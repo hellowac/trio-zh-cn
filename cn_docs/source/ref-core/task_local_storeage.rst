@@ -1,4 +1,4 @@
-
+.. module:: trio
 
 .. _task-local-storage:
 任务存储

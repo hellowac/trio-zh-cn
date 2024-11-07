@@ -1,15 +1,26 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import os
+import sys
 from importlib.metadata import version as get_version
 
 from packaging.version import parse
 
+# For our local_customization module
+sys.path.insert(0, os.path.abspath("."))
+# For trio itself
+sys.path.insert(0, os.path.abspath("../../src"))
+
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.coverage",
+    "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
     "sphinxcontrib_trio",  # 使 Sphinx 更好地记录 Python 函数和方法。特别是，它可以轻松记录异步函数。
+    "local_customization",
+    "typevars",
     "sphinx_inline_tabs",  # tabs
     "sphinx_copybutton",
 ]
@@ -22,6 +33,11 @@ copyright = "2017, Nathaniel J. Smith"  # noqa: A001 # Name shadows builtin
 author = "Nathaniel J. Smith"
 
 autodoc_member_order = "bysource"
+
+autodoc_type_aliases = {
+    # SSLListener.accept's return type is seen as trio._ssl.SSLStream
+    "SSLStream": "trio.SSLStream",
+}
 
 
 # The suffix(es) of source filenames.

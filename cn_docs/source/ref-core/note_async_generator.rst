@@ -1,4 +1,5 @@
-
+.. module:: trio
+   
 .. _async-generators:
 
 异步生成器注意事项

@@ -1,3 +1,5 @@
+.. module:: trio
+
 .. _time-and-clocks:
 
 时间和时钟

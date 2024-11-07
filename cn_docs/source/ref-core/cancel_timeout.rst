@@ -1,3 +1,5 @@
+.. module:: trio
+   
 .. _cancellation:
 
 取消和超时

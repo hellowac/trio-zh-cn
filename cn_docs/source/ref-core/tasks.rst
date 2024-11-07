@@ -1,3 +1,5 @@
+.. module:: trio
+
 .. _tasks:
 
 任务

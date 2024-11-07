@@ -1,3 +1,5 @@
+.. module:: trio
+
 .. _synchronization:
 
 任务同步和通信
