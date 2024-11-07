@@ -1,0 +1,30 @@
+{#
+https://stackoverflow.com/questions/25243482/how-to-add-sphinx-generated-index-to-the-sidebar-when-using-read-the-docs-theme
+#}
+{% extends "!layout.html" %}
+
+{% block sidebartitle %}
+
+{# the logo helper function was removed in Sphinx 6 and deprecated since Sphinx 4 #}
+{# the master_doc variable was renamed to root_doc in Sphinx 4 (master_doc still exists in later Sphinx versions) #}
+{# check sphinx_rtd_theme/layout.html:sidebartitle if this snippet has become outdated #}
+
+<a class="logo" href="{{ pathto(root_doc) }}">
+  <img class="logo" src="{{ logo_url }}" />
+  {%- set nav_version = version %}
+  {% if READTHEDOCS and current_version %}
+    {%- set nav_version = current_version %}
+  {% endif %}
+  {# don't show the version on RTD if it's the default #}
+  {% if nav_version != 'latest' %}
+    <div class="trio-version">{{ nav_version }}</div>
+  {% endif %}
+</a>
+
+{% include "searchbox.html" %}
+
+<p class="trio-help-hint">Need help? <a
+href="https://gitter.im/python-trio/general">Live chat</a>, <a
+href="https://trio.discourse.group">forum</a>, <a
+href="https://stackoverflow.com/questions/ask?tags=python+python-trio">StackOverflow</a>.</p>
+{% endblock %}

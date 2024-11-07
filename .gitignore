@@ -72,3 +72,6 @@ doc/_build/
 
 # PyCharm
 .idea/
+
+# cn_docs
+_build
