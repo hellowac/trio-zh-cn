@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+
+<html class="no-js" data-content_root="../" lang="zh-CN">
+<head><meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/><meta content="width=device-width, initial-scale=1" name="viewport">
+<link href="../genindex.html" rel="index" title="索引"/><link href="../search.html" rel="search" title="搜索"/><link href="threads.html" rel="next" title="线程（如果必须）"/><link href="task_sync.html" rel="prev" title="任务同步和通信"/>
+<link href="../_static/favicon-32.png" rel="shortcut icon"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+<title>异步生成器注意事项 - Trio 0.27.0+dev 文档</title>
+<link href="../_static/pygments.css?v=fa44fd50" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo.css?v=354aac6f" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=125d5c1c" rel="stylesheet" type="text/css"/>
+<link href="../_static/tabs.css?v=4c969af8" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/hackrtd.css?v=2d9fc201" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo-extensions.css?v=302659d7" rel="stylesheet" type="text/css"/>
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></meta></head>
+<body>
+<script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+<symbol id="svg-toc" viewbox="0 0 24 24">
+<title>Contents</title>
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 1024 1024">
+<path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"></path>
+</svg>
+</symbol>
+<symbol id="svg-menu" viewbox="0 0 24 24">
+<title>Menu</title>
+<svg class="feather-menu" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<line x1="3" x2="21" y1="12" y2="12"></line>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<line x1="3" x2="21" y1="18" y2="18"></line>
+</svg>
+</symbol>
+<symbol id="svg-arrow-right" viewbox="0 0 24 24">
+<title>Expand</title>
+<svg class="feather-chevron-right" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</symbol>
+<symbol id="svg-sun" viewbox="0 0 24 24">
+<title>Light mode</title>
+<svg class="feather-sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="5"></circle>
+<line x1="12" x2="12" y1="1" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="23"></line>
+<line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line>
+<line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+<line x1="1" x2="3" y1="12" y2="12"></line>
+<line x1="21" x2="23" y1="12" y2="12"></line>
+<line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line>
+<line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+</svg>
+</symbol>
+<symbol id="svg-moon" viewbox="0 0 24 24">
+<title>Dark mode</title>
+<svg class="icon-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+</svg>
+</symbol>
+<symbol id="svg-sun-with-moon" viewbox="0 0 24 24">
+<title>Auto light/dark, in light mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z" style="opacity: 50%"></path>
+<line x1="14.5" x2="14.5" y1="3.25" y2="1.25"></line>
+<line x1="14.5" x2="14.5" y1="15.85" y2="17.85"></line>
+<line x1="10.044" x2="8.63" y1="5.094" y2="3.68"></line>
+<line x1="19" x2="20.414" y1="14.05" y2="15.464"></line>
+<line x1="8.2" x2="6.2" y1="9.55" y2="9.55"></line>
+<line x1="20.8" x2="22.8" y1="9.55" y2="9.55"></line>
+<line x1="10.044" x2="8.63" y1="14.006" y2="15.42"></line>
+<line x1="19" x2="20.414" y1="5.05" y2="3.636"></line>
+<circle cx="14.5" cy="9.55" r="3.6"></circle>
+</svg>
+</symbol>
+<symbol id="svg-moon-with-sun" viewbox="0 0 24 24">
+<title>Auto light/dark, in dark mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"></path>
+<line style="opacity: 50%" x1="18" x2="18" y1="3.705" y2="2.5"></line>
+<line style="opacity: 50%" x1="18" x2="18" y1="11.295" y2="12.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="4.816" y2="3.964"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="10.212" y2="11.063"></line>
+<line style="opacity: 50%" x1="14.205" x2="13.001" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="21.795" x2="23" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="10.184" y2="11.036"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="4.789" y2="3.937"></line>
+<circle cx="18" cy="7.5" r="2.169" style="opacity: 50%"></circle>
+</svg>
+</symbol>
+<symbol id="svg-pencil" viewbox="0 0 24 24">
+<svg class="icon-tabler-pencil-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path>
+<path d="M13.5 6.5l4 4"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+<symbol id="svg-eye" viewbox="0 0 24 24">
+<svg class="icon-tabler-eye-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+<path d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+</svg>
+<input class="sidebar-toggle" id="__navigation" name="__navigation" type="checkbox"/>
+<input class="sidebar-toggle" id="__toc" name="__toc" type="checkbox"/>
+<label class="overlay sidebar-overlay" for="__navigation">
+<div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+<div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+<div class="page">
+<header class="mobile-header">
+<div class="header-left">
+<label class="nav-overlay-icon" for="__navigation">
+<div class="visually-hidden">Toggle site navigation sidebar</div>
+<i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+</label>
+</div>
+<div class="header-center">
+<a href="../index.html"><div class="brand">Trio 0.27.0+dev 文档</div></a>
+</div>
+<div class="header-right">
+<div class="theme-toggle-container theme-toggle-header">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-header-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+</header>
+<aside class="sidebar-drawer">
+<div class="sidebar-container">
+<div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+<div class="sidebar-logo-container">
+<img alt="Logo" class="sidebar-logo" src="../_static/wordmark-transparent.svg"/>
+</div>
+<span class="sidebar-brand-text">Trio 0.27.0+dev 文档</span>
+</a><form action="../search.html" class="sidebar-search-container" method="get" role="search">
+<input aria-label="搜索" class="sidebar-search" name="q" placeholder="搜索"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+<p class="caption" role="heading"><span class="caption-text">Trio 友好且全面的手册：</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../awesome-trio-libraries.html">超棒的 Trio 库</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Trio 的核心功能</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Trio 的核心功能</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="run.html">运行 Trio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general_principles.html">一般原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_clock.html">时间和时钟</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cancel_timeout.html">取消和超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html">任务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_local_storeage.html">任务存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_sync.html">任务同步和通信</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">异步生成器注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threads.html">线程（如果必须）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging.html">交互式调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exc_warn.html">异常和警告</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ref-io/index.html">Trio 中的 I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Trio 中的 I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/abs_api.html">抽象流 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/low_level.html">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/async_file_io.html">异步文件系统 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/subprocess.html">生成子进程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/signals.html">信号</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-testing.html">Trio 中的测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-lowlevel.html">自省和扩展 Trio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">设计和内部结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">发布历史</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">为 Trio 及相关项目做出贡献</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasing.html">准备发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">行为守则</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<div class="main">
+<div class="content">
+<div class="article-container">
+<a class="back-to-top muted-link" href="#">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+</svg>
+<span>Back to top</span>
+</a>
+<div class="content-icon-container">
+<div class="view-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/blob/sync-docs/cn_docs/source/ref-core/note_async_generator.rst?plain=true" title="View this page">
+<svg><use href="#svg-eye"></use></svg>
+<span class="visually-hidden">View this page</span>
+</a>
+</div><div class="edit-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/edit/sync-docs/cn_docs/source/ref-core/note_async_generator.rst" title="Edit this page">
+<svg><use href="#svg-pencil"></use></svg>
+<span class="visually-hidden">Edit this page</span>
+</a>
+</div><div class="theme-toggle-container theme-toggle-content">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-content-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+<article id="furo-main-content" role="main">
+<section id="async-generators">
+<span id="module-trio"></span><span id="id1"></span><h1>异步生成器注意事项<a class="headerlink" href="#async-generators" title="Link to this heading">¶</a></h1>
+<p><strong>Notes on async generators</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>Python 3.6 增加了对 <em>异步生成器</em> 的支持，这些生成器可以在它们的 <code class="docutils literal notranslate"><span class="pre">yield</span></code> 语句之间使用 <code class="docutils literal notranslate"><span class="pre">await</span></code>、<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span></code> 和 <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code>。正如你所期望的那样，你可以使用 <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span></code> 来迭代它们。如果你需要更多细节，可以参考 <span class="target" id="index-0"></span><a class="pep reference external" href="https://peps.python.org/pep-0525/"><strong>PEP 525</strong></a> 。</p>
+<p>例如，以下是一个间接的方式，用于打印从 0 到 9 的数字，并在每个数字前添加 1 秒的延迟：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">range_slowly</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">   </span><span class="sd">"""像 range()，但在每个值之前添加 1 秒的延迟。"""</span>
+   <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#range" title="range"><span class="nb">range</span></a><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+         <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+         <span class="k">yield</span> <span class="n">value</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">use_it</span><span class="p">():</span>
+   <span class="k">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">range_slowly</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+         <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<span class="n">trio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">use_it</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Trio 支持异步生成器，但本节中描述了一些需要注意的事项。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>Python 3.6 added support for <em>async generators</em>, which can use
+<code class="docutils literal notranslate"><span class="pre">await</span></code>, <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span></code>, and <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> in between their <code class="docutils literal notranslate"><span class="pre">yield</span></code>
+statements. As you might expect, you use <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span></code> to iterate
+over them. <span class="target" id="index-1"></span><a class="pep reference external" href="https://peps.python.org/pep-0525/"><strong>PEP 525</strong></a> has many more details if you want them.</p>
+<p>For example, the following is a roundabout way to print
+the numbers 0 through 9 with a 1-second delay before each one:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">range_slowly</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">   </span><span class="sd">"""Like range(), but adds a 1-second sleep before each value."""</span>
+   <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#range" title="range"><span class="nb">range</span></a><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+         <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+         <span class="k">yield</span> <span class="n">value</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">use_it</span><span class="p">():</span>
+   <span class="k">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">range_slowly</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+         <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<span class="n">trio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">use_it</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Trio supports async generators, with some caveats described in this section.</p>
+</div>
+</div>
+<section id="finalization">
+<h2>Finalization<a class="headerlink" href="#finalization" title="Link to this heading">¶</a></h2>
+<p><strong>Finalization</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<p>如果你完全迭代一个异步生成器，就像上面的示例那样，那么异步生成器的执行将在迭代它的代码上下文中完全进行，通常不会有太多意外。</p>
+<p>然而，如果你放弃了一个部分完成的异步生成器，比如通过在迭代中使用 <code class="docutils literal notranslate"><span class="pre">break</span></code> 跳出循环，那么情况就不那么简单了。异步生成器的迭代器对象仍然存在，等待你恢复迭代以便它可以生成更多的值。到某个时刻，Python 会意识到你已经丢弃了对该迭代器的所有引用，并会请求 Trio 抛出 <cite>GeneratorExit</cite> 异常，以便生成器内部的任何剩余清理代码有机会运行：例如 <code class="docutils literal notranslate"><span class="pre">finally</span></code> 块、<code class="docutils literal notranslate"><span class="pre">__aexit__</span></code> 处理程序等。</p>
+<p>到这里为止，一切正常。不幸的是，Python 对 <em>何时</em> 发生这种情况没有任何保证。它可能会在你跳出 <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span></code> 循环时发生，或者在任意时间之后发生。它甚至可能发生在整个 Trio 运行结束之后！唯一可以保证的是，它 <em>不会</em> 在使用生成器的任务中发生。该任务将继续执行它正在做的其他事情，异步生成器的清理将在 "稍后的某个时候、某个地方" 发生：可能使用不同的上下文变量，不受超时限制，和/或在你使用的任何托儿所关闭之后。</p>
+<p>如果你不喜欢这种模糊性，并且希望确保生成器的 <code class="docutils literal notranslate"><span class="pre">finally</span></code> 块和 <code class="docutils literal notranslate"><span class="pre">__aexit__</span></code> 处理程序在你完成使用时立即执行，那么你需要将生成器的使用包装在类似 <a class="reference external" href="https://async-generator.readthedocs.io/en/latest/reference.html#context-managers">async_generator.aclosing()</a> 的结构中：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 替代这一部分:</span>
+<span class="k">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">my_generator</span><span class="p">():</span>
+   <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">42</span><span class="p">:</span>
+         <span class="k">break</span>
+
+<span class="c1"># 使用这个:</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">aclosing</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span> <span class="k">as</span> <span class="nb">aiter</span><span class="p">:</span>
+   <span class="k">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">aiter</span><span class="p">:</span>
+         <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">42</span><span class="p">:</span>
+            <span class="k">break</span>
+</pre></div>
+</div>
+<p>这虽然有点繁琐，但不幸的是，Python 并没有提供其他可靠的选项。如果你使用 <code class="docutils literal notranslate"><span class="pre">aclosing()</span></code>，那么生成器的清理代码将在与其余迭代相同的上下文中执行，因此超时、异常和上下文变量会按预期工作。</p>
+<p>如果你不使用 <code class="docutils literal notranslate"><span class="pre">aclosing()</span></code>，那么 Trio 仍会尽力处理，但你需要处理以下语义：</p>
+<ul class="simple">
+<li><p>生成器的清理发生在一个已取消的上下文中，即所有在清理过程中执行的阻塞调用将引发 <cite>Cancelled</cite> 异常。这是为了弥补原始使用生成器时的任何超时已被遗忘的事实。</p></li>
+<li><p>清理过程无法访问任何在生成器最初使用时可能存在的 <a class="reference internal" href="task_local_storeage.html#task-local-storage"><span class="std std-ref">上下文变量</span></a>。</p></li>
+<li><p>如果生成器在清理过程中引发异常，它会被打印到 <code class="docutils literal notranslate"><span class="pre">trio.async_generator_errors</span></code> 日志器，并且会被忽略。</p></li>
+<li><p>如果一个异步生成器在整个 <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> 调用结束时仍然存在，那么它将在所有任务退出后，并且在 <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> 返回之前被清理。由于此时 "系统托儿所" 已经关闭，Trio 无法支持任何新的 <a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.spawn_system_task" title="trio.lowlevel.spawn_system_task"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.lowlevel.spawn_system_task()</span></code></a> 调用。</p></li>
+</ul>
+<p>如果你计划在 PyPy 上运行你的代码以利用其更好的性能，你应该意识到 PyPy 比 CPython 更有可能在生成器的最后一次使用之后较长时间执行异步生成器的清理。（这是因为 PyPy 不使用引用计数来管理内存。）为了帮助捕捉此类问题，Trio 会为每个需要通过后备清理路径处理的异步生成器发出 <cite>ResourceWarning`（默认情况下被忽略，但例如在 ``python -X dev`</cite> 下运行时会启用）。</p>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<p>If you iterate over an async generator in its entirety, like the
+example above does, then the execution of the async generator will
+occur completely in the context of the code that's iterating over it,
+and there aren't too many surprises.</p>
+<p>If you abandon a partially-completed async generator, though, such as
+by <code class="docutils literal notranslate"><span class="pre">break</span></code>ing out of the iteration, things aren't so simple.  The
+async generator iterator object is still alive, waiting for you to
+resume iterating it so it can produce more values. At some point,
+Python will realize that you've dropped all references to the
+iterator, and will call on Trio to throw in a <cite>GeneratorExit</cite> exception
+so that any remaining cleanup code inside the generator has a chance
+to run: <code class="docutils literal notranslate"><span class="pre">finally</span></code> blocks, <code class="docutils literal notranslate"><span class="pre">__aexit__</span></code> handlers, and so on.</p>
+<p>So far, so good. Unfortunately, Python provides no guarantees about
+<em>when</em> this happens. It could be as soon as you break out of the
+<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span></code> loop, or an arbitrary amount of time later. It could
+even be after the entire Trio run has finished! Just about the only
+guarantee is that it <em>won't</em> happen in the task that was using the
+generator. That task will continue on with whatever else it's doing,
+and the async generator cleanup will happen "sometime later,
+somewhere else": potentially with different context variables,
+not subject to timeouts, and/or after any nurseries you're using have
+been closed.</p>
+<p>If you don't like that ambiguity, and you want to ensure that a
+generator's <code class="docutils literal notranslate"><span class="pre">finally</span></code> blocks and <code class="docutils literal notranslate"><span class="pre">__aexit__</span></code> handlers execute as
+soon as you're done using it, then you'll need to wrap your use of the
+generator in something like <a class="reference external" href="https://async-generator.readthedocs.io/en/latest/reference.html#context-managers">async_generator.aclosing()</a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instead of this:</span>
+<span class="k">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">my_generator</span><span class="p">():</span>
+   <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">42</span><span class="p">:</span>
+         <span class="k">break</span>
+
+<span class="c1"># Do this:</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">aclosing</span><span class="p">(</span><span class="n">my_generator</span><span class="p">())</span> <span class="k">as</span> <span class="nb">aiter</span><span class="p">:</span>
+   <span class="k">async</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">aiter</span><span class="p">:</span>
+         <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">42</span><span class="p">:</span>
+            <span class="k">break</span>
+</pre></div>
+</div>
+<p>This is cumbersome, but Python unfortunately doesn't provide any other
+reliable options. If you use <code class="docutils literal notranslate"><span class="pre">aclosing()</span></code>, then
+your generator's cleanup code executes in the same context as the
+rest of its iterations, so timeouts, exceptions, and context
+variables work like you'd expect.</p>
+<p>If you don't use <code class="docutils literal notranslate"><span class="pre">aclosing()</span></code>, then Trio will do
+its best anyway, but you'll have to contend with the following semantics:</p>
+<ul class="simple">
+<li><p>The cleanup of the generator occurs in a cancelled context, i.e.,</p></li>
+</ul>
+<p>all blocking calls executed during cleanup will raise <cite>Cancelled</cite>.
+This is to compensate for the fact that any timeouts surrounding
+the original use of the generator have been long since forgotten.</p>
+<ul class="simple">
+<li><p>The cleanup runs without access to any :ref:<a href="#id2"><span class="problematic" id="id3">`</span></a>context variables</p></li>
+</ul>
+<p>&lt;task-local-storage&gt;` that may have been present when the generator
+was originally being used.</p>
+<ul class="simple">
+<li><p>If the generator raises an exception during cleanup, then it's</p></li>
+</ul>
+<p>printed to the <code class="docutils literal notranslate"><span class="pre">trio.async_generator_errors</span></code> logger and otherwise
+ignored.</p>
+<ul class="simple">
+<li><p>If an async generator is still alive at the end of the whole</p></li>
+</ul>
+<p>call to <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a>, then it will be cleaned up after all
+tasks have exited and before <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> returns.
+Since the "system nursery" has already been closed at this point,
+Trio isn't able to support any new calls to
+<a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.spawn_system_task" title="trio.lowlevel.spawn_system_task"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.lowlevel.spawn_system_task()</span></code></a>.</p>
+<p>If you plan to run your code on PyPy to take advantage of its better
+performance, you should be aware that PyPy is <em>far more likely</em> than
+CPython to perform async generator cleanup at a time well after the
+last use of the generator. (This is a consequence of the fact that
+PyPy does not use reference counting to manage memory.)  To help catch
+issues like this, Trio will issue a <cite>ResourceWarning</cite> (ignored by
+default, but enabled when running under <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-X</span> <span class="pre">dev</span></code> for example)
+for each async generator that needs to be handled through the fallback
+finalization path.</p>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2>取消范围和托儿所<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<p><strong>Cancel scopes and nurseries</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>你不能在异步生成器内部的 <cite>CancelScope</cite> 或 <cite>Nursery</cite> 中写出一个挂起异步生成器的 <code class="docutils literal notranslate"><span class="pre">yield</span></code> 语句。</p>
+</div>
+<p>也就是说，下面是可以的：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">some_agen</span><span class="p">():</span>
+   <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+         <span class="k">await</span> <span class="n">long_operation</span><span class="p">()</span>
+   <span class="k">yield</span> <span class="s2">"first"</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">task1</span><span class="p">)</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">task2</span><span class="p">)</span>
+   <span class="k">yield</span> <span class="s2">"second"</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>但下面的代码则不可以：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">some_agen</span><span class="p">():</span>
+   <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+         <span class="k">yield</span> <span class="s2">"first"</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="k">yield</span> <span class="s2">"second"</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">@asynccontextmanager</span></code> 装饰的异步生成器作为异步上下文管理器的模板 <em>不</em> 受此限制，因为 <code class="docutils literal notranslate"><span class="pre">@asynccontextmanager</span></code> 以一种有限的方式使用它们，这样就不会产生问题。</p>
+<p>违反本节中描述的规则有时会给出有用的错误信息，但 Trio 无法检测到所有此类情况，所以有时你可能会遇到一个无用的 <cite>TrioInternalError</cite>。（有时它看起来会正常工作，这可能是最糟糕的结果，因为你可能直到进行一些小的重构，或者代码迭代生成器时才注意到问题，或者只是运气不好。至少有一个 <a class="reference external" href="https://discuss.python.org/t/preventing-yield-inside-certain-context-managers/1091">提议的 Python 增强功能</a>，它会让这个问题一致地失败。）</p>
+<p>关于取消范围的限制，原因在于很难察觉到生成器何时被挂起和恢复。生成器内部的取消范围不应影响生成器外部的代码，但 Trio 并未参与退出和重新进入生成器的过程，因此它很难保持其取消机制的正确状态。托儿所内部使用了取消范围，所以它们不仅有取消范围的问题，还有自己的问题：例如，当生成器被挂起时，后台任务应该做什么？没有好的方法来挂起它们，但如果它们继续运行并抛出异常，这个异常应该在哪里重新抛出？</p>
+<p>如果你有一个希望在托儿所或取消范围内 <code class="docutils literal notranslate"><span class="pre">yield</span></code> 的异步生成器，最好的做法是将它重构为一个单独的任务，通过内存通道进行通信。<code class="docutils literal notranslate"><span class="pre">trio_util</span></code> 包提供了一个 <a class="reference external" href="https://trio-util.readthedocs.io/en/latest/#trio_util.trio_async_generator">装饰器，可以透明地为你完成这个操作</a>。</p>
+<p>有关更多讨论，请参见 Trio 问题 <a class="reference external" href="https://github.com/python-trio/trio/issues/264">264</a> （尤其是 <a class="reference external" href="https://github.com/python-trio/trio/issues/264#issuecomment-418989328">这个评论</a> ）和 <a class="reference external" href="https://github.com/python-trio/trio/issues/638">638</a> 。</p>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>You may not write a <code class="docutils literal notranslate"><span class="pre">yield</span></code> statement that suspends an async generator
+inside a <cite>CancelScope</cite> or <cite>Nursery</cite> that was entered within the generator.</p>
+</div>
+<p>That is, this is OK:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">some_agen</span><span class="p">():</span>
+   <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+         <span class="k">await</span> <span class="n">long_operation</span><span class="p">()</span>
+   <span class="k">yield</span> <span class="s2">"first"</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">task1</span><span class="p">)</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">task2</span><span class="p">)</span>
+   <span class="k">yield</span> <span class="s2">"second"</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>But this is not:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">some_agen</span><span class="p">():</span>
+   <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+         <span class="k">yield</span> <span class="s2">"first"</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="k">yield</span> <span class="s2">"second"</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>Async generators decorated with <code class="docutils literal notranslate"><span class="pre">@asynccontextmanager</span></code> to serve as
+the template for an async context manager are <em>not</em> subject to this
+constraint, because <code class="docutils literal notranslate"><span class="pre">@asynccontextmanager</span></code> uses them in a limited
+way that doesn't create problems.</p>
+<p>Violating the rule described in this section will sometimes get you a
+useful error message, but Trio is not able to detect all such cases,
+so sometimes you'll get an unhelpful <cite>TrioInternalError</cite>. (And
+sometimes it will seem to work, which is probably the worst outcome of
+all, since then you might not notice the issue until you perform some
+minor refactoring of the generator or the code that's iterating it, or
+just get unlucky. There is a <a class="reference external" href="https://discuss.python.org/t/preventing-yield-inside-certain-context-managers/1091">proposed Python enhancement</a>
+that would at least make it fail consistently.)</p>
+<p>The reason for the restriction on cancel scopes has to do with the
+difficulty of noticing when a generator gets suspended and
+resumed. The cancel scopes inside the generator shouldn't affect code
+running outside the generator, but Trio isn't involved in the process
+of exiting and reentering the generator, so it would be hard pressed
+to keep its cancellation plumbing in the correct state. Nurseries
+use a cancel scope internally, so they have all the problems of cancel
+scopes plus a number of problems of their own: for example, when
+the generator is suspended, what should the background tasks do?
+There's no good way to suspend them, but if they keep running and throw
+an exception, where can that exception be reraised?</p>
+<p>If you have an async generator that wants to <code class="docutils literal notranslate"><span class="pre">yield</span></code> from within a nursery
+or cancel scope, your best bet is to refactor it to be a separate task
+that communicates over memory channels.  The <code class="docutils literal notranslate"><span class="pre">trio_util</span></code> package offers a
+<a class="reference external" href="https://trio-util.readthedocs.io/en/latest/#trio_util.trio_async_generator">decorator that does this for you transparently</a>.</p>
+<p>For more discussion, see
+Trio issues <a class="reference external" href="https://github.com/python-trio/trio/issues/264">264</a>
+(especially <a class="reference external" href="https://github.com/python-trio/trio/issues/264#issuecomment-418989328">this comment</a>)
+and <a class="reference external" href="https://github.com/python-trio/trio/issues/638">638</a>.</p>
+</div>
+</div>
+</section>
+</section>
+</article>
+</div>
+<footer>
+<div class="related-pages">
+<a class="next-page" href="threads.html">
+<div class="page-info">
+<div class="context">
+<span>Next</span>
+</div>
+<div class="title">线程（如果必须）</div>
+</div>
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+</a>
+<a class="prev-page" href="task_sync.html">
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+<div class="page-info">
+<div class="context">
+<span>Previous</span>
+</div>
+<div class="title">任务同步和通信</div>
+</div>
+</a>
+</div>
+<div class="bottom-of-page">
+<div class="left-details">
+<div class="copyright">
+                Copyright © 2017, Nathaniel J. Smith
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+</div>
+<div class="right-details">
+<div class="icons">
+<a aria-label="GitHub" class="muted-link" href="https://github.com/hellowac/trio-zh-cn">
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 16 16">
+<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<aside class="toc-drawer">
+<div class="toc-sticky toc-scroll">
+<div class="toc-title-container">
+<span class="toc-title">
+            On this page
+          </span>
+</div>
+<div class="toc-tree-container">
+<div class="toc-tree">
+<ul>
+<li><a class="reference internal" href="#">异步生成器注意事项</a><ul>
+<li><a class="reference internal" href="#finalization">Finalization</a></li>
+<li><a class="reference internal" href="#id4">取消范围和托儿所</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div><script src="../_static/documentation_options.js?v=d2451d57"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+<script src="../_static/tabs.js?v=3ee01567"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/translations.js?v=beaddf03"></script>
+</body>
+</html>

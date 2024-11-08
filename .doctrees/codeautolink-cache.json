@@ -1,0 +1,3072 @@
+{
+  "awesome-trio-libraries": [],
+  "code-of-conduct": [],
+  "contributing": [
+    {
+      "source": "if ...:\n    ...\nelse:  # pragma: no cover\n    raise AssertionError(\"\u8fd9\u4e0d\u53ef\u80fd\u53d1\u751f\uff01\")",
+      "names": [
+        {
+          "import_components": [
+            "AssertionError"
+          ],
+          "code_str": "AssertionError",
+          "lineno": 4,
+          "end_lineno": 4,
+          "context": "none",
+          "resolved_location": "AssertionError"
+        }
+      ],
+      "example": {
+        "document": "contributing",
+        "ref_id": "pull-request-tests",
+        "headings": [
+          "\u4e3a Trio \u53ca\u76f8\u5173\u9879\u76ee\u505a\u51fa\u8d21\u732e",
+          "\u51c6\u5907\u62c9\u53d6\u8bf7\u6c42",
+          "\u6d4b\u8bd5"
+        ]
+      },
+      "doc_lineno": 300
+    },
+    {
+      "source": "if ...:\n    ...\nelse:  # pragma: no cover\n    raise AssertionError(\"this can't happen!\")",
+      "names": [
+        {
+          "import_components": [
+            "AssertionError"
+          ],
+          "code_str": "AssertionError",
+          "lineno": 4,
+          "end_lineno": 4,
+          "context": "none",
+          "resolved_location": "AssertionError"
+        }
+      ],
+      "example": {
+        "document": "contributing",
+        "ref_id": "pull-request-tests",
+        "headings": [
+          "\u4e3a Trio \u53ca\u76f8\u5173\u9879\u76ee\u505a\u51fa\u8d21\u732e",
+          "\u51c6\u5907\u62c9\u53d6\u8bf7\u6c42",
+          "\u6d4b\u8bd5"
+        ]
+      },
+      "doc_lineno": 362
+    }
+  ],
+  "design": [
+    {
+      "source": "async def parent():\n    async with trio.open_nursery() as nursery:\n        nursery.start_soon(child)",
+      "names": [],
+      "example": {
+        "document": "design",
+        "ref_id": "id5",
+        "headings": [
+          "\u8bbe\u8ba1\u548c\u5185\u90e8\u7ed3\u6784",
+          "\u7528\u6237\u7ea7 API \u539f\u5219",
+          "\u5f02\u5e38\u59cb\u7ec8\u4f20\u64ad"
+        ]
+      },
+      "doc_lineno": 410
+    },
+    {
+      "source": "async def parent():\n    async with trio.open_nursery() as nursery:\n        nursery.start_soon(child)",
+      "names": [],
+      "example": {
+        "document": "design",
+        "ref_id": "id5",
+        "headings": [
+          "\u8bbe\u8ba1\u548c\u5185\u90e8\u7ed3\u6784",
+          "\u7528\u6237\u7ea7 API \u539f\u5219",
+          "\u5f02\u5e38\u59cb\u7ec8\u4f20\u64ad"
+        ]
+      },
+      "doc_lineno": 453
+    },
+    {
+      "source": "def call_the_thing(fn, *args, kwonly1, kwonly2):\n    ...",
+      "names": [],
+      "example": {
+        "document": "design",
+        "ref_id": "id7",
+        "headings": [
+          "\u8bbe\u8ba1\u548c\u5185\u90e8\u7ed3\u6784",
+          "\u7279\u5b9a\u6837\u5f0f\u6307\u5357"
+        ]
+      },
+      "doc_lineno": 520
+    },
+    {
+      "source": "def call_the_thing(fn, *args):\n    ...",
+      "names": [],
+      "example": {
+        "document": "design",
+        "ref_id": "id7",
+        "headings": [
+          "\u8bbe\u8ba1\u548c\u5185\u90e8\u7ed3\u6784",
+          "\u7279\u5b9a\u6837\u5f0f\u6307\u5357"
+        ]
+      },
+      "doc_lineno": 527
+    },
+    {
+      "source": "async def OPERATION(arg1, arg2):\n    ...\n\ndef OPERATION_nowait(arg1, arg2):\n    ...",
+      "names": [],
+      "example": {
+        "document": "design",
+        "ref_id": "id7",
+        "headings": [
+          "\u8bbe\u8ba1\u548c\u5185\u90e8\u7ed3\u6784",
+          "\u7279\u5b9a\u6837\u5f0f\u6307\u5357"
+        ]
+      },
+      "doc_lineno": 543
+    },
+    {
+      "source": "def call_the_thing(fn, *args, kwonly1, kwonly2):\n    ...",
+      "names": [],
+      "example": {
+        "document": "design",
+        "ref_id": "id7",
+        "headings": [
+          "\u8bbe\u8ba1\u548c\u5185\u90e8\u7ed3\u6784",
+          "\u7279\u5b9a\u6837\u5f0f\u6307\u5357"
+        ]
+      },
+      "doc_lineno": 561
+    },
+    {
+      "source": "def call_the_thing(fn, *args):\n    ...",
+      "names": [],
+      "example": {
+        "document": "design",
+        "ref_id": "id7",
+        "headings": [
+          "\u8bbe\u8ba1\u548c\u5185\u90e8\u7ed3\u6784",
+          "\u7279\u5b9a\u6837\u5f0f\u6307\u5357"
+        ]
+      },
+      "doc_lineno": 572
+    },
+    {
+      "source": "async def OPERATION(arg1, arg2):\n    ...\n\ndef OPERATION_nowait(arg1, arg2):\n    ...",
+      "names": [],
+      "example": {
+        "document": "design",
+        "ref_id": "id7",
+        "headings": [
+          "\u8bbe\u8ba1\u548c\u5185\u90e8\u7ed3\u6784",
+          "\u7279\u5b9a\u6837\u5f0f\u6307\u5357"
+        ]
+      },
+      "doc_lineno": 599
+    }
+  ],
+  "glossary": [],
+  "history": [
+    {
+      "source": "port = await nursery.start(http_server_on_random_open_port)",
+      "names": [],
+      "example": {
+        "document": "history",
+        "ref_id": "highlights",
+        "headings": [
+          "\u53d1\u5e03\u5386\u53f2",
+          "Trio 0.2.0 (2017-12-06)",
+          "Highlights"
+        ]
+      },
+      "doc_lineno": 1398
+    },
+    {
+      "source": "async def main():\n    # asyncio here\n    await asyncio.sleep(1)\n\n# trio here\ntrio.run(main)",
+      "names": [],
+      "example": {
+        "document": "history",
+        "ref_id": "other-changes",
+        "headings": [
+          "\u53d1\u5e03\u5386\u53f2",
+          "Trio 0.2.0 (2017-12-06)",
+          "Other changes"
+        ]
+      },
+      "doc_lineno": 1642
+    }
+  ],
+  "index": [],
+  "ref-core/cancel_timeout": [
+    {
+      "source": "with trio.move_on_after(30):\n   result = await do_http_get(\"https://...\")\n   print(\"result is\", result)\nprint(\"with block finished\")",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 4,
+          "end_lineno": 4,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id2",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u4e00\u4e2a\u7b80\u5355\u7684\u8d85\u65f6\u793a\u4f8b"
+        ]
+      },
+      "doc_lineno": 28
+    },
+    {
+      "source": "with trio.move_on_after(30):\n   result = await do_http_get(\"https://...\")\n   print(\"result is\", result)\nprint(\"with block finished\")",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 4,
+          "end_lineno": 4,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id2",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u4e00\u4e2a\u7b80\u5355\u7684\u8d85\u65f6\u793a\u4f8b"
+        ]
+      },
+      "doc_lineno": 50
+    },
+    {
+      "source": "print(\"starting...\")\nwith trio.move_on_after(5):\n   with trio.move_on_after(10):\n      await trio.sleep(20)\n      print(\"sleep finished without error\")\n   print(\"move_on_after(10) finished without error\")\nprint(\"move_on_after(5) finished without error\")",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 5,
+          "end_lineno": 5,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id4",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88\u8bed\u4e49"
+        ]
+      },
+      "doc_lineno": 172
+    },
+    {
+      "source": "with trio.move_on_after(5) as cancel_scope:\n   await trio.sleep(10)\nprint(cancel_scope.cancelled_caught)  # prints \"True\"",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id4",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88\u8bed\u4e49"
+        ]
+      },
+      "doc_lineno": 193
+    },
+    {
+      "source": "with trio.move_on_after(TIMEOUT):\n   conn = make_connection()\n   try:\n      await conn.send_hello_msg()\n   finally:\n      await conn.send_goodbye_msg()",
+      "names": [],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id4",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88\u8bed\u4e49"
+        ]
+      },
+      "doc_lineno": 203
+    },
+    {
+      "source": "with trio.move_on_after(TIMEOUT):\n   conn = make_connection()\n   try:\n      await conn.send_hello_msg()\n   finally:\n      with trio.move_on_after(CLEANUP_TIMEOUT, shield=True) as cleanup_scope:\n            await conn.send_goodbye_msg()",
+      "names": [],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id4",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88\u8bed\u4e49"
+        ]
+      },
+      "doc_lineno": 216
+    },
+    {
+      "source": "print(\"starting...\")\nwith trio.move_on_after(5):\n   with trio.move_on_after(10):\n      await trio.sleep(20)\n      print(\"sleep finished without error\")\n   print(\"move_on_after(10) finished without error\")\nprint(\"move_on_after(5) finished without error\")",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 5,
+          "end_lineno": 5,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id4",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88\u8bed\u4e49"
+        ]
+      },
+      "doc_lineno": 237
+    },
+    {
+      "source": "with trio.move_on_after(5) as cancel_scope:\n   await trio.sleep(10)\nprint(cancel_scope.cancelled_caught)  # prints \"True\"",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id4",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88\u8bed\u4e49"
+        ]
+      },
+      "doc_lineno": 268
+    },
+    {
+      "source": "with trio.move_on_after(TIMEOUT):\n   conn = make_connection()\n   try:\n      await conn.send_hello_msg()\n   finally:\n      await conn.send_goodbye_msg()",
+      "names": [],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id4",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88\u8bed\u4e49"
+        ]
+      },
+      "doc_lineno": 286
+    },
+    {
+      "source": "with trio.move_on_after(TIMEOUT):\n   conn = make_connection()\n   try:\n      await conn.send_hello_msg()\n   finally:\n      with trio.move_on_after(CLEANUP_TIMEOUT, shield=True) as cleanup_scope:\n            await conn.send_goodbye_msg()",
+      "names": [],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id4",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88\u8bed\u4e49"
+        ]
+      },
+      "doc_lineno": 315
+    },
+    {
+      "source": "with trio.move_on_after(TIMEOUT):\n      await do_whatever()\n# \u7ee7\u7eed\u6267\u884c\uff01",
+      "names": [],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id10",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88 API \u8be6\u7ec6\u4fe1\u606f",
+          "\u5907\u5fd8\u5355"
+        ]
+      },
+      "doc_lineno": 522
+    },
+    {
+      "source": "with trio.move_on_after(TIMEOUT) as cancel_scope:\n      await do_whatever()\nif cancel_scope.cancelled_caught:\n      # \u64cd\u4f5c\u8d85\u65f6\uff0c\u5c1d\u8bd5\u5176\u4ed6\u65b9\u6cd5\n      try_to_recover()",
+      "names": [],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id10",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88 API \u8be6\u7ec6\u4fe1\u606f",
+          "\u5907\u5fd8\u5355"
+        ]
+      },
+      "doc_lineno": 530
+    },
+    {
+      "source": "with trio.fail_after(TIMEOUT):\n      await do_whatever()",
+      "names": [],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id10",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88 API \u8be6\u7ec6\u4fe1\u606f",
+          "\u5907\u5fd8\u5355"
+        ]
+      },
+      "doc_lineno": 540
+    },
+    {
+      "source": "with trio.move_on_after(TIMEOUT):\n      await do_whatever()\n# carry on!",
+      "names": [],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id10",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88 API \u8be6\u7ec6\u4fe1\u606f",
+          "\u5907\u5fd8\u5355"
+        ]
+      },
+      "doc_lineno": 554
+    },
+    {
+      "source": "with trio.move_on_after(TIMEOUT) as cancel_scope:\n      await do_whatever()\nif cancel_scope.cancelled_caught:\n      # The operation timed out, try something else\n      try_to_recover()",
+      "names": [],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id10",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88 API \u8be6\u7ec6\u4fe1\u606f",
+          "\u5907\u5fd8\u5355"
+        ]
+      },
+      "doc_lineno": 563
+    },
+    {
+      "source": "with trio.fail_after(TIMEOUT):\n      await do_whatever()",
+      "names": [],
+      "example": {
+        "document": "ref-core/cancel_timeout",
+        "ref_id": "id10",
+        "headings": [
+          "\u53d6\u6d88\u548c\u8d85\u65f6",
+          "\u53d6\u6d88 API \u8be6\u7ec6\u4fe1\u606f",
+          "\u5907\u5fd8\u5355"
+        ]
+      },
+      "doc_lineno": 575
+    }
+  ],
+  "ref-core/debugging": [],
+  "ref-core/exc_warn": [],
+  "ref-core/general_principles": [
+    {
+      "source": "# \u6280\u672f\u4e0a\u662f\u5408\u6cd5\u7684\uff0c\u4f46\u98ce\u683c\u5f88\u5dee\uff1a\nasync def why_is_this_async():\n   return 7",
+      "names": [],
+      "example": {
+        "document": "ref-core/general_principles",
+        "ref_id": "checkpoint-rule",
+        "headings": [
+          "\u4e00\u822c\u539f\u5219",
+          "\u68c0\u67e5\u70b9",
+          "\u68c0\u67e5\u70b9\u89c4\u5219"
+        ]
+      },
+      "doc_lineno": 114
+    },
+    {
+      "source": "async def sleep_or_not(should_sleep):\n   if should_sleep:\n      await trio.sleep(1)\n   else:\n      pass",
+      "names": [],
+      "example": {
+        "document": "ref-core/general_principles",
+        "ref_id": "checkpoint-rule",
+        "headings": [
+          "\u4e00\u822c\u539f\u5219",
+          "\u68c0\u67e5\u70b9",
+          "\u68c0\u67e5\u70b9\u89c4\u5219"
+        ]
+      },
+      "doc_lineno": 126
+    },
+    {
+      "source": "async def recv_exactly(sock, nbytes):\n   data = bytearray()\n   while nbytes > 0:\n         # recv() \u6bcf\u6b21\u6700\u591a\u8bfb\u53d6 'nbytes' \u5b57\u8282\n         chunk = await sock.recv(nbytes)\n         if not chunk:\n            raise RuntimeError(\"socket \u610f\u5916\u5173\u95ed\")\n         nbytes -= len(chunk)\n         data += chunk\n   return data",
+      "names": [
+        {
+          "import_components": [
+            "bytearray"
+          ],
+          "code_str": "bytearray",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "none",
+          "resolved_location": "bytearray"
+        },
+        {
+          "import_components": [
+            "RuntimeError"
+          ],
+          "code_str": "RuntimeError",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "RuntimeError"
+        },
+        {
+          "import_components": [
+            "len"
+          ],
+          "code_str": "len",
+          "lineno": 8,
+          "end_lineno": 8,
+          "context": "none",
+          "resolved_location": "len"
+        }
+      ],
+      "example": {
+        "document": "ref-core/general_principles",
+        "ref_id": "checkpoint-rule",
+        "headings": [
+          "\u4e00\u822c\u539f\u5219",
+          "\u68c0\u67e5\u70b9",
+          "\u68c0\u67e5\u70b9\u89c4\u5219"
+        ]
+      },
+      "doc_lineno": 139
+    },
+    {
+      "source": "# technically legal, but bad style:\nasync def why_is_this_async():\n   return 7",
+      "names": [],
+      "example": {
+        "document": "ref-core/general_principles",
+        "ref_id": "checkpoint-rule",
+        "headings": [
+          "\u4e00\u822c\u539f\u5219",
+          "\u68c0\u67e5\u70b9",
+          "\u68c0\u67e5\u70b9\u89c4\u5219"
+        ]
+      },
+      "doc_lineno": 197
+    },
+    {
+      "source": "async def sleep_or_not(should_sleep):\n   if should_sleep:\n      await trio.sleep(1)\n   else:\n      pass",
+      "names": [],
+      "example": {
+        "document": "ref-core/general_principles",
+        "ref_id": "checkpoint-rule",
+        "headings": [
+          "\u4e00\u822c\u539f\u5219",
+          "\u68c0\u67e5\u70b9",
+          "\u68c0\u67e5\u70b9\u89c4\u5219"
+        ]
+      },
+      "doc_lineno": 222
+    },
+    {
+      "source": "async def recv_exactly(sock, nbytes):\n   data = bytearray()\n   while nbytes > 0:\n         # recv() reads up to 'nbytes' bytes each time\n         chunk = await sock.recv(nbytes)\n         if not chunk:\n            raise RuntimeError(\"socket unexpected closed\")\n         nbytes -= len(chunk)\n         data += chunk\n   return data",
+      "names": [
+        {
+          "import_components": [
+            "bytearray"
+          ],
+          "code_str": "bytearray",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "none",
+          "resolved_location": "bytearray"
+        },
+        {
+          "import_components": [
+            "RuntimeError"
+          ],
+          "code_str": "RuntimeError",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "RuntimeError"
+        },
+        {
+          "import_components": [
+            "len"
+          ],
+          "code_str": "len",
+          "lineno": 8,
+          "end_lineno": 8,
+          "context": "none",
+          "resolved_location": "len"
+        }
+      ],
+      "example": {
+        "document": "ref-core/general_principles",
+        "ref_id": "checkpoint-rule",
+        "headings": [
+          "\u4e00\u822c\u539f\u5219",
+          "\u68c0\u67e5\u70b9",
+          "\u68c0\u67e5\u70b9\u89c4\u5219"
+        ]
+      },
+      "doc_lineno": 245
+    }
+  ],
+  "ref-core/index": [],
+  "ref-core/note_async_generator": [
+    {
+      "source": "async def range_slowly(*args):\n   \"\"\"\u50cf range()\uff0c\u4f46\u5728\u6bcf\u4e2a\u503c\u4e4b\u524d\u6dfb\u52a0 1 \u79d2\u7684\u5ef6\u8fdf\u3002\"\"\"\n   for value in range(*args):\n         await trio.sleep(1)\n         yield value\n\nasync def use_it():\n   async for value in range_slowly(10):\n         print(value)\n\ntrio.run(use_it)",
+      "names": [
+        {
+          "import_components": [
+            "range"
+          ],
+          "code_str": "range",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "range"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 9,
+          "end_lineno": 9,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "ref-core/note_async_generator",
+        "ref_id": "async-generators",
+        "headings": [
+          "\u5f02\u6b65\u751f\u6210\u5668\u6ce8\u610f\u4e8b\u9879"
+        ]
+      },
+      "doc_lineno": 16
+    },
+    {
+      "source": "async def range_slowly(*args):\n   \"\"\"Like range(), but adds a 1-second sleep before each value.\"\"\"\n   for value in range(*args):\n         await trio.sleep(1)\n         yield value\n\nasync def use_it():\n   async for value in range_slowly(10):\n         print(value)\n\ntrio.run(use_it)",
+      "names": [
+        {
+          "import_components": [
+            "range"
+          ],
+          "code_str": "range",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "range"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 9,
+          "end_lineno": 9,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "ref-core/note_async_generator",
+        "ref_id": "async-generators",
+        "headings": [
+          "\u5f02\u6b65\u751f\u6210\u5668\u6ce8\u610f\u4e8b\u9879"
+        ]
+      },
+      "doc_lineno": 42
+    },
+    {
+      "source": "# \u66ff\u4ee3\u8fd9\u4e00\u90e8\u5206:\nasync for value in my_generator():\n   if value == 42:\n         break\n\n# \u4f7f\u7528\u8fd9\u4e2a:\nasync with aclosing(my_generator()) as aiter:\n   async for value in aiter:\n         if value == 42:\n            break",
+      "names": [],
+      "example": {
+        "document": "ref-core/note_async_generator",
+        "ref_id": "finalization",
+        "headings": [
+          "\u5f02\u6b65\u751f\u6210\u5668\u6ce8\u610f\u4e8b\u9879",
+          "Finalization"
+        ]
+      },
+      "doc_lineno": 73
+    },
+    {
+      "source": "# Instead of this:\nasync for value in my_generator():\n   if value == 42:\n         break\n\n# Do this:\nasync with aclosing(my_generator()) as aiter:\n   async for value in aiter:\n         if value == 42:\n            break",
+      "names": [],
+      "example": {
+        "document": "ref-core/note_async_generator",
+        "ref_id": "finalization",
+        "headings": [
+          "\u5f02\u6b65\u751f\u6210\u5668\u6ce8\u610f\u4e8b\u9879",
+          "Finalization"
+        ]
+      },
+      "doc_lineno": 133
+    },
+    {
+      "source": "async def some_agen():\n   with trio.move_on_after(1):\n         await long_operation()\n   yield \"first\"\n   async with trio.open_nursery() as nursery:\n         nursery.start_soon(task1)\n         nursery.start_soon(task2)\n   yield \"second\"\n   ...",
+      "names": [],
+      "example": {
+        "document": "ref-core/note_async_generator",
+        "ref_id": "id4",
+        "headings": [
+          "\u5f02\u6b65\u751f\u6210\u5668\u6ce8\u610f\u4e8b\u9879",
+          "\u53d6\u6d88\u8303\u56f4\u548c\u6258\u513f\u6240"
+        ]
+      },
+      "doc_lineno": 196
+    },
+    {
+      "source": "async def some_agen():\n   with trio.move_on_after(1):\n         yield \"first\"\n   async with trio.open_nursery() as nursery:\n         yield \"second\"\n   ...",
+      "names": [],
+      "example": {
+        "document": "ref-core/note_async_generator",
+        "ref_id": "id4",
+        "headings": [
+          "\u5f02\u6b65\u751f\u6210\u5668\u6ce8\u610f\u4e8b\u9879",
+          "\u53d6\u6d88\u8303\u56f4\u548c\u6258\u513f\u6240"
+        ]
+      },
+      "doc_lineno": 210
+    },
+    {
+      "source": "async def some_agen():\n   with trio.move_on_after(1):\n         await long_operation()\n   yield \"first\"\n   async with trio.open_nursery() as nursery:\n         nursery.start_soon(task1)\n         nursery.start_soon(task2)\n   yield \"second\"\n   ...",
+      "names": [],
+      "example": {
+        "document": "ref-core/note_async_generator",
+        "ref_id": "id4",
+        "headings": [
+          "\u5f02\u6b65\u751f\u6210\u5668\u6ce8\u610f\u4e8b\u9879",
+          "\u53d6\u6d88\u8303\u56f4\u548c\u6258\u513f\u6240"
+        ]
+      },
+      "doc_lineno": 238
+    },
+    {
+      "source": "async def some_agen():\n   with trio.move_on_after(1):\n         yield \"first\"\n   async with trio.open_nursery() as nursery:\n         yield \"second\"\n   ...",
+      "names": [],
+      "example": {
+        "document": "ref-core/note_async_generator",
+        "ref_id": "id4",
+        "headings": [
+          "\u5f02\u6b65\u751f\u6210\u5668\u6ce8\u610f\u4e8b\u9879",
+          "\u53d6\u6d88\u8303\u56f4\u548c\u6258\u513f\u6240"
+        ]
+      },
+      "doc_lineno": 252
+    }
+  ],
+  "ref-core/run": [],
+  "ref-core/task_local_storeage": [],
+  "ref-core/task_sync": [
+    {
+      "source": "# fairness-demo.py\n\nimport trio\n\nasync def loopy_child(number, lock):\n   while True:\n      async with lock:\n            print(f\"Child {number} has the lock!\")\n            await trio.sleep(0.5)\n\nasync def main():\n   async with trio.open_nursery() as nursery:\n      lock = trio.Lock()\n      nursery.start_soon(loopy_child, 1, lock)\n      nursery.start_soon(loopy_child, 2, lock)\n\ntrio.run(main)",
+      "names": [
+        {
+          "import_components": [
+            "trio"
+          ],
+          "code_str": "trio",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "import_target",
+          "resolved_location": "trio"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 8,
+          "end_lineno": 8,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "trio",
+            "sleep"
+          ],
+          "code_str": "trio.sleep",
+          "lineno": 9,
+          "end_lineno": 9,
+          "context": "none",
+          "resolved_location": "trio.sleep"
+        },
+        {
+          "import_components": [
+            "trio",
+            "open_nursery"
+          ],
+          "code_str": "trio.open_nursery",
+          "lineno": 12,
+          "end_lineno": 12,
+          "context": "none",
+          "resolved_location": "trio.open_nursery"
+        },
+        {
+          "import_components": [
+            "trio",
+            "Lock"
+          ],
+          "code_str": "trio.Lock",
+          "lineno": 13,
+          "end_lineno": 13,
+          "context": "none",
+          "resolved_location": "trio.Lock"
+        },
+        {
+          "import_components": [
+            "trio",
+            "Lock",
+            "()"
+          ],
+          "code_str": "lock",
+          "lineno": 13,
+          "end_lineno": 13,
+          "context": "none",
+          "resolved_location": "trio.Lock"
+        },
+        {
+          "import_components": [
+            "trio",
+            "Lock",
+            "()"
+          ],
+          "code_str": "lock",
+          "lineno": 14,
+          "end_lineno": 14,
+          "context": "none",
+          "resolved_location": "trio.Lock"
+        },
+        {
+          "import_components": [
+            "trio",
+            "Lock",
+            "()"
+          ],
+          "code_str": "lock",
+          "lineno": 15,
+          "end_lineno": 15,
+          "context": "none",
+          "resolved_location": "trio.Lock"
+        },
+        {
+          "import_components": [
+            "trio",
+            "run"
+          ],
+          "code_str": "trio.run",
+          "lineno": 17,
+          "end_lineno": 17,
+          "context": "none",
+          "resolved_location": "trio.run"
+        }
+      ],
+      "example": {
+        "document": "ref-core/task_sync",
+        "ref_id": "id3",
+        "headings": [
+          "\u4efb\u52a1\u540c\u6b65\u548c\u901a\u4fe1",
+          "\u516c\u5e73\u6027"
+        ]
+      },
+      "doc_lineno": 76
+    },
+    {
+      "source": "# fairness-demo.py\n\nimport trio\n\nasync def loopy_child(number, lock):\n   while True:\n      async with lock:\n            print(f\"Child {number} has the lock!\")\n            await trio.sleep(0.5)\n\nasync def main():\n   async with trio.open_nursery() as nursery:\n      lock = trio.Lock()\n      nursery.start_soon(loopy_child, 1, lock)\n      nursery.start_soon(loopy_child, 2, lock)\n\ntrio.run(main)",
+      "names": [
+        {
+          "import_components": [
+            "trio"
+          ],
+          "code_str": "trio",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "import_target",
+          "resolved_location": "trio"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 8,
+          "end_lineno": 8,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "trio",
+            "sleep"
+          ],
+          "code_str": "trio.sleep",
+          "lineno": 9,
+          "end_lineno": 9,
+          "context": "none",
+          "resolved_location": "trio.sleep"
+        },
+        {
+          "import_components": [
+            "trio",
+            "open_nursery"
+          ],
+          "code_str": "trio.open_nursery",
+          "lineno": 12,
+          "end_lineno": 12,
+          "context": "none",
+          "resolved_location": "trio.open_nursery"
+        },
+        {
+          "import_components": [
+            "trio",
+            "Lock"
+          ],
+          "code_str": "trio.Lock",
+          "lineno": 13,
+          "end_lineno": 13,
+          "context": "none",
+          "resolved_location": "trio.Lock"
+        },
+        {
+          "import_components": [
+            "trio",
+            "Lock",
+            "()"
+          ],
+          "code_str": "lock",
+          "lineno": 13,
+          "end_lineno": 13,
+          "context": "none",
+          "resolved_location": "trio.Lock"
+        },
+        {
+          "import_components": [
+            "trio",
+            "Lock",
+            "()"
+          ],
+          "code_str": "lock",
+          "lineno": 14,
+          "end_lineno": 14,
+          "context": "none",
+          "resolved_location": "trio.Lock"
+        },
+        {
+          "import_components": [
+            "trio",
+            "Lock",
+            "()"
+          ],
+          "code_str": "lock",
+          "lineno": 15,
+          "end_lineno": 15,
+          "context": "none",
+          "resolved_location": "trio.Lock"
+        },
+        {
+          "import_components": [
+            "trio",
+            "run"
+          ],
+          "code_str": "trio.run",
+          "lineno": 17,
+          "end_lineno": 17,
+          "context": "none",
+          "resolved_location": "trio.run"
+        }
+      ],
+      "example": {
+        "document": "ref-core/task_sync",
+        "ref_id": "id3",
+        "headings": [
+          "\u4efb\u52a1\u540c\u6b65\u548c\u901a\u4fe1",
+          "\u516c\u5e73\u6027"
+        ]
+      },
+      "doc_lineno": 116
+    },
+    {
+      "source": "# \u4e5f\u6709\u6548\uff0c\u4f46\u66f4\u5bb9\u6613\u51fa\u9519\uff1a\nsend_channel, receive_channel = trio.open_memory_channel(0)\nnursery.start_soon(producer, \"A\", send_channel.clone())\nnursery.start_soon(producer, \"B\", send_channel)\nnursery.start_soon(consumer, \"X\", receive_channel.clone())\nnursery.start_soon(consumer, \"Y\", receive_channel)",
+      "names": [],
+      "example": {
+        "document": "ref-core/task_sync",
+        "ref_id": "channel-mpmc",
+        "headings": [
+          "\u4efb\u52a1\u540c\u6b65\u548c\u901a\u4fe1",
+          "\u4f7f\u7528\u901a\u9053\u5728\u4efb\u52a1\u4e4b\u95f4\u4f20\u9012\u503c",
+          "\u7ba1\u7406\u591a\u4e2a\u751f\u4ea7\u8005\u548c/\u6216\u591a\u4e2a\u6d88\u8d39\u8005"
+        ]
+      },
+      "doc_lineno": 355
+    },
+    {
+      "source": "# \u9519\u8bef\uff0c\u7a0b\u5e8f\u5c06\u6302\u8d77\uff1a\nsend_channel, receive_channel = trio.open_memory_channel(0)\nnursery.start_soon(producer, \"A\", send_channel.clone())\nnursery.start_soon(producer, \"B\", send_channel.clone())\nnursery.start_soon(consumer, \"X\", receive_channel.clone())\nnursery.start_soon(consumer, \"Y\", receive_channel.clone())",
+      "names": [],
+      "example": {
+        "document": "ref-core/task_sync",
+        "ref_id": "channel-mpmc",
+        "headings": [
+          "\u4efb\u52a1\u540c\u6b65\u548c\u901a\u4fe1",
+          "\u4f7f\u7528\u901a\u9053\u5728\u4efb\u52a1\u4e4b\u95f4\u4f20\u9012\u503c",
+          "\u7ba1\u7406\u591a\u4e2a\u751f\u4ea7\u8005\u548c/\u6216\u591a\u4e2a\u6d88\u8d39\u8005"
+        ]
+      },
+      "doc_lineno": 368
+    },
+    {
+      "source": "# Also works, but is more finicky:\nsend_channel, receive_channel = trio.open_memory_channel(0)\nnursery.start_soon(producer, \"A\", send_channel.clone())\nnursery.start_soon(producer, \"B\", send_channel)\nnursery.start_soon(consumer, \"X\", receive_channel.clone())\nnursery.start_soon(consumer, \"Y\", receive_channel)",
+      "names": [],
+      "example": {
+        "document": "ref-core/task_sync",
+        "ref_id": "channel-mpmc",
+        "headings": [
+          "\u4efb\u52a1\u540c\u6b65\u548c\u901a\u4fe1",
+          "\u4f7f\u7528\u901a\u9053\u5728\u4efb\u52a1\u4e4b\u95f4\u4f20\u9012\u503c",
+          "\u7ba1\u7406\u591a\u4e2a\u751f\u4ea7\u8005\u548c/\u6216\u591a\u4e2a\u6d88\u8d39\u8005"
+        ]
+      },
+      "doc_lineno": 449
+    },
+    {
+      "source": "# Broken, will cause program to hang:\nsend_channel, receive_channel = trio.open_memory_channel(0)\nnursery.start_soon(producer, \"A\", send_channel.clone())\nnursery.start_soon(producer, \"B\", send_channel.clone())\nnursery.start_soon(consumer, \"X\", receive_channel.clone())\nnursery.start_soon(consumer, \"Y\", receive_channel.clone())",
+      "names": [],
+      "example": {
+        "document": "ref-core/task_sync",
+        "ref_id": "channel-mpmc",
+        "headings": [
+          "\u4efb\u52a1\u540c\u6b65\u548c\u901a\u4fe1",
+          "\u4f7f\u7528\u901a\u9053\u5728\u4efb\u52a1\u4e4b\u95f4\u4f20\u9012\u503c",
+          "\u7ba1\u7406\u591a\u4e2a\u751f\u4ea7\u8005\u548c/\u6216\u591a\u4e2a\u6d88\u8d39\u8005"
+        ]
+      },
+      "doc_lineno": 463
+    }
+  ],
+  "ref-core/tasks": [
+    {
+      "source": "async with trio.open_nursery() as nursery:\n   ...",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id3",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u6258\u513f\u6240\u548c\u751f\u6210"
+        ]
+      },
+      "doc_lineno": 41
+    },
+    {
+      "source": "async def child():\n   ...\n\nasync def parent():\n   async with trio.open_nursery() as nursery:\n      # \u540c\u65f6\u8c03\u7528\u4e24\u4e2a child() \u4efb\u52a1\n      nursery.start_soon(child)\n      nursery.start_soon(child)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id3",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u6258\u513f\u6240\u548c\u751f\u6210"
+        ]
+      },
+      "doc_lineno": 48
+    },
+    {
+      "source": "async def main():\n      async with trio.open_nursery() as nursery:\n         nursery.start_soon(trio.sleep, 5)\n         return\n\ntrio.run(main)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id3",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u6258\u513f\u6240\u548c\u751f\u6210"
+        ]
+      },
+      "doc_lineno": 79
+    },
+    {
+      "source": "async with trio.open_nursery() as nursery:\n   ...",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id3",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u6258\u513f\u6240\u548c\u751f\u6210"
+        ]
+      },
+      "doc_lineno": 98
+    },
+    {
+      "source": "async def child():\n   ...\n\nasync def parent():\n   async with trio.open_nursery() as nursery:\n      # Make two concurrent calls to child()\n      nursery.start_soon(child)\n      nursery.start_soon(child)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id3",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u6258\u513f\u6240\u548c\u751f\u6210"
+        ]
+      },
+      "doc_lineno": 106
+    },
+    {
+      "source": "async def main():\n      async with trio.open_nursery() as nursery:\n         nursery.start_soon(trio.sleep, 5)\n         return\n\ntrio.run(main)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id3",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u6258\u513f\u6240\u548c\u751f\u6210"
+        ]
+      },
+      "doc_lineno": 152
+    },
+    {
+      "source": "with trio.move_on_after(TIMEOUT):\n   async with trio.open_nursery() as nursery:\n      nursery.start_soon(child1)\n      nursery.start_soon(child2)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id6",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u5b50\u4efb\u52a1\u548c\u53d6\u6d88"
+        ]
+      },
+      "doc_lineno": 172
+    },
+    {
+      "source": "async with trio.open_nursery() as nursery:\n   with trio.move_on_after(TIMEOUT):  # \u4e0d\u8981\u8fd9\u6837\u505a\uff01\n      nursery.start_soon(child)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id6",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u5b50\u4efb\u52a1\u548c\u53d6\u6d88"
+        ]
+      },
+      "doc_lineno": 181
+    },
+    {
+      "source": "with trio.move_on_after(TIMEOUT):\n   async with trio.open_nursery() as nursery:\n      nursery.start_soon(child1)\n      nursery.start_soon(child2)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id6",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u5b50\u4efb\u52a1\u548c\u53d6\u6d88"
+        ]
+      },
+      "doc_lineno": 199
+    },
+    {
+      "source": "async with trio.open_nursery() as nursery:\n   with trio.move_on_after(TIMEOUT):  # don't do this!\n      nursery.start_soon(child)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id6",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u5b50\u4efb\u52a1\u548c\u53d6\u6d88"
+        ]
+      },
+      "doc_lineno": 211
+    },
+    {
+      "source": "async def broken1():\n   d = {}\n   return d[\"missing\"]\n\nasync def broken2():\n   seq = range(10)\n   return seq[20]\n\nasync def parent():\n   async with trio.open_nursery() as nursery:\n         nursery.start_soon(broken1)\n         nursery.start_soon(broken2)",
+      "names": [
+        {
+          "import_components": [
+            "range"
+          ],
+          "code_str": "range",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "range"
+        }
+      ],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "exceptiongroups",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u591a\u4e2a\u5b50\u4efb\u52a1\u4e2d\u7684\u9519\u8bef"
+        ]
+      },
+      "doc_lineno": 234
+    },
+    {
+      "source": "try:\n   async with trio.open_nursery() as nursery:\n         nursery.start_soon(broken1)\n         nursery.start_soon(broken2)\nexcept* KeyError as excgroup:\n   for exc in excgroup.exceptions:\n         ...  # \u5904\u7406\u6bcf\u4e2a KeyError\nexcept* IndexError as excgroup:\n   for exc in excgroup.exceptions:\n         ...  # \u5904\u7406\u6bcf\u4e2a IndexError",
+      "names": [
+        {
+          "import_components": [
+            "KeyError"
+          ],
+          "code_str": "KeyError",
+          "lineno": 5,
+          "end_lineno": 5,
+          "context": "none",
+          "resolved_location": "KeyError"
+        },
+        {
+          "import_components": [
+            "IndexError"
+          ],
+          "code_str": "IndexError",
+          "lineno": 8,
+          "end_lineno": 8,
+          "context": "none",
+          "resolved_location": "IndexError"
+        }
+      ],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "exceptiongroups",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u591a\u4e2a\u5b50\u4efb\u52a1\u4e2d\u7684\u9519\u8bef"
+        ]
+      },
+      "doc_lineno": 253
+    },
+    {
+      "source": "from exceptiongroup import catch\n\ndef handle_keyerrors(excgroup):\n   for exc in excgroup.exceptions:\n         ...  # \u5904\u7406\u6bcf\u4e2a KeyError\n\ndef handle_indexerrors(excgroup):\n   for exc in excgroup.exceptions:\n         ...  # \u5904\u7406\u6bcf\u4e2a IndexError\n\nwith catch({\n   KeyError: handle_keyerrors,\n   IndexError: handle_indexerrors\n}):\n   async with trio.open_nursery() as nursery:\n         nursery.start_soon(broken1)\n         nursery.start_soon(broken2)",
+      "names": [
+        {
+          "import_components": [
+            "KeyError"
+          ],
+          "code_str": "KeyError",
+          "lineno": 12,
+          "end_lineno": 12,
+          "context": "none",
+          "resolved_location": "KeyError"
+        },
+        {
+          "import_components": [
+            "IndexError"
+          ],
+          "code_str": "IndexError",
+          "lineno": 13,
+          "end_lineno": 13,
+          "context": "none",
+          "resolved_location": "IndexError"
+        }
+      ],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "exceptiongroups",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u591a\u4e2a\u5b50\u4efb\u52a1\u4e2d\u7684\u9519\u8bef"
+        ]
+      },
+      "doc_lineno": 270
+    },
+    {
+      "source": "def handle_keyerrors(excgroup):\n   nonlocal myflag\n   myflag = True\n\nmyflag = False\nwith catch({KeyError: handle_keyerrors}):\n   async with trio.open_nursery() as nursery:\n         nursery.start_soon(broken1)",
+      "names": [
+        {
+          "import_components": [
+            "KeyError"
+          ],
+          "code_str": "KeyError",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "KeyError"
+        }
+      ],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "exceptiongroups",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u591a\u4e2a\u5b50\u4efb\u52a1\u4e2d\u7684\u9519\u8bef"
+        ]
+      },
+      "doc_lineno": 292
+    },
+    {
+      "source": "async def broken1():\n   d = {}\n   return d[\"missing\"]\n\nasync def broken2():\n   seq = range(10)\n   return seq[20]\n\nasync def parent():\n   async with trio.open_nursery() as nursery:\n         nursery.start_soon(broken1)\n         nursery.start_soon(broken2)",
+      "names": [
+        {
+          "import_components": [
+            "range"
+          ],
+          "code_str": "range",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "range"
+        }
+      ],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "exceptiongroups",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u591a\u4e2a\u5b50\u4efb\u52a1\u4e2d\u7684\u9519\u8bef"
+        ]
+      },
+      "doc_lineno": 309
+    },
+    {
+      "source": "try:\n   async with trio.open_nursery() as nursery:\n         nursery.start_soon(broken1)\n         nursery.start_soon(broken2)\nexcept* KeyError as excgroup:\n   for exc in excgroup.exceptions:\n         ...  # handle each KeyError\nexcept* IndexError as excgroup:\n   for exc in excgroup.exceptions:\n         ...  # handle each IndexError",
+      "names": [
+        {
+          "import_components": [
+            "KeyError"
+          ],
+          "code_str": "KeyError",
+          "lineno": 5,
+          "end_lineno": 5,
+          "context": "none",
+          "resolved_location": "KeyError"
+        },
+        {
+          "import_components": [
+            "IndexError"
+          ],
+          "code_str": "IndexError",
+          "lineno": 8,
+          "end_lineno": 8,
+          "context": "none",
+          "resolved_location": "IndexError"
+        }
+      ],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "exceptiongroups",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u591a\u4e2a\u5b50\u4efb\u52a1\u4e2d\u7684\u9519\u8bef"
+        ]
+      },
+      "doc_lineno": 333
+    },
+    {
+      "source": "from exceptiongroup import catch\n\ndef handle_keyerrors(excgroup):\n   for exc in excgroup.exceptions:\n         ...  # handle each KeyError\n\ndef handle_indexerrors(excgroup):\n   for exc in excgroup.exceptions:\n         ...  # handle each IndexError\n\nwith catch({\n   KeyError: handle_keyerrors,\n   IndexError: handle_indexerrors\n}):\n   async with trio.open_nursery() as nursery:\n         nursery.start_soon(broken1)\n         nursery.start_soon(broken2)",
+      "names": [
+        {
+          "import_components": [
+            "KeyError"
+          ],
+          "code_str": "KeyError",
+          "lineno": 12,
+          "end_lineno": 12,
+          "context": "none",
+          "resolved_location": "KeyError"
+        },
+        {
+          "import_components": [
+            "IndexError"
+          ],
+          "code_str": "IndexError",
+          "lineno": 13,
+          "end_lineno": 13,
+          "context": "none",
+          "resolved_location": "IndexError"
+        }
+      ],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "exceptiongroups",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u591a\u4e2a\u5b50\u4efb\u52a1\u4e2d\u7684\u9519\u8bef"
+        ]
+      },
+      "doc_lineno": 354
+    },
+    {
+      "source": "def handle_keyerrors(excgroup):\n   nonlocal myflag\n   myflag = True\n\nmyflag = False\nwith catch({KeyError: handle_keyerrors}):\n   async with trio.open_nursery() as nursery:\n         nursery.start_soon(broken1)",
+      "names": [
+        {
+          "import_components": [
+            "KeyError"
+          ],
+          "code_str": "KeyError",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "KeyError"
+        }
+      ],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "exceptiongroups",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u591a\u4e2a\u5b50\u4efb\u52a1\u4e2d\u7684\u9519\u8bef"
+        ]
+      },
+      "doc_lineno": 378
+    },
+    {
+      "source": "async def new_connection_listener(handler, nursery):\n   while True:\n      conn = await get_new_connection()\n      nursery.start_soon(handler, conn)\n\nasync def server(handler):\n   async with trio.open_nursery() as nursery:\n      nursery.start_soon(new_connection_listener, handler, nursery)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id10",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u751f\u6210\u4efb\u52a1\u800c\u4e0d\u6210\u4e3a\u7236\u7ea7"
+        ]
+      },
+      "doc_lineno": 529
+    },
+    {
+      "source": "async def server(handler):\n   async with trio.open_nursery() as nursery:\n      while True:\n            conn = await get_new_connection()\n            nursery.start_soon(handler, conn)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id10",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u751f\u6210\u4efb\u52a1\u800c\u4e0d\u6210\u4e3a\u7236\u7ea7"
+        ]
+      },
+      "doc_lineno": 542
+    },
+    {
+      "source": "async def do_spawn(nursery):\n   with trio.move_on_after(TIMEOUT):  # \u4e0d\u8981\u8fd9\u6837\u505a\uff0c\u5b83\u6ca1\u6709\u6548\u679c\n      nursery.start_soon(child)\n\nasync with trio.open_nursery() as nursery:\n   nursery.start_soon(do_spawn, nursery)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id10",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u751f\u6210\u4efb\u52a1\u800c\u4e0d\u6210\u4e3a\u7236\u7ea7"
+        ]
+      },
+      "doc_lineno": 554
+    },
+    {
+      "source": "async def new_connection_listener(handler, nursery):\n   while True:\n      conn = await get_new_connection()\n      nursery.start_soon(handler, conn)\n\nasync def server(handler):\n   async with trio.open_nursery() as nursery:\n      nursery.start_soon(new_connection_listener, handler, nursery)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id10",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u751f\u6210\u4efb\u52a1\u800c\u4e0d\u6210\u4e3a\u7236\u7ea7"
+        ]
+      },
+      "doc_lineno": 574
+    },
+    {
+      "source": "async def server(handler):\n   async with trio.open_nursery() as nursery:\n      while True:\n            conn = await get_new_connection()\n            nursery.start_soon(handler, conn)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id10",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u751f\u6210\u4efb\u52a1\u800c\u4e0d\u6210\u4e3a\u7236\u7ea7"
+        ]
+      },
+      "doc_lineno": 590
+    },
+    {
+      "source": "async def do_spawn(nursery):\n   with trio.move_on_after(TIMEOUT):  # don't do this, it has no effect\n      nursery.start_soon(child)\n\nasync with trio.open_nursery() as nursery:\n   nursery.start_soon(do_spawn, nursery)",
+      "names": [],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id10",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u751f\u6210\u4efb\u52a1\u800c\u4e0d\u6210\u4e3a\u7236\u7ea7"
+        ]
+      },
+      "doc_lineno": 606
+    },
+    {
+      "source": "async def race(*async_fns):\n   if not async_fns:\n      raise ValueError(\"must pass at least one argument\")\n\n   winner = None\n\n   async def jockey(async_fn, cancel_scope):\n      nonlocal winner\n      winner = await async_fn()\n      cancel_scope.cancel()\n\n   async with trio.open_nursery() as nursery:\n      for async_fn in async_fns:\n            nursery.start_soon(jockey, async_fn, nursery.cancel_scope)\n\n   return winner",
+      "names": [
+        {
+          "import_components": [
+            "ValueError"
+          ],
+          "code_str": "ValueError",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "ValueError"
+        }
+      ],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id11",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u81ea\u5b9a\u4e49\u4e3b\u7ba1"
+        ]
+      },
+      "doc_lineno": 627
+    },
+    {
+      "source": "async def race(*async_fns):\n   if not async_fns:\n      raise ValueError(\"must pass at least one argument\")\n\n   winner = None\n\n   async def jockey(async_fn, cancel_scope):\n      nonlocal winner\n      winner = await async_fn()\n      cancel_scope.cancel()\n\n   async with trio.open_nursery() as nursery:\n      for async_fn in async_fns:\n            nursery.start_soon(jockey, async_fn, nursery.cancel_scope)\n\n   return winner",
+      "names": [
+        {
+          "import_components": [
+            "ValueError"
+          ],
+          "code_str": "ValueError",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "ValueError"
+        }
+      ],
+      "example": {
+        "document": "ref-core/tasks",
+        "ref_id": "id11",
+        "headings": [
+          "\u4efb\u52a1",
+          "\u4efb\u52a1\u8ba9\u60a8\u53ef\u4ee5\u540c\u65f6\u6267\u884c\u591a\u9879\u64cd\u4f5c",
+          "\u81ea\u5b9a\u4e49\u4e3b\u7ba1"
+        ]
+      },
+      "doc_lineno": 669
+    }
+  ],
+  "ref-core/threads": [
+    {
+      "source": "class CombinedLimiter:\n   def __init__(self, first, second):\n         self._first = first\n         self._second = second\n\n   async def acquire_on_behalf_of(self, borrower):\n         # \u83b7\u53d6\u4e24\u4e2a\u9650\u5236\u5668\uff0c\u786e\u4fdd\u51fa\u9519\u65f6\u6b63\u786e\u6e05\u7406\n         await self._first.acquire_on_behalf_of(borrower)\n         try:\n            await self._second.acquire_on_behalf_of(borrower)\n         except:\n            self._first.release_on_behalf_of(borrower)\n            raise\n\n   def release_on_behalf_of(self, borrower):\n         # \u91ca\u653e\u4e24\u4e2a\u9650\u5236\u5668\uff0c\u786e\u4fdd\u51fa\u9519\u65f6\u6b63\u786e\u6e05\u7406\n         try:\n            self._second.release_on_behalf_of(borrower)\n         finally:\n            self._first.release_on_behalf_of(borrower)\n\n\n# \u4f7f\u7528\u5f31\u5f15\u7528\u5b57\u5178\uff0c\u4ee5\u514d\u6d6a\u8d39\u5185\u5b58\u6765\u4fdd\u5b58\u6ca1\u6709\u6b63\u5728\u8fd0\u884c\u7684\u5de5\u4f5c\u7ebf\u7a0b\u7684\u7528\u6237\u7684\u9650\u5236\u5668\u5bf9\u8c61\u3002\nUSER_LIMITERS = weakref.WeakValueDictionary()\nMAX_THREADS_PER_USER = 3\n\ndef get_user_limiter(user_id):\n   try:\n      return USER_LIMITERS[user_id]\n   except KeyError:\n      per_user_limiter = trio.CapacityLimiter(MAX_THREADS_PER_USER)\n      global_limiter = trio.current_default_thread_limiter()\n      # \u91cd\u8981\uff1a\u9996\u5148\u83b7\u53d6 per_user_limiter\uff0c\u518d\u83b7\u53d6 global_limiter\u3002\n      # \u5982\u679c\u6211\u4eec\u540c\u65f6\u4e3a\u67d0\u4e2a\u7528\u6237\u63d0\u4ea4 100 \u4e2a\u4efb\u52a1\uff0c\u6211\u4eec\u5e0c\u671b\n      # \u53ea\u5141\u8bb8\u5176\u4e2d 3 \u4e2a\u4efb\u52a1\u7ade\u4e89\u5168\u5c40\u7ebf\u7a0b\u69fd\u3002\n      combined_limiter = CombinedLimiter(per_user_limiter, global_limiter)\n      USER_LIMITERS[user_id] = combined_limiter\n      return combined_limiter\n\n\nasync def run_sync_in_thread_for_user(user_id, sync_fn, *args):\n   combined_limiter = get_user_limiter(user_id)\n   return await trio.to_thread.run_sync(sync_fn, *args, limiter=combined_limiter)",
+      "names": [
+        {
+          "import_components": [
+            "KeyError"
+          ],
+          "code_str": "KeyError",
+          "lineno": 30,
+          "end_lineno": 30,
+          "context": "none",
+          "resolved_location": "KeyError"
+        }
+      ],
+      "example": {
+        "document": "ref-core/threads",
+        "ref_id": "trio",
+        "headings": [
+          "\u7ebf\u7a0b\uff08\u5982\u679c\u5fc5\u987b\uff09",
+          "Trio \u5173\u4e8e\u7ba1\u7406\u5de5\u4f5c\u7ebf\u7a0b\u7684\u7406\u5ff5"
+        ]
+      },
+      "doc_lineno": 56
+    },
+    {
+      "source": "class CombinedLimiter:\n   def __init__(self, first, second):\n         self._first = first\n         self._second = second\n\n   async def acquire_on_behalf_of(self, borrower):\n         # Acquire both, being careful to clean up properly on error\n         await self._first.acquire_on_behalf_of(borrower)\n         try:\n            await self._second.acquire_on_behalf_of(borrower)\n         except:\n            self._first.release_on_behalf_of(borrower)\n            raise\n\n   def release_on_behalf_of(self, borrower):\n         # Release both, being careful to clean up properly on error\n         try:\n            self._second.release_on_behalf_of(borrower)\n         finally:\n            self._first.release_on_behalf_of(borrower)\n\n\n# Use a weak value dictionary, so that we don't waste memory holding\n# limiter objects for users who don't have any worker threads running.\nUSER_LIMITERS = weakref.WeakValueDictionary()\nMAX_THREADS_PER_USER = 3\n\ndef get_user_limiter(user_id):\n   try:\n      return USER_LIMITERS[user_id]\n   except KeyError:\n      per_user_limiter = trio.CapacityLimiter(MAX_THREADS_PER_USER)\n      global_limiter = trio.current_default_thread_limiter()\n      # IMPORTANT: acquire the per_user_limiter before the global_limiter.\n      # If we get 100 jobs for a user at the same time, we want\n      # to only allow 3 of them at a time to even compete for the\n      # global thread slots.\n      combined_limiter = CombinedLimiter(per_user_limiter, global_limiter)\n      USER_LIMITERS[user_id] = combined_limiter\n      return combined_limiter\n\n\nasync def run_sync_in_thread_for_user(user_id, sync_fn, *args):\n   combined_limiter = get_user_limiter(user_id)\n   return await trio.to_thread.run_sync(sync_fn, *args, limiter=combined_limiter)",
+      "names": [
+        {
+          "import_components": [
+            "KeyError"
+          ],
+          "code_str": "KeyError",
+          "lineno": 31,
+          "end_lineno": 31,
+          "context": "none",
+          "resolved_location": "KeyError"
+        }
+      ],
+      "example": {
+        "document": "ref-core/threads",
+        "ref_id": "trio",
+        "headings": [
+          "\u7ebf\u7a0b\uff08\u5982\u679c\u5fc5\u987b\uff09",
+          "Trio \u5173\u4e8e\u7ba1\u7406\u5de5\u4f5c\u7ebf\u7a0b\u7684\u7406\u5ff5"
+        ]
+      },
+      "doc_lineno": 176
+    }
+  ],
+  "ref-core/time_clock": [],
+  "ref-io/abs_api": [
+    {
+      "source": "ssl_context = ssl.create_default_context()\nssl_context.check_hostname = False\ns = SSLStream(StapledStream(process.stdin, process.stdout), ssl_context)",
+      "names": [],
+      "example": {
+        "document": "ref-io/abs_api",
+        "ref_id": "api",
+        "headings": [
+          "\u62bd\u8c61\u6d41 API"
+        ]
+      },
+      "doc_lineno": 23
+    },
+    {
+      "source": "# \u83b7\u53d6\u5230\u4ee3\u7406\u7684\u539f\u59cb SocketStream \u8fde\u63a5\uff1a\ns0 = await open_tcp_stream(\"proxy\", 443)\n\n# \u8bbe\u7f6e\u4e0e\u4ee3\u7406\u7684 SSL \u8fde\u63a5\uff1a\ns1 = SSLStream(s0, proxy_ssl_context, server_hostname=\"proxy\")\n# \u8bf7\u6c42\u8fde\u63a5\u5230\u7f51\u7ad9\nawait s1.send_all(b\"CONNECT website:443 / HTTP/1.0\\r\\n\\r\\n\")\nawait check_CONNECT_response(s1)\n\n# \u8bbe\u7f6e\u4e0e\u771f\u5b9e\u7f51\u7ad9\u7684 SSL \u8fde\u63a5\u3002\u6ce8\u610f, s1 \u5df2\u7ecf\u662f\u4e00\u4e2a SSLStream \u5bf9\u8c61,\n# \u8fd9\u91cc\u6211\u4eec\u5c06\u7b2c\u4e8c\u4e2a SSLStream \u5bf9\u8c61\u5305\u88c5\u5728\u5b83\u5468\u56f4\u3002\ns2 = SSLStream(s1, website_ssl_context, server_hostname=\"website\")\n# \u53d1\u51fa\u8bf7\u6c42\nawait s2.send_all(b\"GET /index.html HTTP/1.0\\r\\n\\r\\n\")\n...",
+      "names": [],
+      "example": {
+        "document": "ref-io/abs_api",
+        "ref_id": "api",
+        "headings": [
+          "\u62bd\u8c61\u6d41 API"
+        ]
+      },
+      "doc_lineno": 31
+    },
+    {
+      "source": "ssl_context = ssl.create_default_context()\nssl_context.check_hostname = False\ns = SSLStream(StapledStream(process.stdin, process.stdout), ssl_context)",
+      "names": [],
+      "example": {
+        "document": "ref-io/abs_api",
+        "ref_id": "api",
+        "headings": [
+          "\u62bd\u8c61\u6d41 API"
+        ]
+      },
+      "doc_lineno": 63
+    },
+    {
+      "source": "# Get a raw SocketStream connection to the proxy:\ns0 = await open_tcp_stream(\"proxy\", 443)\n\n# Set up SSL connection to proxy:\ns1 = SSLStream(s0, proxy_ssl_context, server_hostname=\"proxy\")\n# Request a connection to the website\nawait s1.send_all(b\"CONNECT website:443 / HTTP/1.0\\r\\n\\r\\n\")\nawait check_CONNECT_response(s1)\n\n# Set up SSL connection to the real website. Notice that s1 is\n# already an SSLStream object, and here we're wrapping a second\n# SSLStream object around it.\ns2 = SSLStream(s1, website_ssl_context, server_hostname=\"website\")\n# Make our request\nawait s2.send_all(b\"GET /index.html HTTP/1.0\\r\\n\\r\\n\")\n...",
+      "names": [],
+      "example": {
+        "document": "ref-io/abs_api",
+        "ref_id": "api",
+        "headings": [
+          "\u62bd\u8c61\u6d41 API"
+        ]
+      },
+      "doc_lineno": 71
+    }
+  ],
+  "ref-io/async_file_io": [
+    {
+      "source": "for subpath in await mypath.glob():\n    ...",
+      "names": [],
+      "example": {
+        "document": "ref-io/async_file_io",
+        "ref_id": "id4",
+        "headings": [
+          "\u5f02\u6b65\u6587\u4ef6\u7cfb\u7edf I/O",
+          "\u5f02\u6b65\u8def\u5f84\u5bf9\u8c61"
+        ]
+      },
+      "doc_lineno": 9
+    },
+    {
+      "source": "for subpath in await mypath.iterdir():\n    ...",
+      "names": [],
+      "example": {
+        "document": "ref-io/async_file_io",
+        "ref_id": "id4",
+        "headings": [
+          "\u5f02\u6b65\u6587\u4ef6\u7cfb\u7edf I/O",
+          "\u5f02\u6b65\u8def\u5f84\u5bf9\u8c61"
+        ]
+      },
+      "doc_lineno": 11
+    },
+    {
+      "source": "for subpath in await mypath.rglob():\n    ...",
+      "names": [],
+      "example": {
+        "document": "ref-io/async_file_io",
+        "ref_id": "id4",
+        "headings": [
+          "\u5f02\u6b65\u6587\u4ef6\u7cfb\u7edf I/O",
+          "\u5f02\u6b65\u8def\u5f84\u5bf9\u8c61"
+        ]
+      },
+      "doc_lineno": 10
+    },
+    {
+      "source": "async with await trio.open_file(...) as f:\n      async for line in f:\n         print(line)",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "ref-io/async_file_io",
+        "ref_id": "async-file-objects",
+        "headings": [
+          "\u5f02\u6b65\u6587\u4ef6\u7cfb\u7edf I/O",
+          "\u5f02\u6b65\u6587\u4ef6\u5bf9\u8c61"
+        ]
+      },
+      "doc_lineno": 214
+    },
+    {
+      "source": "async with await trio.open_file(...) as f:\n      async for line in f:\n         print(line)",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "ref-io/async_file_io",
+        "ref_id": "async-file-objects",
+        "headings": [
+          "\u5f02\u6b65\u6587\u4ef6\u7cfb\u7edf I/O",
+          "\u5f02\u6b65\u6587\u4ef6\u5bf9\u8c61"
+        ]
+      },
+      "doc_lineno": 285
+    }
+  ],
+  "ref-io/index": [],
+  "ref-io/low_level": [
+    {
+      "source": "_, service_name = await getnameinfo(('127.0.0.1', port), NI_NUMERICHOST)",
+      "names": [],
+      "example": {
+        "document": "ref-io/low_level",
+        "ref_id": "id1",
+        "headings": [
+          "\u4f7f\u7528 trio.socket \u8fdb\u884c\u4f4e\u7ea7\u7f51\u7edc\u7f16\u7a0b",
+          "\u9876\u7ea7\u5bfc\u51fa"
+        ]
+      },
+      "doc_lineno": 67
+    },
+    {
+      "source": "await getaddrinfo(None, service_name)",
+      "names": [],
+      "example": {
+        "document": "ref-io/low_level",
+        "ref_id": "id1",
+        "headings": [
+          "\u4f7f\u7528 trio.socket \u8fdb\u884c\u4f4e\u7ea7\u7f51\u7edc\u7f16\u7a0b",
+          "\u9876\u7ea7\u5bfc\u51fa"
+        ]
+      },
+      "doc_lineno": 73
+    },
+    {
+      "source": "_, service_name = await getnameinfo(('127.0.0.1', port), NI_NUMERICHOST)",
+      "names": [],
+      "example": {
+        "document": "ref-io/low_level",
+        "ref_id": "id1",
+        "headings": [
+          "\u4f7f\u7528 trio.socket \u8fdb\u884c\u4f4e\u7ea7\u7f51\u7edc\u7f16\u7a0b",
+          "\u9876\u7ea7\u5bfc\u51fa"
+        ]
+      },
+      "doc_lineno": 141
+    },
+    {
+      "source": "await getaddrinfo(None, service_name)",
+      "names": [],
+      "example": {
+        "document": "ref-io/low_level",
+        "ref_id": "id1",
+        "headings": [
+          "\u4f7f\u7528 trio.socket \u8fdb\u884c\u4f4e\u7ea7\u7f51\u7edc\u7f16\u7a0b",
+          "\u9876\u7ea7\u5bfc\u51fa"
+        ]
+      },
+      "doc_lineno": 148
+    }
+  ],
+  "ref-io/signals": [],
+  "ref-io/subprocess": [],
+  "reference-lowlevel": [
+    {
+      "source": "bidirectional_stream = trio.StapledStream(\n    trio.lowlevel.FdStream(write_fd),\n    trio.lowlevel.FdStream(read_fd)\n)",
+      "names": [],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "unix-api",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u4f4e\u7ea7 I/O \u539f\u8bed",
+          "Unix \u7279\u5b9a API"
+        ]
+      },
+      "doc_lineno": 331
+    },
+    {
+      "source": "bidirectional_stream = trio.StapledStream(\n    trio.lowlevel.FdStream(write_fd),\n    trio.lowlevel.FdStream(read_fd)\n)",
+      "names": [],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "unix-api",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u4f4e\u7ea7 I/O \u539f\u8bed",
+          "Unix \u7279\u5b9a API"
+        ]
+      },
+      "doc_lineno": 351
+    },
+    {
+      "source": "async def operation_that_maybe_blocks():\n    await checkpoint_if_cancelled()\n    try:\n        ret = attempt_operation()\n    except BlockingIOError:\n        # \u9700\u8981\u963b\u585e\u5e76\u91cd\u8bd5\uff0c\u4e0b\u9762\u4f1a\u6267\u884c\n        pass\n    else:\n        # \u64cd\u4f5c\u6210\u529f\uff0c\u5b8c\u6210\u68c0\u67e5\u70b9\u7136\u540e\u8fd4\u56de\n        await cancel_shielded_checkpoint()\n        return ret\n    while True:\n        await wait_for_operation_to_be_ready()\n        try:\n            return attempt_operation()\n        except BlockingIOError:\n            pass",
+      "names": [
+        {
+          "import_components": [
+            "BlockingIOError"
+          ],
+          "code_str": "BlockingIOError",
+          "lineno": 5,
+          "end_lineno": 5,
+          "context": "none",
+          "resolved_location": "BlockingIOError"
+        },
+        {
+          "import_components": [
+            "BlockingIOError"
+          ],
+          "code_str": "BlockingIOError",
+          "lineno": 16,
+          "end_lineno": 16,
+          "context": "none",
+          "resolved_location": "BlockingIOError"
+        }
+      ],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "id12",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u7761\u7720\u548c\u5524\u9192",
+          "\u4f4e\u7ea7\u68c0\u67e5\u70b9\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 712
+    },
+    {
+      "source": "async def operation_that_maybe_blocks():\n    await checkpoint_if_cancelled()\n    try:\n        ret = attempt_operation()\n    except BlockingIOError:\n        # need to block and then retry, which we do below\n        pass\n    else:\n        # operation succeeded, finish the checkpoint then return\n        await cancel_shielded_checkpoint()\n        return ret\n    while True:\n        await wait_for_operation_to_be_ready()\n        try:\n            return attempt_operation()\n        except BlockingIOError:\n            pass",
+      "names": [
+        {
+          "import_components": [
+            "BlockingIOError"
+          ],
+          "code_str": "BlockingIOError",
+          "lineno": 5,
+          "end_lineno": 5,
+          "context": "none",
+          "resolved_location": "BlockingIOError"
+        },
+        {
+          "import_components": [
+            "BlockingIOError"
+          ],
+          "code_str": "BlockingIOError",
+          "lineno": 16,
+          "end_lineno": 16,
+          "context": "none",
+          "resolved_location": "BlockingIOError"
+        }
+      ],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "id12",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u7761\u7720\u548c\u5524\u9192",
+          "\u4f4e\u7ea7\u68c0\u67e5\u70b9\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 760
+    },
+    {
+      "source": "class NotVeryGoodLock:\n    def __init__(self):\n        self._blocked_tasks = collections.deque()\n        self._held = False\n\n    async def acquire(self):\n        # \u6211\u4eec\u53ef\u80fd\u9700\u8981\u591a\u6b21\u5c1d\u8bd5\u624d\u80fd\u83b7\u5f97\u9501\u3002\n        while self._held:\n            # \u6709\u5176\u4ed6\u4eba\u6301\u6709\u9501\uff0c\u56e0\u6b64\u6211\u4eec\u9700\u8981\u7b49\u5f85\u3002\n            task = trio.lowlevel.current_task()\n            self._blocked_tasks.append(task)\n            def abort_fn(_):\n                self._blocked_tasks.remove(task)\n                return trio.lowlevel.Abort.SUCCEEDED\n            await trio.lowlevel.wait_task_rescheduled(abort_fn)\n            # \u5728\u8fd9\u4e00\u70b9\uff0c\u9501\u5df2\u7ecf\u88ab\u91ca\u653e\u4e86\u2014\u2014\u4f46\u662f\u53ef\u80fd\u5728\u6211\u4eec\u9192\u6765\u4e4b\u524d\uff0c\n            # \u522b\u4eba\u5df2\u7ecf\u62a2\u5148\u62ff\u5230\u4e86\u9501\u3002\u6240\u4ee5\u6211\u4eec\u8981\u91cd\u65b0\u68c0\u67e5 'while' \u6761\u4ef6\u3002\n        # \u5982\u679c\u6211\u4eec\u5230\u8fbe\u8fd9\u4e00\u70b9\uff0c\u610f\u5473\u7740 'while' \u6761\u4ef6\u521a\u521a\u5931\u8d25\uff0c\u6240\u4ee5\u6211\u4eec\u77e5\u9053\u6ca1\u6709\u4eba\u6301\u6709\u9501\uff0c\n        # \u5e76\u4e14\u6211\u4eec\u53ef\u4ee5\u83b7\u53d6\u5b83\u3002\n        self._held = True\n\n    def release(self):\n        self._held = False\n        if self._blocked_tasks:\n            woken_task = self._blocked_tasks.popleft()\n        trio.lowlevel.reschedule(woken_task)",
+      "names": [],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "id13",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u7761\u7720\u548c\u5524\u9192",
+          "\u4f4e\u7ea7\u963b\u585e"
+        ]
+      },
+      "doc_lineno": 811
+    },
+    {
+      "source": "class NotVeryGoodLock:\n    def __init__(self):\n        self._blocked_tasks = collections.deque()\n        self._held = False\n\n    async def acquire(self):\n        # We might have to try several times to acquire the lock.\n        while self._held:\n            # Someone else has the lock, so we have to wait.\n            task = trio.lowlevel.current_task()\n            self._blocked_tasks.append(task)\n            def abort_fn(_):\n                self._blocked_tasks.remove(task)\n                return trio.lowlevel.Abort.SUCCEEDED\n            await trio.lowlevel.wait_task_rescheduled(abort_fn)\n            # At this point the lock was released -- but someone else\n            # might have swooped in and taken it again before we\n            # woke up. So we loop around to check the 'while' condition\n            # again.\n        # if we reach this point, it means that the 'while' condition\n        # has just failed, so we know no-one is holding the lock, and\n        # we can take it.\n        self._held = True\n\n    def release(self):\n        self._held = False\n        if self._blocked_tasks:\n            woken_task = self._blocked_tasks.popleft()\n            trio.lowlevel.reschedule(woken_task)",
+      "names": [],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "id13",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u7761\u7720\u548c\u5524\u9192",
+          "\u4f4e\u7ea7\u963b\u585e"
+        ]
+      },
+      "doc_lineno": 859
+    },
+    {
+      "source": "# Trio \u4ee3\u7801\u53ef\u4ee5\u521b\u5efa Qt \u5bf9\u8c61\u800c\u4e0d\u9700\u8981\u4efb\u4f55\u7279\u522b\u7684\u6b65\u9aa4...\nmy_cancel_button = QPushButton(\"Cancel\")\n# ...Qt \u4e5f\u53ef\u4ee5\u8f7b\u677e\u5730\u56de\u8c03 Trio\nmy_cancel_button.clicked.connect(my_cancel_scope.cancel)",
+      "names": [],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "id17",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u4f7f\u7528\u201c\u8bbf\u5ba2\u6a21\u5f0f\u201d\u5728\u5176\u4ed6\u4e8b\u4ef6\u5faa\u73af\u4e4b\u4e0a\u8fd0\u884c Trio",
+          "\u4ec0\u4e48\u662f\u201c\u8bbf\u5ba2\u6a21\u5f0f\u201d\uff1f"
+        ]
+      },
+      "doc_lineno": 971
+    },
+    {
+      "source": "# Trio code can create Qt objects without any special ceremony...\nmy_cancel_button = QPushButton(\"Cancel\")\n# ...and Qt can call back to Trio just as easily\nmy_cancel_button.clicked.connect(my_cancel_scope.cancel)",
+      "names": [],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "id17",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u4f7f\u7528\u201c\u8bbf\u5ba2\u6a21\u5f0f\u201d\u5728\u5176\u4ed6\u4e8b\u4ef6\u5faa\u73af\u4e4b\u4e0a\u8fd0\u884c Trio",
+          "\u4ec0\u4e48\u662f\u201c\u8bbf\u5ba2\u6a21\u5f0f\u201d\uff1f"
+        ]
+      },
+      "doc_lineno": 1003
+    },
+    {
+      "source": "import asyncio\nimport trio\n\n# \u4e00\u4e2a\u5c0f\u578b\u7684 Trio \u7a0b\u5e8f\nasync def trio_main():\n    for _ in range(5):\n        print(\"Hello from Trio!\")\n        # \u8fd9\u662f\u5728 Trio \u5185\u90e8\uff0c\u6240\u4ee5\u6211\u4eec\u5fc5\u987b\u4f7f\u7528 Trio \u7684 API\n        await trio.sleep(1)\n    return \"trio done!\"\n\n# \u5c06\u5176\u4f5c\u4e3a\u6765\u5bbe\u8fd0\u884c\u5728 asyncio \u4e2d\u7684\u4ee3\u7801\nasync def asyncio_main():\n    asyncio_loop = asyncio.get_running_loop()\n\n    def run_sync_soon_threadsafe(fn):\n        asyncio_loop.call_soon_threadsafe(fn)\n\n    def done_callback(trio_main_outcome):\n        print(f\"Trio \u7a0b\u5e8f\u7ed3\u675f\uff0c\u7ed3\u679c\u662f: {trio_main_outcome}\")\n\n    # \u8fd9\u662f\u9b54\u6cd5\u53d1\u751f\u7684\u5730\u65b9\uff1a\n    trio.lowlevel.start_guest_run(\n        trio_main,\n        run_sync_soon_threadsafe=run_sync_soon_threadsafe,\n        done_callback=done_callback,\n    )\n\n    # \u8ba9\u4e3b\u673a\u5faa\u73af\u8fd0\u884c\u4e00\u6bb5\u65f6\u95f4\uff0c\u4ee5\u4fbf trio_main \u6709\u65f6\u95f4\u5b8c\u6210\u3002\n    # \uff08\u8b66\u544a\uff1a\u8fd9\u662f\u4e00\u79cd hack\uff0c\u4e0b\u9762\u4f1a\u8ba8\u8bba\u66f4\u597d\u7684\u65b9\u6cd5\u3002\uff09\n    #\n    # \u8fd9\u4e2a\u51fd\u6570\u5728 asyncio \u4e2d\uff0c\u56e0\u6b64\u6211\u4eec\u5fc5\u987b\u4f7f\u7528 asyncio \u7684 API\u3002\n    await asyncio.sleep(10)\n\nasyncio.run(asyncio_main())",
+      "names": [
+        {
+          "import_components": [
+            "asyncio"
+          ],
+          "code_str": "asyncio",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "import_target",
+          "resolved_location": "asyncio"
+        },
+        {
+          "import_components": [
+            "trio"
+          ],
+          "code_str": "trio",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "import_target",
+          "resolved_location": "trio"
+        },
+        {
+          "import_components": [
+            "range"
+          ],
+          "code_str": "range",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "range"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "trio",
+            "sleep"
+          ],
+          "code_str": "trio.sleep",
+          "lineno": 9,
+          "end_lineno": 9,
+          "context": "none",
+          "resolved_location": "trio.sleep"
+        },
+        {
+          "import_components": [
+            "asyncio",
+            "get_running_loop"
+          ],
+          "code_str": "asyncio.get_running_loop",
+          "lineno": 14,
+          "end_lineno": 14,
+          "context": "none",
+          "resolved_location": "asyncio.get_running_loop"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 20,
+          "end_lineno": 20,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "trio",
+            "lowlevel",
+            "start_guest_run"
+          ],
+          "code_str": "trio.lowlevel.start_guest_run",
+          "lineno": 23,
+          "end_lineno": 23,
+          "context": "none",
+          "resolved_location": "trio.lowlevel.start_guest_run"
+        },
+        {
+          "import_components": [
+            "asyncio",
+            "sleep"
+          ],
+          "code_str": "asyncio.sleep",
+          "lineno": 33,
+          "end_lineno": 33,
+          "context": "none",
+          "resolved_location": "asyncio.sleep"
+        },
+        {
+          "import_components": [
+            "asyncio",
+            "run"
+          ],
+          "code_str": "asyncio.run",
+          "lineno": 35,
+          "end_lineno": 35,
+          "context": "none",
+          "resolved_location": "asyncio.run"
+        }
+      ],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "guest-run-implementation",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u4f7f\u7528\u201c\u8bbf\u5ba2\u6a21\u5f0f\u201d\u5728\u5176\u4ed6\u4e8b\u4ef6\u5faa\u73af\u4e4b\u4e0a\u8fd0\u884c Trio",
+          "\u4e3a\u60a8\u6700\u559c\u6b22\u7684\u4e8b\u4ef6\u5faa\u73af\u5b9e\u73b0\u8bbf\u5ba2\u6a21\u5f0f"
+        ]
+      },
+      "doc_lineno": 1130
+    },
+    {
+      "source": "def trio_run_with_asyncio(trio_main, *args, **trio_run_kwargs):\n    async def asyncio_main():\n        # \u540c\u4e0a\n        ...\n\n    return asyncio.run(asyncio_main())",
+      "names": [],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "guest-run-implementation",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u4f7f\u7528\u201c\u8bbf\u5ba2\u6a21\u5f0f\u201d\u5728\u5176\u4ed6\u4e8b\u4ef6\u5faa\u73af\u4e4b\u4e0a\u8fd0\u884c Trio",
+          "\u4e3a\u60a8\u6700\u559c\u6b22\u7684\u4e8b\u4ef6\u5faa\u73af\u5b9e\u73b0\u8bbf\u5ba2\u6a21\u5f0f"
+        ]
+      },
+      "doc_lineno": 1226
+    },
+    {
+      "source": "import asyncio\nimport trio\n\n# A tiny Trio program\nasync def trio_main():\n    for _ in range(5):\n        print(\"Hello from Trio!\")\n        # This is inside Trio, so we have to use Trio APIs\n        await trio.sleep(1)\n    return \"trio done!\"\n\n# The code to run it as a guest inside asyncio\nasync def asyncio_main():\n    asyncio_loop = asyncio.get_running_loop()\n\n    def run_sync_soon_threadsafe(fn):\n        asyncio_loop.call_soon_threadsafe(fn)\n\n    def done_callback(trio_main_outcome):\n        print(f\"Trio program ended with: {trio_main_outcome}\")\n\n    # This is where the magic happens:\n    trio.lowlevel.start_guest_run(\n        trio_main,\n        run_sync_soon_threadsafe=run_sync_soon_threadsafe,\n        done_callback=done_callback,\n    )\n\n    # Let the host loop run for a while to give trio_main time to\n    # finish. (WARNING: This is a hack. See below for better\n    # approaches.)\n    #\n    # This function is in asyncio, so we have to use asyncio APIs.\n    await asyncio.sleep(10)\n\nasyncio.run(asyncio_main())",
+      "names": [
+        {
+          "import_components": [
+            "asyncio"
+          ],
+          "code_str": "asyncio",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "import_target",
+          "resolved_location": "asyncio"
+        },
+        {
+          "import_components": [
+            "trio"
+          ],
+          "code_str": "trio",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "import_target",
+          "resolved_location": "trio"
+        },
+        {
+          "import_components": [
+            "range"
+          ],
+          "code_str": "range",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "range"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "trio",
+            "sleep"
+          ],
+          "code_str": "trio.sleep",
+          "lineno": 9,
+          "end_lineno": 9,
+          "context": "none",
+          "resolved_location": "trio.sleep"
+        },
+        {
+          "import_components": [
+            "asyncio",
+            "get_running_loop"
+          ],
+          "code_str": "asyncio.get_running_loop",
+          "lineno": 14,
+          "end_lineno": 14,
+          "context": "none",
+          "resolved_location": "asyncio.get_running_loop"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 20,
+          "end_lineno": 20,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "trio",
+            "lowlevel",
+            "start_guest_run"
+          ],
+          "code_str": "trio.lowlevel.start_guest_run",
+          "lineno": 23,
+          "end_lineno": 23,
+          "context": "none",
+          "resolved_location": "trio.lowlevel.start_guest_run"
+        },
+        {
+          "import_components": [
+            "asyncio",
+            "sleep"
+          ],
+          "code_str": "asyncio.sleep",
+          "lineno": 34,
+          "end_lineno": 34,
+          "context": "none",
+          "resolved_location": "asyncio.sleep"
+        },
+        {
+          "import_components": [
+            "asyncio",
+            "run"
+          ],
+          "code_str": "asyncio.run",
+          "lineno": 36,
+          "end_lineno": 36,
+          "context": "none",
+          "resolved_location": "asyncio.run"
+        }
+      ],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "guest-run-implementation",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u4f7f\u7528\u201c\u8bbf\u5ba2\u6a21\u5f0f\u201d\u5728\u5176\u4ed6\u4e8b\u4ef6\u5faa\u73af\u4e4b\u4e0a\u8fd0\u884c Trio",
+          "\u4e3a\u60a8\u6700\u559c\u6b22\u7684\u4e8b\u4ef6\u5faa\u73af\u5b9e\u73b0\u8bbf\u5ba2\u6a21\u5f0f"
+        ]
+      },
+      "doc_lineno": 1281
+    },
+    {
+      "source": "def trio_run_with_asyncio(trio_main, *args, **trio_run_kwargs):\n    async def asyncio_main():\n        # same as above\n        ...\n\n    return asyncio.run(asyncio_main())",
+      "names": [],
+      "example": {
+        "document": "reference-lowlevel",
+        "ref_id": "guest-run-implementation",
+        "headings": [
+          "\u81ea\u7701\u548c\u6269\u5c55 Trio",
+          "\u4f7f\u7528\u201c\u8bbf\u5ba2\u6a21\u5f0f\u201d\u5728\u5176\u4ed6\u4e8b\u4ef6\u5faa\u73af\u4e4b\u4e0a\u8fd0\u884c Trio",
+          "\u4e3a\u60a8\u6700\u559c\u6b22\u7684\u4e8b\u4ef6\u5faa\u73af\u5b9e\u73b0\u8bbf\u5ba2\u6a21\u5f0f"
+        ]
+      },
+      "doc_lineno": 1395
+    }
+  ],
+  "reference-testing": [],
+  "releasing": [],
+  "tutorial": [
+    {
+      "source": "# \u666e\u901a\u51fd\u6570\ndef regular_double(x):\n   return 2 * x\n\n# \u5f02\u6b65\u51fd\u6570\nasync def async_double(x):\n   return 2 * x",
+      "names": [],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id4",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 157
+    },
+    {
+      "source": "def print_double(x):\n   print(await async_double(x))   # <-- \u8fd9\u91cc\u4f1a\u51fa\u73b0 SyntaxError",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id4",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 175
+    },
+    {
+      "source": "async def print_double(x):\n   print(await async_double(x))   # <-- \u6ca1\u95ee\u9898\uff01",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id4",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 182
+    },
+    {
+      "source": "import trio\n\nasync def async_double(x):\n   return 2 * x\n\ntrio.run(async_double, 3)  # \u8fd4\u56de 6",
+      "names": [
+        {
+          "import_components": [
+            "trio"
+          ],
+          "code_str": "trio",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "import_target",
+          "resolved_location": "trio"
+        },
+        {
+          "import_components": [
+            "trio",
+            "run"
+          ],
+          "code_str": "trio.run",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "trio.run"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id4",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 210
+    },
+    {
+      "source": "import trio\n\nasync def double_sleep(x):\n   await trio.sleep(2 * x)\n\ntrio.run(double_sleep, 3)  # \u65e0\u64cd\u4f5c\u6301\u7eed 6 \u79d2\u540e\u8fd4\u56de",
+      "names": [
+        {
+          "import_components": [
+            "trio"
+          ],
+          "code_str": "trio",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "import_target",
+          "resolved_location": "trio"
+        },
+        {
+          "import_components": [
+            "trio",
+            "sleep"
+          ],
+          "code_str": "trio.sleep",
+          "lineno": 4,
+          "end_lineno": 4,
+          "context": "none",
+          "resolved_location": "trio.sleep"
+        },
+        {
+          "import_components": [
+            "trio",
+            "run"
+          ],
+          "code_str": "trio.run",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "trio.run"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id4",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 225
+    },
+    {
+      "source": "# A regular function\ndef regular_double(x):\n   return 2 * x\n\n# An async function\nasync def async_double(x):\n   return 2 * x",
+      "names": [],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id4",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 258
+    },
+    {
+      "source": "def print_double(x):\n   print(await async_double(x))   # <-- SyntaxError here",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id4",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 282
+    },
+    {
+      "source": "async def print_double(x):\n   print(await async_double(x))   # <-- OK!",
+      "names": [
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "none",
+          "resolved_location": "print"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id4",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 289
+    },
+    {
+      "source": "import trio\n\nasync def async_double(x):\n   return 2 * x\n\ntrio.run(async_double, 3)  # returns 6",
+      "names": [
+        {
+          "import_components": [
+            "trio"
+          ],
+          "code_str": "trio",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "import_target",
+          "resolved_location": "trio"
+        },
+        {
+          "import_components": [
+            "trio",
+            "run"
+          ],
+          "code_str": "trio.run",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "trio.run"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id4",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 331
+    },
+    {
+      "source": "import trio\n\nasync def double_sleep(x):\n   await trio.sleep(2 * x)\n\ntrio.run(double_sleep, 3)  # does nothing for 6 seconds then returns",
+      "names": [
+        {
+          "import_components": [
+            "trio"
+          ],
+          "code_str": "trio",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "import_target",
+          "resolved_location": "trio"
+        },
+        {
+          "import_components": [
+            "trio",
+            "sleep"
+          ],
+          "code_str": "trio.sleep",
+          "lineno": 4,
+          "end_lineno": 4,
+          "context": "none",
+          "resolved_location": "trio.sleep"
+        },
+        {
+          "import_components": [
+            "trio",
+            "run"
+          ],
+          "code_str": "trio.run",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "trio.run"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id4",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570"
+        ]
+      },
+      "doc_lineno": 356
+    },
+    {
+      "source": "import time\nimport trio\n\nasync def broken_double_sleep(x):\n   print(\"*\u6253\u54c8\u6b20* \u51c6\u5907\u5165\u7761\")\n   start_time = time.perf_counter()\n\n   # \u54ce\u5440\uff0c\u6211\u4eec\u5fd8\u4e86\u52a0 'await'\uff01\n   trio.sleep(2 * x)\n\n   sleep_time = time.perf_counter() - start_time\n   print(f\"\u9192\u6765\u540e\u611f\u89c9\u7cbe\u795e\u6296\u64de\uff01\u4e00\u5171\u7761\u4e86 {sleep_time:.2f} \u79d2\u3002\")\n\ntrio.run(broken_double_sleep, 3)",
+      "names": [
+        {
+          "import_components": [
+            "time"
+          ],
+          "code_str": "time",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "import_target",
+          "resolved_location": "time"
+        },
+        {
+          "import_components": [
+            "trio"
+          ],
+          "code_str": "trio",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "import_target",
+          "resolved_location": "trio"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 5,
+          "end_lineno": 5,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "time",
+            "perf_counter"
+          ],
+          "code_str": "time.perf_counter",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "time.perf_counter"
+        },
+        {
+          "import_components": [
+            "trio",
+            "sleep"
+          ],
+          "code_str": "trio.sleep",
+          "lineno": 9,
+          "end_lineno": 9,
+          "context": "none",
+          "resolved_location": "trio.sleep"
+        },
+        {
+          "import_components": [
+            "time",
+            "perf_counter"
+          ],
+          "code_str": "time.perf_counter",
+          "lineno": 11,
+          "end_lineno": 11,
+          "context": "none",
+          "resolved_location": "time.perf_counter"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 12,
+          "end_lineno": 12,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "trio",
+            "run"
+          ],
+          "code_str": "trio.run",
+          "lineno": 14,
+          "end_lineno": 14,
+          "context": "none",
+          "resolved_location": "trio.run"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "await",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570",
+          "\u8b66\u544a\uff1a\u4e0d\u8981\u5fd8\u8bb0 await \uff01"
+        ]
+      },
+      "doc_lineno": 402
+    },
+    {
+      "source": ">>> trio.run(broken_double_sleep, 3)\n*\u6253\u54c8\u6b20* \u51c6\u5907\u5165\u7761\n\u9192\u6765\u540e\u611f\u89c9\u7cbe\u795e\u6296\u64de\uff01\u4e00\u5171\u7761\u4e86 0.00 \u79d2\u3002\n__main__:4: RuntimeWarning: coroutine 'sleep' was never awaited\n>>>",
+      "names": [],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "await",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570",
+          "\u8b66\u544a\uff1a\u4e0d\u8981\u5fd8\u8bb0 await \uff01"
+        ]
+      },
+      "doc_lineno": 421
+    },
+    {
+      "source": "# \u5728 PyPy \u4e2d\uff1a\n>>> trio.run(broken_double_sleep, 3)\n*\u6253\u54c8\u6b20* \u51c6\u5907\u5165\u7761\n\u9192\u6765\u540e\u611f\u89c9\u7cbe\u795e\u6296\u64de\uff01\u4e00\u5171\u7761\u4e86 0.00 \u79d2\uff01\n>>> # \u4ec0\u4e48\u2026\u2026\uff1f\uff1f\uff1f\u6ca1\u6709\u4efb\u4f55\u8b66\u544a\uff01\n\n>>> # \u5f3a\u5236\u6267\u884c\u4e00\u6b21\u5783\u573e\u56de\u6536\u540e\u5219\u4f1a\u770b\u5230\u8b66\u544a\uff1a\n>>> import gc\n>>> gc.collect()\n/home/njs/pypy-3.8-nightly/lib-python/3/importlib/_bootstrap.py:191: RuntimeWarning: coroutine 'sleep' was never awaited\nif _module_locks.get(name) is wr:    # XXX PyPy \u4fee\u590d\uff1f\n0",
+      "names": [
+        {
+          "import_components": [
+            "gc"
+          ],
+          "code_str": "gc",
+          "lineno": 8,
+          "end_lineno": 8,
+          "context": "import_target",
+          "resolved_location": "gc"
+        },
+        {
+          "import_components": [
+            "gc",
+            "collect"
+          ],
+          "code_str": "gc.collect",
+          "lineno": 9,
+          "end_lineno": 9,
+          "context": "none",
+          "resolved_location": "gc.collect"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "await",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570",
+          "\u8b66\u544a\uff1a\u4e0d\u8981\u5fd8\u8bb0 await \uff01"
+        ]
+      },
+      "doc_lineno": 431
+    },
+    {
+      "source": ">>> trio.sleep(3)\n<coroutine object sleep at 0x7f5ac77be6d0>",
+      "names": [],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "await",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570",
+          "\u8b66\u544a\uff1a\u4e0d\u8981\u5fd8\u8bb0 await \uff01"
+        ]
+      },
+      "doc_lineno": 454
+    },
+    {
+      "source": ">>> async_double(3) + 1\nTypeError: unsupported operand type(s) for +: 'coroutine' and 'int'",
+      "names": [],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "await",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570",
+          "\u8b66\u544a\uff1a\u4e0d\u8981\u5fd8\u8bb0 await \uff01"
+        ]
+      },
+      "doc_lineno": 461
+    },
+    {
+      "source": "import time\nimport trio\n\nasync def broken_double_sleep(x):\n   print(\"*yawn* Going to sleep\")\n   start_time = time.perf_counter()\n\n   # Whoops, we forgot the 'await'!\n   trio.sleep(2 * x)\n\n   sleep_time = time.perf_counter() - start_time\n   print(f\"Woke up after {sleep_time:.2f} seconds, feeling well rested!\")\n\ntrio.run(broken_double_sleep, 3)",
+      "names": [
+        {
+          "import_components": [
+            "time"
+          ],
+          "code_str": "time",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "import_target",
+          "resolved_location": "time"
+        },
+        {
+          "import_components": [
+            "trio"
+          ],
+          "code_str": "trio",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "import_target",
+          "resolved_location": "trio"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 5,
+          "end_lineno": 5,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "time",
+            "perf_counter"
+          ],
+          "code_str": "time.perf_counter",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "time.perf_counter"
+        },
+        {
+          "import_components": [
+            "trio",
+            "sleep"
+          ],
+          "code_str": "trio.sleep",
+          "lineno": 9,
+          "end_lineno": 9,
+          "context": "none",
+          "resolved_location": "trio.sleep"
+        },
+        {
+          "import_components": [
+            "time",
+            "perf_counter"
+          ],
+          "code_str": "time.perf_counter",
+          "lineno": 11,
+          "end_lineno": 11,
+          "context": "none",
+          "resolved_location": "time.perf_counter"
+        },
+        {
+          "import_components": [
+            "print"
+          ],
+          "code_str": "print",
+          "lineno": 12,
+          "end_lineno": 12,
+          "context": "none",
+          "resolved_location": "print"
+        },
+        {
+          "import_components": [
+            "trio",
+            "run"
+          ],
+          "code_str": "trio.run",
+          "lineno": 14,
+          "end_lineno": 14,
+          "context": "none",
+          "resolved_location": "trio.run"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "await",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570",
+          "\u8b66\u544a\uff1a\u4e0d\u8981\u5fd8\u8bb0 await \uff01"
+        ]
+      },
+      "doc_lineno": 480
+    },
+    {
+      "source": ">>> trio.run(broken_double_sleep, 3)\n*yawn* Going to sleep\nWoke up after 0.00 seconds, feeling well rested!\n__main__:4: RuntimeWarning: coroutine 'sleep' was never awaited\n>>>",
+      "names": [],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "await",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570",
+          "\u8b66\u544a\uff1a\u4e0d\u8981\u5fd8\u8bb0 await \uff01"
+        ]
+      },
+      "doc_lineno": 504
+    },
+    {
+      "source": "# On PyPy:\n>>> trio.run(broken_double_sleep, 3)\n*yawn* Going to sleep\nWoke up after 0.00 seconds, feeling well rested!\n>>> # what the ... ?? not even a warning!\n\n>>> # but forcing a garbage collection gives us a warning:\n>>> import gc\n>>> gc.collect()\n/home/njs/pypy-3.8-nightly/lib-python/3/importlib/_bootstrap.py:191: RuntimeWarning: coroutine 'sleep' was never awaited\nif _module_locks.get(name) is wr:    # XXX PyPy fix?\n0",
+      "names": [
+        {
+          "import_components": [
+            "gc"
+          ],
+          "code_str": "gc",
+          "lineno": 8,
+          "end_lineno": 8,
+          "context": "import_target",
+          "resolved_location": "gc"
+        },
+        {
+          "import_components": [
+            "gc",
+            "collect"
+          ],
+          "code_str": "gc.collect",
+          "lineno": 9,
+          "end_lineno": 9,
+          "context": "none",
+          "resolved_location": "gc.collect"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "await",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570",
+          "\u8b66\u544a\uff1a\u4e0d\u8981\u5fd8\u8bb0 await \uff01"
+        ]
+      },
+      "doc_lineno": 521
+    },
+    {
+      "source": ">>> trio.sleep(3)\n<coroutine object sleep at 0x7f5ac77be6d0>",
+      "names": [],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "await",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570",
+          "\u8b66\u544a\uff1a\u4e0d\u8981\u5fd8\u8bb0 await \uff01"
+        ]
+      },
+      "doc_lineno": 562
+    },
+    {
+      "source": ">>> async_double(3) + 1\nTypeError: unsupported operand type(s) for +: 'coroutine' and 'int'",
+      "names": [],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "await",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u5f02\u6b65\u51fd\u6570",
+          "\u8b66\u544a\uff1a\u4e0d\u8981\u5fd8\u8bb0 await \uff01"
+        ]
+      },
+      "doc_lineno": 572
+    },
+    {
+      "source": "# \u4f60\u80fd\u53d1\u73b0\u8fd9\u6bb5\u4ee3\u7801\u7684\u4e24\u4e2a\u95ee\u9898\u5417\uff1f\nasync def send_and_receive(client_stream):\n   while True:\n      data = ...\n      await client_stream.send_all(data)\n      received = await client_stream.receive_some()\n      if not received:\n            sys.exit()\n      await trio.sleep(1)",
+      "names": [],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id10",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u4f7f\u7528 Trio \u8fdb\u884c\u7f51\u7edc\u7f16\u7a0b",
+          "\u56de\u663e\u5ba2\u6237\u7aef\u548c\u670d\u52a1\u5668\u4e2d\u7684\u6d41\u63a7\u5236"
+        ]
+      },
+      "doc_lineno": 1638
+    },
+    {
+      "source": "expected = len(data)\nwhile expected > 0:\n   received = await client_stream.receive_some(expected)\n   if not received:\n      sys.exit(1)\n   expected -= len(received)",
+      "names": [
+        {
+          "import_components": [
+            "len"
+          ],
+          "code_str": "len",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "len"
+        },
+        {
+          "import_components": [
+            "len"
+          ],
+          "code_str": "len",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "len"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id10",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u4f7f\u7528 Trio \u8fdb\u884c\u7f51\u7edc\u7f16\u7a0b",
+          "\u56de\u663e\u5ba2\u6237\u7aef\u548c\u670d\u52a1\u5668\u4e2d\u7684\u6d41\u63a7\u5236"
+        ]
+      },
+      "doc_lineno": 1659
+    },
+    {
+      "source": "# Can you spot the two problems with this code?\nasync def send_and_receive(client_stream):\n   while True:\n      data = ...\n      await client_stream.send_all(data)\n      received = await client_stream.receive_some()\n      if not received:\n            sys.exit()\n      await trio.sleep(1)",
+      "names": [],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id10",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u4f7f\u7528 Trio \u8fdb\u884c\u7f51\u7edc\u7f16\u7a0b",
+          "\u56de\u663e\u5ba2\u6237\u7aef\u548c\u670d\u52a1\u5668\u4e2d\u7684\u6d41\u63a7\u5236"
+        ]
+      },
+      "doc_lineno": 1695
+    },
+    {
+      "source": "expected = len(data)\nwhile expected > 0:\n   received = await client_stream.receive_some(expected)\n   if not received:\n      sys.exit(1)\n   expected -= len(received)",
+      "names": [
+        {
+          "import_components": [
+            "len"
+          ],
+          "code_str": "len",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "len"
+        },
+        {
+          "import_components": [
+            "len"
+          ],
+          "code_str": "len",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "len"
+        }
+      ],
+      "example": {
+        "document": "tutorial",
+        "ref_id": "id10",
+        "headings": [
+          "\u6559\u7a0b",
+          "\u4f7f\u7528 Trio \u8fdb\u884c\u7f51\u7edc\u7f16\u7a0b",
+          "\u56de\u663e\u5ba2\u6237\u7aef\u548c\u670d\u52a1\u5668\u4e2d\u7684\u6d41\u63a7\u5236"
+        ]
+      },
+      "doc_lineno": 1733
+    }
+  ]
+}

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+
+<html class="no-js" data-content_root="../" lang="zh-CN">
+<head><meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/><meta content="width=device-width, initial-scale=1" name="viewport">
+<link href="../genindex.html" rel="index" title="索引"/><link href="../search.html" rel="search" title="搜索"/><link href="async_file_io.html" rel="next" title="异步文件系统 I/O"/><link href="abs_api.html" rel="prev" title="抽象流 API"/>
+<link href="../_static/favicon-32.png" rel="shortcut icon"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+<title>使用 trio.socket 进行低级网络编程 - Trio 0.27.0+dev 文档</title>
+<link href="../_static/pygments.css?v=fa44fd50" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo.css?v=354aac6f" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=125d5c1c" rel="stylesheet" type="text/css"/>
+<link href="../_static/tabs.css?v=4c969af8" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/hackrtd.css?v=2d9fc201" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo-extensions.css?v=302659d7" rel="stylesheet" type="text/css"/>
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></meta></head>
+<body>
+<script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+<symbol id="svg-toc" viewbox="0 0 24 24">
+<title>Contents</title>
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 1024 1024">
+<path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"></path>
+</svg>
+</symbol>
+<symbol id="svg-menu" viewbox="0 0 24 24">
+<title>Menu</title>
+<svg class="feather-menu" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<line x1="3" x2="21" y1="12" y2="12"></line>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<line x1="3" x2="21" y1="18" y2="18"></line>
+</svg>
+</symbol>
+<symbol id="svg-arrow-right" viewbox="0 0 24 24">
+<title>Expand</title>
+<svg class="feather-chevron-right" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</symbol>
+<symbol id="svg-sun" viewbox="0 0 24 24">
+<title>Light mode</title>
+<svg class="feather-sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="5"></circle>
+<line x1="12" x2="12" y1="1" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="23"></line>
+<line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line>
+<line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+<line x1="1" x2="3" y1="12" y2="12"></line>
+<line x1="21" x2="23" y1="12" y2="12"></line>
+<line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line>
+<line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+</svg>
+</symbol>
+<symbol id="svg-moon" viewbox="0 0 24 24">
+<title>Dark mode</title>
+<svg class="icon-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+</svg>
+</symbol>
+<symbol id="svg-sun-with-moon" viewbox="0 0 24 24">
+<title>Auto light/dark, in light mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z" style="opacity: 50%"></path>
+<line x1="14.5" x2="14.5" y1="3.25" y2="1.25"></line>
+<line x1="14.5" x2="14.5" y1="15.85" y2="17.85"></line>
+<line x1="10.044" x2="8.63" y1="5.094" y2="3.68"></line>
+<line x1="19" x2="20.414" y1="14.05" y2="15.464"></line>
+<line x1="8.2" x2="6.2" y1="9.55" y2="9.55"></line>
+<line x1="20.8" x2="22.8" y1="9.55" y2="9.55"></line>
+<line x1="10.044" x2="8.63" y1="14.006" y2="15.42"></line>
+<line x1="19" x2="20.414" y1="5.05" y2="3.636"></line>
+<circle cx="14.5" cy="9.55" r="3.6"></circle>
+</svg>
+</symbol>
+<symbol id="svg-moon-with-sun" viewbox="0 0 24 24">
+<title>Auto light/dark, in dark mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"></path>
+<line style="opacity: 50%" x1="18" x2="18" y1="3.705" y2="2.5"></line>
+<line style="opacity: 50%" x1="18" x2="18" y1="11.295" y2="12.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="4.816" y2="3.964"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="10.212" y2="11.063"></line>
+<line style="opacity: 50%" x1="14.205" x2="13.001" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="21.795" x2="23" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="10.184" y2="11.036"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="4.789" y2="3.937"></line>
+<circle cx="18" cy="7.5" r="2.169" style="opacity: 50%"></circle>
+</svg>
+</symbol>
+<symbol id="svg-pencil" viewbox="0 0 24 24">
+<svg class="icon-tabler-pencil-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path>
+<path d="M13.5 6.5l4 4"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+<symbol id="svg-eye" viewbox="0 0 24 24">
+<svg class="icon-tabler-eye-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+<path d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+</svg>
+<input class="sidebar-toggle" id="__navigation" name="__navigation" type="checkbox"/>
+<input class="sidebar-toggle" id="__toc" name="__toc" type="checkbox"/>
+<label class="overlay sidebar-overlay" for="__navigation">
+<div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+<div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+<div class="page">
+<header class="mobile-header">
+<div class="header-left">
+<label class="nav-overlay-icon" for="__navigation">
+<div class="visually-hidden">Toggle site navigation sidebar</div>
+<i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+</label>
+</div>
+<div class="header-center">
+<a href="../index.html"><div class="brand">Trio 0.27.0+dev 文档</div></a>
+</div>
+<div class="header-right">
+<div class="theme-toggle-container theme-toggle-header">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-header-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+</header>
+<aside class="sidebar-drawer">
+<div class="sidebar-container">
+<div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+<div class="sidebar-logo-container">
+<img alt="Logo" class="sidebar-logo" src="../_static/wordmark-transparent.svg"/>
+</div>
+<span class="sidebar-brand-text">Trio 0.27.0+dev 文档</span>
+</a><form action="../search.html" class="sidebar-search-container" method="get" role="search">
+<input aria-label="搜索" class="sidebar-search" name="q" placeholder="搜索"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+<p class="caption" role="heading"><span class="caption-text">Trio 友好且全面的手册：</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../awesome-trio-libraries.html">超棒的 Trio 库</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ref-core/index.html">Trio 的核心功能</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Trio 的核心功能</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/run.html">运行 Trio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/general_principles.html">一般原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/time_clock.html">时间和时钟</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/cancel_timeout.html">取消和超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/tasks.html">任务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/task_local_storeage.html">任务存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/task_sync.html">任务同步和通信</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/note_async_generator.html">异步生成器注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/threads.html">线程（如果必须）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/debugging.html">交互式调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/exc_warn.html">异常和警告</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Trio 中的 I/O</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Trio 中的 I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="abs_api.html">抽象流 API</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_file_io.html">异步文件系统 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subprocess.html">生成子进程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signals.html">信号</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-testing.html">Trio 中的测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-lowlevel.html">自省和扩展 Trio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">设计和内部结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">发布历史</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">为 Trio 及相关项目做出贡献</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasing.html">准备发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">行为守则</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<div class="main">
+<div class="content">
+<div class="article-container">
+<a class="back-to-top muted-link" href="#">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+</svg>
+<span>Back to top</span>
+</a>
+<div class="content-icon-container">
+<div class="view-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/blob/sync-docs/cn_docs/source/ref-io/low_level.rst?plain=true" title="View this page">
+<svg><use href="#svg-eye"></use></svg>
+<span class="visually-hidden">View this page</span>
+</a>
+</div><div class="edit-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/edit/sync-docs/cn_docs/source/ref-io/low_level.rst" title="Edit this page">
+<svg><use href="#svg-pencil"></use></svg>
+<span class="visually-hidden">Edit this page</span>
+</a>
+</div><div class="theme-toggle-container theme-toggle-content">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-content-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+<article id="furo-main-content" role="main">
+<section id="trio-socket">
+<span id="module-trio.socket"></span><h1>使用 <a class="reference internal" href="#module-trio.socket" title="trio.socket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code></a> 进行低级网络编程<a class="headerlink" href="#trio-socket" title="Link to this heading">¶</a></h1>
+<p><strong>Low-level networking with :mod:`trio.socket`</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p><a class="reference internal" href="#module-trio.socket" title="trio.socket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code></a> 模块提供了 Trio 的基本底层网络 API。如果您正在通过 IPv4/IPv6/Unix 域套接字进行普通的流式连接操作, 那么您可能希望使用上面描述的高层 API。如果您想使用 UDP, 或使用像 <code class="docutils literal notranslate"><span class="pre">AF_BLUETOOTH</span></code> 这样的特殊地址族, 或者需要直接访问系统网络 API 的所有奇怪部分, 那么您来对地方了。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>The <a class="reference internal" href="#module-trio.socket" title="trio.socket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code></a> module provides Trio's basic low-level
+networking API. If you're doing ordinary things with stream-oriented
+connections over IPv4/IPv6/Unix domain sockets, then you probably want
+to stick to the high-level API described above. If you want to use
+UDP, or exotic address families like <code class="docutils literal notranslate"><span class="pre">AF_BLUETOOTH</span></code>, or otherwise
+get direct access to all the quirky bits of your system's networking
+API, then you're in the right place.</p>
+</div>
+</div>
+<section id="id1">
+<h2>顶级导出<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<p><strong>Top-level exports</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<p>通常, <a class="reference internal" href="#module-trio.socket" title="trio.socket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code></a> 模块暴露的 API 与标准库的 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#module-socket" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">socket</span></code></a> 模块相似。大多数常量 (如 <code class="docutils literal notranslate"><span class="pre">SOL_SOCKET</span></code> ) 和简单的工具函数 (如 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.inet_aton" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">inet_aton()</span></code></a> ) 都只是重新导出了, 保持不变。但也有一些不同之处, 下面将进行描述。</p>
+<p>首先, Trio 提供了所有返回套接字对象的标准库函数的类比；它们的接口完全相同, 只是它们被修改为返回 Trio 套接字对象：</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.socket.socket">
+<span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">socket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileno</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.socket" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new Trio socket, like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a>.</p>
+<p>This function's behavior can be customized using
+<a class="reference internal" href="../reference-testing.html#trio.socket.set_custom_socket_factory" title="trio.socket.set_custom_socket_factory"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_custom_socket_factory()</span></code></a>.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.socket.socketpair">
+<span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">socketpair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SocketKind.SOCK_STREAM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.socketpair" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socketpair" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.socketpair()</span></code></a>, but returns a pair of Trio socket
+objects.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.socket.fromfd">
+<span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">fromfd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.fromfd" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.fromfd" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.fromfd()</span></code></a>, but returns a Trio socket object.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.socket.fromshare">
+<span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">fromshare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.fromshare" title="Link to this definition">¶</a></dt>
+<dd><p>类似于 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.fromshare" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.fromshare()</span></code></a>, 但返回一个 Trio 套接字对象。</p>
+</dd></dl>
+<p>此外, 还有一个新函数可以直接将标准库的套接字转换为 Trio 套接字：</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.socket.from_stdlib_socket">
+<span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">from_stdlib_socket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sock</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.from_stdlib_socket" title="Link to this definition">¶</a></dt>
+<dd><p>Convert a standard library <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a> object into a Trio
+socket object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#trio.socket.SocketType" title="trio.socket.SocketType"><code class="xref py py-class docutils literal notranslate"><span class="pre">SocketType</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<p>与 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a> 不同, <a class="reference internal" href="#trio.socket.socket" title="trio.socket.socket"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.socket.socket()</span></code></a> 是一个函数, 而不是一个类；如果您想检查一个对象是否是 Trio 套接字, 请使用 <code class="docutils literal notranslate"><span class="pre">isinstance(obj,</span> <span class="pre">trio.socket.SocketType)</span></code>。</p>
+<p>对于名称查找, Trio 提供了标准的函数, 但做了一些修改：</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.socket.getaddrinfo">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">getaddrinfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.getaddrinfo" title="Link to this definition">¶</a></dt>
+<dd><p>Look up a numeric address given a name.</p>
+<p>Arguments and return values are identical to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getaddrinfo" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.getaddrinfo()</span></code></a>,
+except that this version is async.</p>
+<p>Also, <a class="reference internal" href="#trio.socket.getaddrinfo" title="trio.socket.getaddrinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.socket.getaddrinfo()</span></code></a> correctly uses IDNA 2008 to process
+non-ASCII domain names. (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getaddrinfo" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.getaddrinfo()</span></code></a> uses IDNA 2003, which
+can give the wrong result in some cases and cause you to connect to a
+different host than the one you intended; see <a class="reference external" href="https://bugs.python.org/issue17305">bpo-17305</a>.)</p>
+<p>This function's behavior can be customized using
+<a class="reference internal" href="../reference-testing.html#trio.socket.set_custom_hostname_resolver" title="trio.socket.set_custom_hostname_resolver"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_custom_hostname_resolver()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#list" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#tuple" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AddressFamily</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SocketKind</span></code>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#tuple" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>] | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#tuple" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]]]</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.socket.getnameinfo">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">getnameinfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sockaddr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.getnameinfo" title="Link to this definition">¶</a></dt>
+<dd><p>Look up a name given a numeric address.</p>
+<p>Arguments and return values are identical to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getnameinfo" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.getnameinfo()</span></code></a>,
+except that this version is async.</p>
+<p>This function's behavior can be customized using
+<a class="reference internal" href="../reference-testing.html#trio.socket.set_custom_hostname_resolver" title="trio.socket.set_custom_hostname_resolver"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_custom_hostname_resolver()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#tuple" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.socket.getprotobyname">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">getprotobyname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.getprotobyname" title="Link to this definition">¶</a></dt>
+<dd><p>Look up a protocol number by name. (Rarely used.)</p>
+<p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getprotobyname" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.getprotobyname()</span></code></a>, but async.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<p>Trio 特意不包含一些过时的, 冗余的或损坏的功能：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.gethostbyname" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">gethostbyname()</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.gethostbyname_ex" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">gethostbyname_ex()</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.gethostbyaddr" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">gethostbyaddr()</span></code></a>：已过时；请改用 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getaddrinfo" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getaddrinfo()</span></code></a> 和 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getnameinfo" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getnameinfo()</span></code></a>。</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getservbyport" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getservbyport()</span></code></a>：已过时且存在 <a class="reference external" href="https://bugs.python.org/issue30482">bug</a>；请改用：</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">service_name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">getnameinfo</span><span class="p">((</span><span class="s1">'127.0.0.1'</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">NI_NUMERICHOST</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getservbyname" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getservbyname()</span></code></a>：已过时且存在 <a class="reference external" href="https://bugs.python.org/issue30482">bug</a>；请改用：</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">getaddrinfo</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">service_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getfqdn" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getfqdn()</span></code></a>：已过时；请使用 <a class="reference internal" href="#trio.socket.getaddrinfo" title="trio.socket.getaddrinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">getaddrinfo()</span></code></a> 并带上 <code class="docutils literal notranslate"><span class="pre">AI_CANONNAME</span></code> 标志。</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getdefaulttimeout" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getdefaulttimeout()</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.setdefaulttimeout" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">setdefaulttimeout()</span></code></a>：请使用 Trio 的标准支持来进行 <a class="reference internal" href="../ref-core/cancel_timeout.html#cancellation"><span class="std std-ref">取消</span></a> 。</p></li>
+<li><p>在 Windows 上,  <code class="docutils literal notranslate"><span class="pre">SO_REUSEADDR</span></code> 没有被导出, 因为它是一个陷阱：这个名字与 Unix 上的 <code class="docutils literal notranslate"><span class="pre">SO_REUSEADDR</span></code> 相同, 但语义是 <a class="reference external" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms740621(v=vs.85).aspx">不同且极为破坏性的</a> 。在非常罕见的情况下, 如果您确实需要在 Windows 上使用 <code class="docutils literal notranslate"><span class="pre">SO_REUSEADDR</span></code> , 它仍然可以通过标准库的 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#module-socket" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">socket</span></code></a> 模块访问。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<p>Generally, the API exposed by <a class="reference internal" href="#module-trio.socket" title="trio.socket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code></a> mirrors that of the
+standard library <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#module-socket" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">socket</span></code></a> module. Most constants (like
+<code class="docutils literal notranslate"><span class="pre">SOL_SOCKET</span></code>) and simple utilities (like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.inet_aton" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">inet_aton()</span></code></a>)
+are simply re-exported unchanged. But there are also some differences,
+which are described here.</p>
+<p>First, Trio provides analogues to all the standard library functions
+that return socket objects; their interface is identical, except that
+they're modified to return Trio socket objects instead:</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">socket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileno</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Create a new Trio socket, like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a>.</p>
+<p>This function's behavior can be customized using
+<a class="reference internal" href="../reference-testing.html#trio.socket.set_custom_socket_factory" title="trio.socket.set_custom_socket_factory"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_custom_socket_factory()</span></code></a>.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">socketpair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SocketKind.SOCK_STREAM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socketpair" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.socketpair()</span></code></a>, but returns a pair of Trio socket
+objects.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">fromfd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.fromfd" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.fromfd()</span></code></a>, but returns a Trio socket object.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">fromshare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.fromshare" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.fromshare()</span></code></a>, but returns a Trio socket object.</p>
+</dd></dl>
+<p>In addition, there is a new function to directly convert a standard
+library socket into a Trio socket:</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">from_stdlib_socket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sock</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert a standard library <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a> object into a Trio
+socket object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#trio.socket.SocketType" title="trio.socket.SocketType"><code class="xref py py-class docutils literal notranslate"><span class="pre">SocketType</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<p>Unlike <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a>, <a class="reference internal" href="#trio.socket.socket" title="trio.socket.socket"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.socket.socket()</span></code></a> is a
+function, not a class; if you want to check whether an object is a
+Trio socket, use <code class="docutils literal notranslate"><span class="pre">isinstance(obj,</span> <span class="pre">trio.socket.SocketType)</span></code>.</p>
+<p>For name lookup, Trio provides the standard functions, but with some
+changes:</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">getaddrinfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Look up a numeric address given a name.</p>
+<p>Arguments and return values are identical to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getaddrinfo" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.getaddrinfo()</span></code></a>,
+except that this version is async.</p>
+<p>Also, <a class="reference internal" href="#trio.socket.getaddrinfo" title="trio.socket.getaddrinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.socket.getaddrinfo()</span></code></a> correctly uses IDNA 2008 to process
+non-ASCII domain names. (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getaddrinfo" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.getaddrinfo()</span></code></a> uses IDNA 2003, which
+can give the wrong result in some cases and cause you to connect to a
+different host than the one you intended; see <a class="reference external" href="https://bugs.python.org/issue17305">bpo-17305</a>.)</p>
+<p>This function's behavior can be customized using
+<a class="reference internal" href="../reference-testing.html#trio.socket.set_custom_hostname_resolver" title="trio.socket.set_custom_hostname_resolver"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_custom_hostname_resolver()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#list" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#tuple" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">AddressFamily</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SocketKind</span></code>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#tuple" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>] | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#tuple" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]]]</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">getnameinfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sockaddr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Look up a name given a numeric address.</p>
+<p>Arguments and return values are identical to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getnameinfo" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.getnameinfo()</span></code></a>,
+except that this version is async.</p>
+<p>This function's behavior can be customized using
+<a class="reference internal" href="../reference-testing.html#trio.socket.set_custom_hostname_resolver" title="trio.socket.set_custom_hostname_resolver"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_custom_hostname_resolver()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#tuple" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">getprotobyname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Look up a protocol number by name. (Rarely used.)</p>
+<p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getprotobyname" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">socket.getprotobyname()</span></code></a>, but async.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<p>Trio intentionally DOES NOT include some obsolete, redundant, or
+broken features:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.gethostbyname" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">gethostbyname()</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.gethostbyname_ex" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">gethostbyname_ex()</span></code></a>,
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.gethostbyaddr" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">gethostbyaddr()</span></code></a>: obsolete; use
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getaddrinfo" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getaddrinfo()</span></code></a> and <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getnameinfo" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getnameinfo()</span></code></a> instead.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getservbyport" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getservbyport()</span></code></a>: obsolete and <a class="reference external" href="https://bugs.python.org/issue30482">buggy</a>; instead, do:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="p">,</span> <span class="n">service_name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">getnameinfo</span><span class="p">((</span><span class="s1">'127.0.0.1'</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">NI_NUMERICHOST</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getservbyname" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getservbyname()</span></code></a>: obsolete and <a class="reference external" href="https://bugs.python.org/issue30482">buggy</a> ; instead, do:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">getaddrinfo</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">service_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getfqdn" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getfqdn()</span></code></a>: obsolete; use <a class="reference internal" href="#trio.socket.getaddrinfo" title="trio.socket.getaddrinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">getaddrinfo()</span></code></a> with the
+<code class="docutils literal notranslate"><span class="pre">AI_CANONNAME</span></code> flag.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.getdefaulttimeout" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">getdefaulttimeout()</span></code></a>,
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.setdefaulttimeout" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">setdefaulttimeout()</span></code></a>: instead, use Trio's standard
+support for <a class="reference internal" href="../ref-core/cancel_timeout.html#cancellation"><span class="std std-ref">取消和超时</span></a>.</p></li>
+<li><p>On Windows, <code class="docutils literal notranslate"><span class="pre">SO_REUSEADDR</span></code> is not exported, because it's a trap:
+the name is the same as Unix <code class="docutils literal notranslate"><span class="pre">SO_REUSEADDR</span></code>, but the semantics are
+<a class="reference external" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms740621(v=vs.85).aspx">different and extremely broken</a>. In
+the very rare cases where you actually want <code class="docutils literal notranslate"><span class="pre">SO_REUSEADDR</span></code> on
+Windows, then it can still be accessed from the standard library's
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#module-socket" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">socket</span></code></a> module.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="id2">
+<h2>套接字对象<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p><strong>Socket objects</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<dl class="py class">
+<dt class="sig sig-object py" id="trio.socket.SocketType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">SocketType</span></span><a class="headerlink" href="#trio.socket.SocketType" title="Link to this definition">¶</a></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><a class="reference internal" href="#trio.socket.SocketType" title="trio.socket.SocketType"><code class="xref py py-class docutils literal notranslate"><span class="pre">trio.socket.SocketType</span></code></a> 是一个抽象类, 不能直接实例化；您可以通过调用构造函数, 如 <a class="reference internal" href="#trio.socket.socket" title="trio.socket.socket"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.socket.socket()</span></code></a>, 来获得具体的套接字对象。然而, 您可以使用它来检查一个对象是否是 Trio 套接字, 方法是 <code class="docutils literal notranslate"><span class="pre">isinstance(obj,</span> <span class="pre">trio.socket.SocketType)</span></code>。</p>
+</div>
+<p>Trio 套接字对象总体上与 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket-objects" title="（在 Python v3.13）"><span class="xref std std-ref">标准库套接字对象</span></a> 非常相似, 但有一些重要的区别：</p>
+<p>首先, 也是最显著的, 所有内容都被改造成了“Trio 风格”：
+阻塞方法变为异步方法, 并且以下属性 <em>不</em> 支持：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.setblocking" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setblocking()</span></code></a>：Trio 套接字始终表现得像阻塞套接字；如果您需要同时从多个套接字读取/写入, 应该创建多个任务。</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.settimeout" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">settimeout()</span></code></a>：请改用 <a class="reference internal" href="../ref-core/cancel_timeout.html#cancellation"><span class="std std-ref">取消</span></a>。</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.makefile" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">makefile()</span></code></a>：Python 的类文件 API 是同步的, 因此无法在异步套接字上实现。</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.sendall" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sendall()</span></code></a>：可能支持, 但您最好使用更高层次的 <a class="reference internal" href="abs_api.html#trio.SocketStream" title="trio.SocketStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">SocketStream</span></code></a>, 特别是它的 <a class="reference internal" href="abs_api.html#trio.SocketStream.send_all" title="trio.SocketStream.send_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">send_all()</span></code></a> 方法, 这个方法还会执行额外的错误检查。</p></li>
+</ul>
+<p>此外, 以下方法与 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a> 中的相似, 但有一些 Trio 特有的怪癖：</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.socket.SocketType.connect">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.SocketType.connect" title="Link to this definition">¶</a></dt>
+<dd><p>将套接字连接到远程地址。</p>
+<p>类似于 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.connect" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">socket.socket.connect()</span></code></a>, 但它是异步的。</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>由于底层操作系统 API 的限制, 一旦连接尝试开始, 可能无法正确取消该连接。如果 <a class="reference internal" href="#trio.socket.SocketType.connect" title="trio.socket.SocketType.connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">connect()</span></code></a> 被取消, 且无法中止连接尝试, 则它将：</p>
+<ol class="arabic simple">
+<li><p>强制关闭套接字以防止意外重用</p></li>
+<li><p>引发 <a class="reference internal" href="../ref-core/exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>。</p></li>
+</ol>
+<p>简而言之：如果 <a class="reference internal" href="#trio.socket.SocketType.connect" title="trio.socket.SocketType.connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">connect()</span></code></a> 被取消, 则套接字处于未知状态——可能是打开的, 也可能是关闭的。唯一合理的做法是关闭它。</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.socket.SocketType.is_readable">
+<span class="sig-name descname"><span class="pre">is_readable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.SocketType.is_readable" title="Link to this definition">¶</a></dt>
+<dd><p>检查套接字是否可读。</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.socket.SocketType.sendfile">
+<span class="sig-name descname"><span class="pre">sendfile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.socket.SocketType.sendfile" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://github.com/python-trio/trio/issues/45">尚未实现!</a></p>
+</dd></dl>
+<p>我们还跟踪一个额外的状态位, 因为它对 <a class="reference internal" href="abs_api.html#trio.SocketStream" title="trio.SocketStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">trio.SocketStream</span></code></a> 很有用：</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.socket.SocketType.did_shutdown_SHUT_WR">
+<span class="sig-name descname"><span class="pre">did_shutdown_SHUT_WR</span></span><a class="headerlink" href="#trio.socket.SocketType.did_shutdown_SHUT_WR" title="Link to this definition">¶</a></dt>
+<dd><p>如果您调用了 <code class="docutils literal notranslate"><span class="pre">sock.shutdown(SHUT_WR)</span></code> 或 <code class="docutils literal notranslate"><span class="pre">sock.shutdown(SHUT_RDWR)</span></code>, 则此 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> 属性为 True, 否则为 False。</p>
+</dd></dl>
+<p>以下方法与 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a> 中的对应方法相同, 唯一不同的是它们是异步的, 并且那些接受地址参数的方法需要预先解析的地址：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.accept" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">accept()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.bind" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recv" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recv()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recv_into" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recv_into()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recvfrom" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recvfrom()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recvfrom_into" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recvfrom_into()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recvmsg" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recvmsg()</span></code></a>  (如果可用 )</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recvmsg_into" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recvmsg_into()</span></code></a>  (如果可用 )</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.send" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">send()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.sendto" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sendto()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.sendmsg" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sendmsg()</span></code></a>  (如果可用 )</p></li>
+</ul>
+<p>所有未在上面提到的方法和属性都与 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a> 中的对应项相同：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.family" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">family</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.type" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.proto" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">proto</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.fileno" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fileno()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.listen" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">listen()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.getpeername" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getpeername()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.getsockname" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getsockname()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.close" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.shutdown" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.setsockopt" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setsockopt()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.getsockopt" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getsockopt()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.dup" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dup()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.detach" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">detach()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.share" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">share()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.set_inheritable" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_inheritable()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.get_inheritable" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_inheritable()</span></code></a></p></li>
+</ul>
+</dd></dl>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.socket.</span></span><span class="sig-name descname"><span class="pre">SocketType</span></span></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><a class="reference internal" href="#trio.socket.SocketType" title="trio.socket.SocketType"><code class="xref py py-class docutils literal notranslate"><span class="pre">trio.socket.SocketType</span></code></a> is an abstract class and cannot be instantiated directly; you get concrete socket objects by calling constructors like <a class="reference internal" href="#trio.socket.socket" title="trio.socket.socket"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.socket.socket()</span></code></a>. However, you can use it to check if an object is a Trio socket via <code class="docutils literal notranslate"><span class="pre">isinstance(obj,</span> <span class="pre">trio.socket.SocketType)</span></code>.</p>
+</div>
+<p>Trio socket objects are overall very similar to the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket-objects" title="（在 Python v3.13）"><span class="xref std std-ref">standard
+library socket objects</span></a>, with a few
+important differences:</p>
+<p>First, and most obviously, everything is made "Trio-style":
+blocking methods become async methods, and the following attributes
+are <em>not</em> supported:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.setblocking" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setblocking()</span></code></a>: Trio sockets always act like blocking sockets; if you need to read/write from multiple sockets at once, then create multiple tasks.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.settimeout" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">settimeout()</span></code></a>: see <a class="reference internal" href="../ref-core/cancel_timeout.html#cancellation"><span class="std std-ref">取消和超时</span></a> instead.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.makefile" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">makefile()</span></code></a>: Python's file-like API is synchronous, so it can't be implemented on top of an async socket.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.sendall" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sendall()</span></code></a>: Could be supported, but you're better off using the higher-level <a class="reference internal" href="abs_api.html#trio.SocketStream" title="trio.SocketStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">SocketStream</span></code></a>, and specifically its <a class="reference internal" href="abs_api.html#trio.SocketStream.send_all" title="trio.SocketStream.send_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">send_all()</span></code></a> method, which also does additional error checking.</p></li>
+</ul>
+<p>In addition, the following methods are similar to the equivalents in <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a>, but have some Trio-specific quirks:</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Connect the socket to a remote address.</p>
+<p>Similar to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.connect" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">socket.socket.connect()</span></code></a>, except async.</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>Due to limitations of the underlying operating system APIs, it is
+not always possible to properly cancel a connection attempt once it
+has begun. If <a class="reference internal" href="#trio.socket.SocketType.connect" title="trio.socket.SocketType.connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">connect()</span></code></a> is cancelled, and is unable to
+abort the connection attempt, then it will:</p>
+<ol class="arabic simple">
+<li><p>forcibly close the socket to prevent accidental reuse</p></li>
+<li><p>raise <a class="reference internal" href="../ref-core/exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>.</p></li>
+</ol>
+<p>tl;dr: if <a class="reference internal" href="#trio.socket.SocketType.connect" title="trio.socket.SocketType.connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">connect()</span></code></a> is cancelled then the socket is
+left in an unknown state – possibly open, and possibly
+closed. The only reasonable thing to do is to close it.</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">is_readable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Check whether the socket is readable or not.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">sendfile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p><a class="reference external" href="https://github.com/python-trio/trio/issues/45">Not implemented yet!</a></p>
+</dd></dl>
+<p>We also keep track of an extra bit of state, because it turns out
+to be useful for <a class="reference internal" href="abs_api.html#trio.SocketStream" title="trio.SocketStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">trio.SocketStream</span></code></a>:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">did_shutdown_SHUT_WR</span></span></dt>
+<dd><p>This <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> attribute is True if you've called
+<code class="docutils literal notranslate"><span class="pre">sock.shutdown(SHUT_WR)</span></code> or <code class="docutils literal notranslate"><span class="pre">sock.shutdown(SHUT_RDWR)</span></code>, and
+False otherwise.</p>
+</dd></dl>
+<p>The following methods are identical to their equivalents in
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a>, except async, and the ones that take address
+arguments require pre-resolved addresses:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.accept" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">accept()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.bind" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recv" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recv()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recv_into" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recv_into()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recvfrom" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recvfrom()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recvfrom_into" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recvfrom_into()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recvmsg" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recvmsg()</span></code></a> (if available)</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.recvmsg_into" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">recvmsg_into()</span></code></a> (if available)</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.send" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">send()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.sendto" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sendto()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.sendmsg" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sendmsg()</span></code></a> (if available)</p></li>
+</ul>
+<p>All methods and attributes <em>not</em> mentioned above are identical to
+their equivalents in <a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">socket.socket</span></code></a>:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.family" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">family</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.type" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.proto" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">proto</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.fileno" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fileno()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.listen" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">listen()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.getpeername" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getpeername()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.getsockname" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getsockname()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.close" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.shutdown" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">shutdown()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.setsockopt" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setsockopt()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.getsockopt" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getsockopt()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.dup" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dup()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.detach" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">detach()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.share" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">share()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.set_inheritable" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_inheritable()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/socket.html#socket.socket.get_inheritable" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_inheritable()</span></code></a></p></li>
+</ul>
+</dd></dl>
+</div>
+</div>
+</section>
+</section>
+</article>
+</div>
+<footer>
+<div class="related-pages">
+<a class="next-page" href="async_file_io.html">
+<div class="page-info">
+<div class="context">
+<span>Next</span>
+</div>
+<div class="title">异步文件系统 I/O</div>
+</div>
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+</a>
+<a class="prev-page" href="abs_api.html">
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+<div class="page-info">
+<div class="context">
+<span>Previous</span>
+</div>
+<div class="title">抽象流 API</div>
+</div>
+</a>
+</div>
+<div class="bottom-of-page">
+<div class="left-details">
+<div class="copyright">
+                Copyright © 2017, Nathaniel J. Smith
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+</div>
+<div class="right-details">
+<div class="icons">
+<a aria-label="GitHub" class="muted-link" href="https://github.com/hellowac/trio-zh-cn">
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 16 16">
+<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<aside class="toc-drawer">
+<div class="toc-sticky toc-scroll">
+<div class="toc-title-container">
+<span class="toc-title">
+            On this page
+          </span>
+</div>
+<div class="toc-tree-container">
+<div class="toc-tree">
+<ul>
+<li><a class="reference internal" href="#">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a><ul>
+<li><a class="reference internal" href="#id1">顶级导出</a><ul>
+<li><a class="reference internal" href="#trio.socket.socket"><code class="docutils literal notranslate"><span class="pre">socket()</span></code></a></li>
+<li><a class="reference internal" href="#trio.socket.socketpair"><code class="docutils literal notranslate"><span class="pre">socketpair()</span></code></a></li>
+<li><a class="reference internal" href="#trio.socket.fromfd"><code class="docutils literal notranslate"><span class="pre">fromfd()</span></code></a></li>
+<li><a class="reference internal" href="#trio.socket.fromshare"><code class="docutils literal notranslate"><span class="pre">fromshare()</span></code></a></li>
+<li><a class="reference internal" href="#trio.socket.from_stdlib_socket"><code class="docutils literal notranslate"><span class="pre">from_stdlib_socket()</span></code></a></li>
+<li><a class="reference internal" href="#trio.socket.getaddrinfo"><code class="docutils literal notranslate"><span class="pre">getaddrinfo()</span></code></a></li>
+<li><a class="reference internal" href="#trio.socket.getnameinfo"><code class="docutils literal notranslate"><span class="pre">getnameinfo()</span></code></a></li>
+<li><a class="reference internal" href="#trio.socket.getprotobyname"><code class="docutils literal notranslate"><span class="pre">getprotobyname()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">套接字对象</a><ul>
+<li><a class="reference internal" href="#trio.socket.SocketType"><code class="docutils literal notranslate"><span class="pre">SocketType</span></code></a><ul>
+<li><a class="reference internal" href="#trio.socket.SocketType.connect"><code class="docutils literal notranslate"><span class="pre">SocketType.connect()</span></code></a></li>
+<li><a class="reference internal" href="#trio.socket.SocketType.is_readable"><code class="docutils literal notranslate"><span class="pre">SocketType.is_readable()</span></code></a></li>
+<li><a class="reference internal" href="#trio.socket.SocketType.sendfile"><code class="docutils literal notranslate"><span class="pre">SocketType.sendfile()</span></code></a></li>
+<li><a class="reference internal" href="#trio.socket.SocketType.did_shutdown_SHUT_WR"><code class="docutils literal notranslate"><span class="pre">SocketType.did_shutdown_SHUT_WR</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div><script src="../_static/documentation_options.js?v=d2451d57"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+<script src="../_static/tabs.js?v=3ee01567"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/translations.js?v=beaddf03"></script>
+</body>
+</html>

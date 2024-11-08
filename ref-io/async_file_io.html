@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+
+<html class="no-js" data-content_root="../" lang="zh-CN">
+<head><meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/><meta content="width=device-width, initial-scale=1" name="viewport">
+<link href="../genindex.html" rel="index" title="索引"/><link href="../search.html" rel="search" title="搜索"/><link href="subprocess.html" rel="next" title="生成子进程"/><link href="low_level.html" rel="prev" title="使用 trio.socket 进行低级网络编程"/>
+<link href="../_static/favicon-32.png" rel="shortcut icon"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+<title>异步文件系统 I/O - Trio 0.27.0+dev 文档</title>
+<link href="../_static/pygments.css?v=fa44fd50" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo.css?v=354aac6f" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=125d5c1c" rel="stylesheet" type="text/css"/>
+<link href="../_static/tabs.css?v=4c969af8" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/hackrtd.css?v=2d9fc201" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo-extensions.css?v=302659d7" rel="stylesheet" type="text/css"/>
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></meta></head>
+<body>
+<script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+<symbol id="svg-toc" viewbox="0 0 24 24">
+<title>Contents</title>
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 1024 1024">
+<path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"></path>
+</svg>
+</symbol>
+<symbol id="svg-menu" viewbox="0 0 24 24">
+<title>Menu</title>
+<svg class="feather-menu" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<line x1="3" x2="21" y1="12" y2="12"></line>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<line x1="3" x2="21" y1="18" y2="18"></line>
+</svg>
+</symbol>
+<symbol id="svg-arrow-right" viewbox="0 0 24 24">
+<title>Expand</title>
+<svg class="feather-chevron-right" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</symbol>
+<symbol id="svg-sun" viewbox="0 0 24 24">
+<title>Light mode</title>
+<svg class="feather-sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="5"></circle>
+<line x1="12" x2="12" y1="1" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="23"></line>
+<line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line>
+<line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+<line x1="1" x2="3" y1="12" y2="12"></line>
+<line x1="21" x2="23" y1="12" y2="12"></line>
+<line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line>
+<line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+</svg>
+</symbol>
+<symbol id="svg-moon" viewbox="0 0 24 24">
+<title>Dark mode</title>
+<svg class="icon-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+</svg>
+</symbol>
+<symbol id="svg-sun-with-moon" viewbox="0 0 24 24">
+<title>Auto light/dark, in light mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z" style="opacity: 50%"></path>
+<line x1="14.5" x2="14.5" y1="3.25" y2="1.25"></line>
+<line x1="14.5" x2="14.5" y1="15.85" y2="17.85"></line>
+<line x1="10.044" x2="8.63" y1="5.094" y2="3.68"></line>
+<line x1="19" x2="20.414" y1="14.05" y2="15.464"></line>
+<line x1="8.2" x2="6.2" y1="9.55" y2="9.55"></line>
+<line x1="20.8" x2="22.8" y1="9.55" y2="9.55"></line>
+<line x1="10.044" x2="8.63" y1="14.006" y2="15.42"></line>
+<line x1="19" x2="20.414" y1="5.05" y2="3.636"></line>
+<circle cx="14.5" cy="9.55" r="3.6"></circle>
+</svg>
+</symbol>
+<symbol id="svg-moon-with-sun" viewbox="0 0 24 24">
+<title>Auto light/dark, in dark mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"></path>
+<line style="opacity: 50%" x1="18" x2="18" y1="3.705" y2="2.5"></line>
+<line style="opacity: 50%" x1="18" x2="18" y1="11.295" y2="12.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="4.816" y2="3.964"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="10.212" y2="11.063"></line>
+<line style="opacity: 50%" x1="14.205" x2="13.001" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="21.795" x2="23" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="10.184" y2="11.036"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="4.789" y2="3.937"></line>
+<circle cx="18" cy="7.5" r="2.169" style="opacity: 50%"></circle>
+</svg>
+</symbol>
+<symbol id="svg-pencil" viewbox="0 0 24 24">
+<svg class="icon-tabler-pencil-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path>
+<path d="M13.5 6.5l4 4"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+<symbol id="svg-eye" viewbox="0 0 24 24">
+<svg class="icon-tabler-eye-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+<path d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+</svg>
+<input class="sidebar-toggle" id="__navigation" name="__navigation" type="checkbox"/>
+<input class="sidebar-toggle" id="__toc" name="__toc" type="checkbox"/>
+<label class="overlay sidebar-overlay" for="__navigation">
+<div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+<div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+<div class="page">
+<header class="mobile-header">
+<div class="header-left">
+<label class="nav-overlay-icon" for="__navigation">
+<div class="visually-hidden">Toggle site navigation sidebar</div>
+<i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+</label>
+</div>
+<div class="header-center">
+<a href="../index.html"><div class="brand">Trio 0.27.0+dev 文档</div></a>
+</div>
+<div class="header-right">
+<div class="theme-toggle-container theme-toggle-header">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-header-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+</header>
+<aside class="sidebar-drawer">
+<div class="sidebar-container">
+<div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+<div class="sidebar-logo-container">
+<img alt="Logo" class="sidebar-logo" src="../_static/wordmark-transparent.svg"/>
+</div>
+<span class="sidebar-brand-text">Trio 0.27.0+dev 文档</span>
+</a><form action="../search.html" class="sidebar-search-container" method="get" role="search">
+<input aria-label="搜索" class="sidebar-search" name="q" placeholder="搜索"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+<p class="caption" role="heading"><span class="caption-text">Trio 友好且全面的手册：</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../awesome-trio-libraries.html">超棒的 Trio 库</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ref-core/index.html">Trio 的核心功能</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Trio 的核心功能</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/run.html">运行 Trio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/general_principles.html">一般原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/time_clock.html">时间和时钟</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/cancel_timeout.html">取消和超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/tasks.html">任务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/task_local_storeage.html">任务存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/task_sync.html">任务同步和通信</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/note_async_generator.html">异步生成器注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/threads.html">线程（如果必须）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/debugging.html">交互式调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/exc_warn.html">异常和警告</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Trio 中的 I/O</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Trio 中的 I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="abs_api.html">抽象流 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="low_level.html">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">异步文件系统 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subprocess.html">生成子进程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signals.html">信号</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-testing.html">Trio 中的测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-lowlevel.html">自省和扩展 Trio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">设计和内部结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">发布历史</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">为 Trio 及相关项目做出贡献</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasing.html">准备发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">行为守则</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<div class="main">
+<div class="content">
+<div class="article-container">
+<a class="back-to-top muted-link" href="#">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+</svg>
+<span>Back to top</span>
+</a>
+<div class="content-icon-container">
+<div class="view-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/blob/sync-docs/cn_docs/source/ref-io/async_file_io.rst?plain=true" title="View this page">
+<svg><use href="#svg-eye"></use></svg>
+<span class="visually-hidden">View this page</span>
+</a>
+</div><div class="edit-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/edit/sync-docs/cn_docs/source/ref-io/async_file_io.rst" title="Edit this page">
+<svg><use href="#svg-pencil"></use></svg>
+<span class="visually-hidden">Edit this page</span>
+</a>
+</div><div class="theme-toggle-container theme-toggle-content">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-content-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+<article id="furo-main-content" role="main">
+<section id="i-o">
+<span id="async-file-io"></span><h1>异步文件系统 I/O<a class="headerlink" href="#i-o" title="Link to this heading">¶</a></h1>
+<p><strong>Asynchronous filesystem I/O</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 提供了内置功能, 用于执行异步文件系统操作, 例如读取或重命名文件。通常, 我们建议您使用这些功能, 而不是 Python 的正常同步文件 API。但这里的权衡有些微妙：有时人们切换到异步 I/O, 然后发现它并没有加速程序, 反而感到惊讶和困惑。下一节将解释异步文件 I/O 背后的理论, 帮助您更好地理解代码的行为。或者, 如果您只是想开始使用, 可以 <a class="reference internal" href="#async-file-io-overview"><span class="std std-ref">跳到 API 概览</span></a>。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>Trio provides built-in facilities for performing asynchronous
+filesystem operations like reading or renaming a file. Generally, we
+recommend that you use these instead of Python's normal synchronous
+file APIs. But the tradeoffs here are somewhat subtle: sometimes
+people switch to async I/O, and then they're surprised and confused
+when they find it doesn't speed up their program. The next section
+explains the theory behind async file I/O, to help you better
+understand your code's behavior. Or, if you just want to get started,
+you can <a class="reference internal" href="#async-file-io-overview"><span class="std std-ref">jump down to the API overview</span></a>.</p>
+</div>
+</div>
+<section id="id1">
+<h2>背景：异步文件 I/O 为何有用？答案可能会让您大吃一惊<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<p><strong>Background: Why is async file I/O useful? The answer may surprise you</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<p>许多人认为从同步文件 I/O 切换到异步文件 I/O 总是能加速程序的运行。事实并非如此!如果我们仅仅看总体吞吐量, 那么异步文件 I/O 可能更快, 也可能更慢, 或者差不多一样, 这取决于诸如磁盘访问模式或内存大小等复杂因素。异步文件 I/O 的主要动机并不是提高吞吐量, 而是 <strong>减少延迟波动的频率</strong>。</p>
+<p>要理解这一点, 您需要知道两件事。</p>
+<p>首先, 目前没有主流操作系统提供通用的, 可靠的本地 API 来进行异步文件或文件系统操作, 因此我们必须通过使用线程 (具体来说, 使用 <a class="reference internal" href="../ref-core/threads.html#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> ) 来模拟实现。这虽然便宜, 但并不是免费的：在典型的 PC 上, 调度到一个工作线程会为每次操作增加大约 ~100 微秒的开销。 (“µs”表示“微秒”, 一秒钟有 1,000,000 微秒。请注意, 这里所有的数字都是粗略的数量级, 用来给您一个规模的概念；如果您需要您环境中的精确数字, 请进行测量! )</p>
+<p>其次, 磁盘操作的成本是极其双峰的。有时, 您需要的数据已经缓存到内存中, 这时访问数据非常, 非常快——对一个缓存的文件调用 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/io.html#io.FileIO" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">io.FileIO</span></code></a> 的 <code class="docutils literal notranslate"><span class="pre">read</span></code> 方法只需大约 ~1 微秒。但当数据没有缓存时, 访问它要慢得多：SSD 的平均延迟大约是 ~100 微秒, 旋转磁盘则大约是 ~10,000 微秒。如果您查看尾部延迟, 您会发现对于这两种存储类型, 偶尔有些操作的延迟会比平均值慢 10 倍甚至 100 倍。而且这是假设您的程序是唯一在使用那个磁盘的——如果您使用的是超卖的云虚拟机, 与其他租户争抢 I/O, 那谁知道会发生什么。有些操作可能需要多次磁盘访问。</p>
+<p>将这些因素结合起来：如果您的数据已经在内存中, 那么显然使用线程是一个糟糕的主意——如果您在一个 1 微秒的操作上加上 100 微秒的开销, 那就意味着速度变慢了 100 倍!另一方面, 如果您的数据在旋转磁盘上, 那么使用线程是 <em>非常好</em> 的——我们不再阻塞主线程和所有任务 10,000 微秒, 而是仅仅阻塞它们 100 微秒, 并可以利用剩余的时间运行其他任务完成有用的工作, 这样就能有效地提升 100 倍的速度。</p>
+<p>但问题在于：对于任何单独的 I/O 操作, 我们无法预先知道它是会是快操作还是慢操作, 因此无法选择性地使用它们。当您切换到异步文件 I/O 时, 它会使所有快操作变慢, 所有慢操作变快。这算是一个优势吗？从整体速度上讲, 很难说：这取决于您使用的磁盘类型, 以及您的内核磁盘缓存命中率, 这又取决于您的文件访问模式, 可用内存, 服务负载……各种因素。如果这个问题对您很重要, 那么没有什么能替代在您实际部署环境中测量代码实际行为的方式。但我们 <em>可以</em> 说的是, 异步磁盘 I/O 可以让性能在更广泛的运行时条件下变得更加可预测。</p>
+<p><a href="#id2"><span class="problematic" id="id3">**</span></a>如果您不确定该做什么, 我们建议默认使用异步磁盘 I/O, ** 因为它能让您的代码在条件不佳时更为稳健, 特别是在处理尾部延迟时；这提高了用户看到的结果与您在测试中看到的结果一致的可能性。阻塞主线程会导致 <em>所有</em> 任务在那段时间内都无法运行。10,000 微秒是 10 毫秒, 而只需要几次 10 毫秒的延迟就能导致 <a class="reference external" href="https://google.com/search?q=latency+cost">实际损失</a>；异步磁盘 I/O 可以帮助防止这些情况发生。只要不要期望它是魔法, 并且意识到其中的权衡。</p>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<p>Many people expect that switching from synchronous file I/O to
+async file I/O will always make their program faster. This is not
+true! If we just look at total throughput, then async file I/O might
+be faster, slower, or about the same, and it depends in a complicated
+way on things like your exact patterns of disk access, or how much RAM
+you have. The main motivation for async file I/O is not to improve
+throughput, but to <strong>reduce the frequency of latency glitches.</strong></p>
+<p>To understand why, you need to know two things.</p>
+<p>First, right now no mainstream operating system offers a generic,
+reliable, native API for async file or filesystem operations, so we
+have to fake it by using threads (specifically,
+<a class="reference internal" href="../ref-core/threads.html#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>). This is cheap but isn't free: on a
+typical PC, dispatching to a worker thread adds something like ~100 µs
+of overhead to each operation. ("µs" is pronounced "microseconds", and
+there are 1,000,000 µs in a second. Note that all the numbers here are
+going to be rough orders of magnitude to give you a sense of scale; if
+you need precise numbers for your environment, measure!)</p>
+<p>And second, the cost of a disk operation is incredibly
+bimodal. Sometimes, the data you need is already cached in RAM, and
+then accessing it is very, very fast – calling <a class="reference external" href="https://docs.python.org/zh-cn/3/library/io.html#io.FileIO" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">io.FileIO</span></code></a>'s
+<code class="docutils literal notranslate"><span class="pre">read</span></code> method on a cached file takes on the order of ~1 µs. But when
+the data isn't cached, then accessing it is much, much slower: the
+average is ~100 µs for SSDs and ~10,000 µs for spinning disks, and if
+you look at tail latencies then for both types of storage you'll see
+cases where occasionally some operation will be 10x or 100x slower
+than average. And that's assuming your program is the only thing
+trying to use that disk – if you're on some oversold cloud VM fighting
+for I/O with other tenants then who knows what will happen. And some
+operations can require multiple disk accesses.</p>
+<p>Putting these together: if your data is in RAM then it should be clear
+that using a thread is a terrible idea – if you add 100 µs of overhead
+to a 1 µs operation, then that's a 100x slowdown! On the other hand,
+if your data's on a spinning disk, then using a thread is <em>great</em> –
+instead of blocking the main thread and all tasks for 10,000 µs, we
+only block them for 100 µs and can spend the rest of that time running
+other tasks to get useful work done, which can effectively be a 100x
+speedup.</p>
+<p>But here's the problem: for any individual I/O operation, there's no
+way to know in advance whether it's going to be one of the fast ones
+or one of the slow ones, so you can't pick and choose. When you switch
+to async file I/O, it makes all the fast operations slower, and all
+the slow operations faster. Is that a win? In terms of overall speed,
+it's hard to say: it depends what kind of disks you're using and your
+kernel's disk cache hit rate, which in turn depends on your file
+access patterns, how much spare RAM you have, the load on your
+service, ... all kinds of things. If the answer is important to you,
+then there's no substitute for measuring your code's actual behavior
+in your actual deployment environment. But what we <em>can</em> say is that
+async disk I/O makes performance much more predictable across a wider
+range of runtime conditions.</p>
+<p><strong>If you're not sure what to do, then we recommend that you use async
+disk I/O by default,</strong> because it makes your code more robust when
+conditions are bad, especially with regards to tail latencies; this
+improves the chances that what your users see matches what you saw in
+testing. Blocking the main thread stops <em>all</em> tasks from running for
+that time. 10,000 µs is 10 ms, and it doesn't take many 10 ms glitches
+to start adding up to <a class="reference external" href="https://google.com/search?q=latency+cost">real money</a>; async disk I/O can help
+prevent those. Just don't expect it to be magic, and be aware of the
+tradeoffs.</p>
+</div>
+</div>
+</section>
+<section id="api">
+<span id="async-file-io-overview"></span><h2>API 概述<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<p><strong>API overview</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<p>如果您想执行一般的文件系统操作, 例如创建和列出目录, 重命名文件或检查文件元数据, 或者如果您只是想以一种友好的方式处理文件系统路径, 那么您需要使用 <a class="reference internal" href="#trio.Path" title="trio.Path"><code class="xref py py-class docutils literal notranslate"><span class="pre">trio.Path</span></code></a>。它是标准库 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> 的异步替代品, 并提供相同的全面操作集。</p>
+<p>对于文件和类文件对象的读取和写入, Trio 还提供了一种机制, 可以将任何同步的类文件对象包装为异步接口。如果您拥有一个 <a class="reference internal" href="#trio.Path" title="trio.Path"><code class="xref py py-class docutils literal notranslate"><span class="pre">trio.Path</span></code></a> 对象, 可以通过调用其 <a class="reference internal" href="#trio.Path.open" title="trio.Path.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> 方法来获取一个异步文件对象；或者, 如果您知道文件名, 也可以直接使用 <a class="reference internal" href="#trio.open_file" title="trio.open_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.open_file()</span></code></a> 打开文件。或者, 如果您已经有一个打开的类文件对象, 可以通过 <a class="reference internal" href="#trio.wrap_file" title="trio.wrap_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.wrap_file()</span></code></a> 将其包装起来——在编写测试时, 特别有用的一种情况是将 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/io.html#io.BytesIO" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">io.BytesIO</span></code></a> 或 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/io.html#io.StringIO" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">io.StringIO</span></code></a> 包装起来。</p>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<p>If you want to perform general filesystem operations like creating and
+listing directories, renaming files, or checking file metadata – or if
+you just want a friendly way to work with filesystem paths – then you
+want <a class="reference internal" href="#trio.Path" title="trio.Path"><code class="xref py py-class docutils literal notranslate"><span class="pre">trio.Path</span></code></a>. It's an asyncified replacement for the
+standard library's <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>, and provides the same
+comprehensive set of operations.</p>
+<p>For reading and writing to files and file-like objects, Trio also
+provides a mechanism for wrapping any synchronous file-like object
+into an asynchronous interface. If you have a <a class="reference internal" href="#trio.Path" title="trio.Path"><code class="xref py py-class docutils literal notranslate"><span class="pre">trio.Path</span></code></a>
+object you can get one of these by calling its <a class="reference internal" href="#trio.Path.open" title="trio.Path.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a>
+method; or if you know the file's name you can open it directly with
+<a class="reference internal" href="#trio.open_file" title="trio.open_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.open_file()</span></code></a>. Alternatively, if you already have an open
+file-like object, you can wrap it with <a class="reference internal" href="#trio.wrap_file" title="trio.wrap_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.wrap_file()</span></code></a> – one
+case where this is especially useful is to wrap <a class="reference external" href="https://docs.python.org/zh-cn/3/library/io.html#io.BytesIO" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">io.BytesIO</span></code></a> or
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/io.html#io.StringIO" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">io.StringIO</span></code></a> when writing tests.</p>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2>异步路径对象<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<p><strong>Asynchronous path objects</strong></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="trio.Path">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">Path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/os.html#os.PathLike" title="（在 Python v3.13）"><span class="pre">os.PathLike</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path" title="Link to this definition">¶</a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.PurePath" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">PurePath</span></code></a></p>
+<p>An async <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> that executes blocking methods in <a class="reference internal" href="../ref-core/threads.html#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>.</p>
+<p>Instantiating <a class="reference internal" href="#trio.Path" title="trio.Path"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a> returns a concrete platform-specific subclass, one of <a class="reference internal" href="#trio.PosixPath" title="trio.PosixPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">PosixPath</span></code></a> or
+<a class="reference internal" href="#trio.WindowsPath" title="trio.WindowsPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">WindowsPath</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.absolute">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">absolute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.absolute" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.absolute" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">absolute()</span></code></a>, but async.</p>
+<p>Return an absolute version of this path by prepending the current
+working directory. No normalization or symlink resolution is performed.</p>
+<p>Use resolve() to get the canonical path to a file.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Path.anchor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">anchor</span></span><a class="headerlink" href="#trio.Path.anchor" title="Link to this definition">¶</a></dt>
+<dd><p>The concatenation of the drive and root, or ''.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.as_posix">
+<span class="sig-name descname"><span class="pre">as_posix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.as_posix" title="Link to this definition">¶</a></dt>
+<dd><p>Return the string representation of the path with forward (/)
+slashes.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.as_uri">
+<span class="sig-name descname"><span class="pre">as_uri</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.as_uri" title="Link to this definition">¶</a></dt>
+<dd><p>Return the path as a 'file' URI.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.chmod">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">chmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_symlinks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.chmod" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.chmod" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">chmod()</span></code></a>, but async.</p>
+<p>Change the permissions of the path, like os.chmod().</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.cwd">
+<em class="property"><span class="pre">classmethod</span> <span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">cwd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.cwd" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.cwd" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cwd()</span></code></a>, but async.</p>
+<p>Return a new path pointing to the current working directory.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Path.drive">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">drive</span></span><a class="headerlink" href="#trio.Path.drive" title="Link to this definition">¶</a></dt>
+<dd><p>The drive prefix (letter or UNC path), if any.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.exists">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_symlinks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.exists" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.exists" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exists()</span></code></a>, but async.</p>
+<p>Whether this path exists.</p>
+<p>This method normally follows symlinks; to check whether a symlink exists,
+add the argument follow_symlinks=False.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.expanduser">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">expanduser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.expanduser" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.expanduser" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expanduser()</span></code></a>, but async.</p>
+<p>Return a new path with expanded ~ and ~user constructs
+(as returned by os.path.expanduser)</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.glob">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">glob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.glob" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.glob" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">glob()</span></code></a>, but async.</p>
+<p>Iterate over this subtree and yield all existing files (of any
+kind, including directories) matching the given relative pattern.</p>
+<p>This is an async method that returns a synchronous iterator, so you
+use it like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">subpath</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">mypath</span><span class="o">.</span><span class="n">glob</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The iterator is loaded into memory immediately during the initial
+call (see <a class="reference external" href="https://github.com/python-trio/trio/issues/501">issue #501</a> for discussion).</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.group">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">group</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.group" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.group" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group()</span></code></a>, but async.</p>
+<p>Return the group name of the file gid.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.hardlink_to">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">hardlink_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.hardlink_to" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.hardlink_to" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hardlink_to()</span></code></a>, but async.</p>
+<p>Make this path a hard link pointing to the same file as <em>target</em>.</p>
+<p>Note the order of arguments (self, target) is the reverse of os.link's.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.home">
+<em class="property"><span class="pre">classmethod</span> <span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">home</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.home" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.home" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">home()</span></code></a>, but async.</p>
+<p>Return a new path pointing to the user's home directory (as
+returned by os.path.expanduser('~')).</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_absolute">
+<span class="sig-name descname"><span class="pre">is_absolute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_absolute" title="Link to this definition">¶</a></dt>
+<dd><p>True if the path is absolute (has both a root and, if applicable,
+a drive).</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_block_device">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">is_block_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_block_device" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.is_block_device" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_block_device()</span></code></a>, but async.</p>
+<p>Whether this path is a block device.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_char_device">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">is_char_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_char_device" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.is_char_device" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_char_device()</span></code></a>, but async.</p>
+<p>Whether this path is a character device.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_dir">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">is_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_dir" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.is_dir" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_dir()</span></code></a>, but async.</p>
+<p>Whether this path is a directory.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_fifo">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">is_fifo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_fifo" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.is_fifo" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_fifo()</span></code></a>, but async.</p>
+<p>Whether this path is a FIFO.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_file">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">is_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_file" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.is_file" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_file()</span></code></a>, but async.</p>
+<p>Whether this path is a regular file (also True for symlinks pointing
+to regular files).</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_junction">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">is_junction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_junction" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.is_junction" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_junction()</span></code></a>, but async.</p>
+<p>Whether this path is a junction.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_mount">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">is_mount</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_mount" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.is_mount" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_mount()</span></code></a>, but async.</p>
+<p>Check if this path is a mount point</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_relative_to">
+<span class="sig-name descname"><span class="pre">is_relative_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_deprecated</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_relative_to" title="Link to this definition">¶</a></dt>
+<dd><p>Return True if the path is relative to another path or False.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_reserved">
+<span class="sig-name descname"><span class="pre">is_reserved</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_reserved" title="Link to this definition">¶</a></dt>
+<dd><p>Return True if the path contains one of the special names reserved
+by the system, if any.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_socket">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">is_socket</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_socket" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.is_socket" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_socket()</span></code></a>, but async.</p>
+<p>Whether this path is a socket.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.is_symlink">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">is_symlink</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.is_symlink" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.is_symlink" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_symlink()</span></code></a>, but async.</p>
+<p>Whether this path is a symbolic link.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.iterdir">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">iterdir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.iterdir" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.iterdir" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iterdir()</span></code></a>, but async.</p>
+<p>Yield path objects of the directory contents.</p>
+<p>The children are yielded in arbitrary order, and the
+special entries '.' and '..' are not included.</p>
+<p>This is an async method that returns a synchronous iterator, so you
+use it like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">subpath</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">mypath</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The iterator is loaded into memory immediately during the initial
+call (see <a class="reference external" href="https://github.com/python-trio/trio/issues/501">issue #501</a> for discussion).</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.joinpath">
+<span class="sig-name descname"><span class="pre">joinpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pathsegments</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.joinpath" title="Link to this definition">¶</a></dt>
+<dd><p>Combine this path with one or several arguments, and return a
+new path representing either a subpath (if all arguments are relative
+paths) or a totally different path (if one of the arguments is
+anchored).</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.lchmod">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">lchmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.lchmod" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.lchmod" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lchmod()</span></code></a>, but async.</p>
+<p>Like chmod(), except if the path points to a symlink, the symlink's
+permissions are changed, rather than its target's.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.lstat">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">lstat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.lstat" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.lstat" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lstat()</span></code></a>, but async.</p>
+<p>Like stat(), except if the path points to a symlink, the symlink's
+status information is returned, rather than its target's.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.match">
+<span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_pattern</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.match" title="Link to this definition">¶</a></dt>
+<dd><p>Return True if this path matches the given pattern.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.mkdir">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">mkdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">511</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exist_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.mkdir" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.mkdir" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mkdir()</span></code></a>, but async.</p>
+<p>Create a new directory at this given path.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Path.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#trio.Path.name" title="Link to this definition">¶</a></dt>
+<dd><p>The final path component, if any.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.open">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffering</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.open" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.open" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a>, but async.</p>
+<p>Open the file pointed to by this path and return a file object, as
+the built-in open() function does.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.owner">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">owner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.owner" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.owner" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">owner()</span></code></a>, but async.</p>
+<p>Return the login name of the file owner.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Path.parent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent</span></span><a class="headerlink" href="#trio.Path.parent" title="Link to this definition">¶</a></dt>
+<dd><p>The logical parent of the path.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Path.parents">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parents</span></span><a class="headerlink" href="#trio.Path.parents" title="Link to this definition">¶</a></dt>
+<dd><p>A sequence of this path's logical parents.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Path.parts">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parts</span></span><a class="headerlink" href="#trio.Path.parts" title="Link to this definition">¶</a></dt>
+<dd><p>An object providing sequence-like access to the
+components in the filesystem path.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.read_bytes">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">read_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.read_bytes" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.read_bytes" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_bytes()</span></code></a>, but async.</p>
+<p>Open the file in bytes mode, read it, and close the file.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.read_text">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.read_text" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.read_text" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_text()</span></code></a>, but async.</p>
+<p>Open the file in text mode, read it, and close the file.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.readlink">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">readlink</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.readlink" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.readlink" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">readlink()</span></code></a>, but async.</p>
+<p>Return the path to which the symbolic link points.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.relative_to">
+<span class="sig-name descname"><span class="pre">relative_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_deprecated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walk_up</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.relative_to" title="Link to this definition">¶</a></dt>
+<dd><p>Return the relative path to another path identified by the passed
+arguments.  If the operation is not possible (because this is not
+related to the other path), raise ValueError.</p>
+<p>The <em>walk_up</em> parameter controls whether <cite>..</cite> may be used to resolve
+the path.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.rename">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.rename" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.rename" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rename()</span></code></a>, but async.</p>
+<p>Rename this path to the target path.</p>
+<p>The target path may be absolute or relative. Relative paths are
+interpreted relative to the current working directory, <em>not</em> the
+directory of the Path object.</p>
+<p>Returns the new Path instance pointing to the target path.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.replace">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.replace" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.replace" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">replace()</span></code></a>, but async.</p>
+<p>Rename this path to the target path, overwriting if that path exists.</p>
+<p>The target path may be absolute or relative. Relative paths are
+interpreted relative to the current working directory, <em>not</em> the
+directory of the Path object.</p>
+<p>Returns the new Path instance pointing to the target path.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.resolve">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">resolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.resolve" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.resolve" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resolve()</span></code></a>, but async.</p>
+<p>Make the path absolute, resolving all symlinks on the way and also
+normalizing it.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.rglob">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">rglob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.rglob" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.rglob" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rglob()</span></code></a>, but async.</p>
+<p>Recursively yield all existing files (of any kind, including
+directories) matching the given relative pattern, anywhere in
+this subtree.</p>
+<p>This is an async method that returns a synchronous iterator, so you
+use it like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">subpath</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">mypath</span><span class="o">.</span><span class="n">rglob</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The iterator is loaded into memory immediately during the initial
+call (see <a class="reference external" href="https://github.com/python-trio/trio/issues/501">issue #501</a> for discussion).</p>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.rmdir">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">rmdir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.rmdir" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.rmdir" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rmdir()</span></code></a>, but async.</p>
+<p>Remove this directory.  The directory must be empty.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Path.root">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#trio.Path.root" title="Link to this definition">¶</a></dt>
+<dd><p>The root of the path, if any.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.samefile">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">samefile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.samefile" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.samefile" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">samefile()</span></code></a>, but async.</p>
+<p>Return whether other_path is the same or not as this file
+(as returned by os.path.samefile()).</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.stat">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">stat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_symlinks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.stat" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.stat" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stat()</span></code></a>, but async.</p>
+<p>Return the result of the stat() system call on this path, like
+os.stat() does.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Path.stem">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stem</span></span><a class="headerlink" href="#trio.Path.stem" title="Link to this definition">¶</a></dt>
+<dd><p>The final path component, minus its last suffix.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Path.suffix">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">suffix</span></span><a class="headerlink" href="#trio.Path.suffix" title="Link to this definition">¶</a></dt>
+<dd><p>The final component's last suffix, if any.</p>
+<p>This includes the leading period. For example: '.txt'</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Path.suffixes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">suffixes</span></span><a class="headerlink" href="#trio.Path.suffixes" title="Link to this definition">¶</a></dt>
+<dd><p>A list of the final component's suffixes, if any.</p>
+<p>These include the leading periods. For example: ['.tar', '.gz']</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.symlink_to">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">symlink_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_is_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.symlink_to" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.symlink_to" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">symlink_to()</span></code></a>, but async.</p>
+<p>Make this path a symlink pointing to the target path.
+Note the order of arguments (link, target) is the reverse of os.symlink.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.touch">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">touch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">438</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exist_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.touch" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.touch" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">touch()</span></code></a>, but async.</p>
+<p>Create this file with the given access mode, if it doesn't exist.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.unlink">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">unlink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">missing_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.unlink" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.unlink" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unlink()</span></code></a>, but async.</p>
+<p>Remove this file or link.
+If the path is a directory, use rmdir() instead.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.with_name">
+<span class="sig-name descname"><span class="pre">with_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.with_name" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new path with the file name changed.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.with_segments">
+<span class="sig-name descname"><span class="pre">with_segments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pathsegments</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.with_segments" title="Link to this definition">¶</a></dt>
+<dd><p>Construct a new path object from any number of path-like objects.
+Subclasses may override this method to customize how new path objects
+are created from methods like <cite>iterdir()</cite>.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.with_stem">
+<span class="sig-name descname"><span class="pre">with_stem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.with_stem" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new path with the stem changed.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.with_suffix">
+<span class="sig-name descname"><span class="pre">with_suffix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.with_suffix" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new path with the file suffix changed.  If the path
+has no suffix, add given suffix.  If the given suffix is an empty
+string, remove the suffix from the path.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.write_bytes">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">write_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.write_bytes" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.write_bytes" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_bytes()</span></code></a>, but async.</p>
+<p>Open the file in bytes mode, write to it, and close the file.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Path.write_text">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">write_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Path.write_text" title="Link to this definition">¶</a></dt>
+<dd><p>Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.Path.write_text" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_text()</span></code></a>, but async.</p>
+<p>Open the file in text mode, write to it, and close the file.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="trio.PosixPath">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">PosixPath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/os.html#os.PathLike" title="（在 Python v3.13）"><span class="pre">os.PathLike</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.PosixPath" title="Link to this definition">¶</a></dt>
+<dd><p>基类：<a class="reference internal" href="#trio.Path" title="trio.Path"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.PurePosixPath" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">PurePosixPath</span></code></a></p>
+<p>An async <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.PosixPath" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.PosixPath</span></code></a> that executes blocking methods in <a class="reference internal" href="../ref-core/threads.html#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>.</p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="trio.WindowsPath">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">WindowsPath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/os.html#os.PathLike" title="（在 Python v3.13）"><span class="pre">os.PathLike</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.WindowsPath" title="Link to this definition">¶</a></dt>
+<dd><p>基类：<a class="reference internal" href="#trio.Path" title="trio.Path"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.PureWindowsPath" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">PureWindowsPath</span></code></a></p>
+<p>An async <a class="reference external" href="https://docs.python.org/zh-cn/3/library/pathlib.html#pathlib.WindowsPath" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.WindowsPath</span></code></a> that executes blocking methods in <a class="reference internal" href="../ref-core/threads.html#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-meth docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>.</p>
+</dd></dl>
+</section>
+<section id="async-file-objects">
+<span id="id5"></span><h2>异步文件对象<a class="headerlink" href="#async-file-objects" title="Link to this heading">¶</a></h2>
+<p><strong>Asynchronous file objects</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">中文</label><div class="tab-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.open_file">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">open_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffering</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closefd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opener</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.open_file" title="Link to this definition">¶</a></dt>
+<dd><p>Asynchronous version of <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#open" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">open()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">AsyncIOWrapper[object]</span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <a class="reference internal" href="../glossary.html#term-asynchronous-file-object"><span class="xref std std-term">asynchronous file object</span></a></p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="k">assert</span> <span class="n">f</span><span class="o">.</span><span class="n">closed</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="#trio.Path.open" title="trio.Path.open"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.Path.open()</span></code></a></p>
+</div>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.wrap_file">
+<span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">wrap_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.wrap_file" title="Link to this definition">¶</a></dt>
+<dd><p>This wraps any file object in a wrapper that provides an asynchronous
+file object interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/typing.html#typing.TypeVar" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">FileT</span></code>)</span>) -- a <a class="reference external" href="https://docs.python.org/zh-cn/3/glossary.html#term-file-object" title="（在 Python v3.13）"><span class="xref std std-term">file object</span></a></p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIOWrapper</span></code>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/typing.html#typing.TypeVar" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">FileT</span></code>)]</span></p>
+</dd>
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An <a class="reference internal" href="../glossary.html#term-asynchronous-file-object"><span class="xref std std-term">asynchronous file object</span></a> that wraps <code class="docutils literal notranslate"><span class="pre">file</span></code></p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">async_file</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">wrap_file</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="s1">'asdf'</span><span class="p">))</span>
+
+<span class="k">assert</span> <span class="k">await</span> <span class="n">async_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'asdf'</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py interface">
+<dt class="sig sig-object py" id="trio.Asynchronous-file-interface">
+<span class="sig-name descname"><span class="pre">Asynchronous</span> <span class="pre">file</span> <span class="pre">interface(异步文件接口)</span></span><a class="headerlink" href="#trio.Asynchronous-file-interface" title="Link to this definition">¶</a></dt>
+<dd><p>Trio 的异步文件对象具有一个接口, 该接口会自动适应被包装的对象。直观地说, 您可以将它们像常规的 <a class="reference external" href="https://docs.python.org/zh-cn/3/glossary.html#term-file-object" title="（在 Python v3.13）"><span class="xref std std-term">文件对象</span></a> 一样使用, 只是在执行 I/O 的任何方法前添加 <code class="docutils literal notranslate"><span class="pre">await</span></code>。不过, Python 中的 <a class="reference external" href="https://docs.python.org/zh-cn/3/glossary.html#term-file-object" title="（在 Python v3.13）"><span class="xref std std-term">文件对象</span></a> 定义有点模糊, 因此这里列出了具体细节：</p>
+<ul class="simple">
+<li><p>同步属性/方法：如果存在以下任何属性或方法, 它们将保持不变并重新导出：<code class="docutils literal notranslate"><span class="pre">closed</span></code>, <code class="docutils literal notranslate"><span class="pre">encoding</span></code>, <code class="docutils literal notranslate"><span class="pre">errors</span></code>, <code class="docutils literal notranslate"><span class="pre">fileno</span></code>, <code class="docutils literal notranslate"><span class="pre">isatty</span></code>, <code class="docutils literal notranslate"><span class="pre">newlines</span></code>, <code class="docutils literal notranslate"><span class="pre">readable</span></code>, <code class="docutils literal notranslate"><span class="pre">seekable</span></code>, <code class="docutils literal notranslate"><span class="pre">writable</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, <code class="docutils literal notranslate"><span class="pre">raw</span></code>, <code class="docutils literal notranslate"><span class="pre">line_buffering</span></code>, <code class="docutils literal notranslate"><span class="pre">closefd</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">mode</span></code>, <code class="docutils literal notranslate"><span class="pre">getvalue</span></code>, <code class="docutils literal notranslate"><span class="pre">getbuffer</span></code>。</p></li>
+<li><p>异步方法：如果存在以下任何方法, 它们将作为异步方法重新导出：<code class="docutils literal notranslate"><span class="pre">flush</span></code>, <code class="docutils literal notranslate"><span class="pre">read</span></code>, <code class="docutils literal notranslate"><span class="pre">read1</span></code>, <code class="docutils literal notranslate"><span class="pre">readall</span></code>, <code class="docutils literal notranslate"><span class="pre">readinto</span></code>, <code class="docutils literal notranslate"><span class="pre">readline</span></code>, <code class="docutils literal notranslate"><span class="pre">readlines</span></code>, <code class="docutils literal notranslate"><span class="pre">seek</span></code>, <code class="docutils literal notranslate"><span class="pre">tell</span></code>, <code class="docutils literal notranslate"><span class="pre">truncate</span></code>, <code class="docutils literal notranslate"><span class="pre">write</span></code>, <code class="docutils literal notranslate"><span class="pre">writelines</span></code>, <code class="docutils literal notranslate"><span class="pre">readinto1</span></code>, <code class="docutils literal notranslate"><span class="pre">peek</span></code>, <code class="docutils literal notranslate"><span class="pre">detach</span></code>。</p></li>
+</ul>
+<p>特别说明：</p>
+<ul class="simple">
+<li><p>异步文件对象实现了 Trio 的 <a class="reference internal" href="abs_api.html#trio.abc.AsyncResource" title="trio.abc.AsyncResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncResource</span></code></a> 接口：您通过调用 <a class="reference internal" href="abs_api.html#trio.abc.AsyncResource.aclose" title="trio.abc.AsyncResource.aclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">aclose()</span></code></a> 来关闭它们, 而不是使用 <code class="docutils literal notranslate"><span class="pre">close</span></code> (!!) , 并且它们可以作为异步上下文管理器使用。像所有的 <a class="reference internal" href="abs_api.html#trio.abc.AsyncResource.aclose" title="trio.abc.AsyncResource.aclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">aclose()</span></code></a> 方法一样, 异步文件对象上的 <code class="docutils literal notranslate"><span class="pre">aclose</span></code> 方法在返回之前保证关闭文件, 即使它被取消或以其他方式引发错误。</p></li>
+<li><p>从多个任务同时使用同一个异步文件对象：由于异步文件对象上的异步方法是通过线程实现的, 只有当底层同步文件对象是线程安全时, 才可以从不同任务中同时安全地调用两个方法。您应该查阅您正在包装的对象的文档。对于 <a class="reference internal" href="#trio.open_file" title="trio.open_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.open_file()</span></code></a> 或 <a class="reference internal" href="#trio.Path.open" title="trio.Path.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">trio.Path.open()</span></code></a> 返回的对象, 这取决于您是以二进制模式还是文本模式打开文件：<a class="reference external" href="https://docs.python.org/3/library/io.html#multi-threading">二进制模式文件是任务安全/线程安全的, 文本模式文件则不是</a> 。</p></li>
+<li><p>异步文件对象可以作为异步迭代器, 用于迭代文件的每一行：</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+      <span class="k">async</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+         <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">detach</span></code> 方法 (如果存在 ) 返回一个异步文件对象。</p></li>
+</ul>
+<p>这应该包括 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/io.html#module-io" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">io</span></code></a> 中的类所暴露的所有属性。如果您正在包装的对象有其他未在上述列表中的属性, 您可以通过 <code class="docutils literal notranslate"><span class="pre">.wrapped</span></code> 属性访问它们：</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.Asynchronous-file-interface-.wrapped">
+<span class="sig-name descname"><span class="pre">wrapped</span></span><a class="headerlink" href="#trio.Asynchronous-file-interface-.wrapped" title="Link to this definition">¶</a></dt>
+<dd><p>底层同步文件对象。</p>
+</dd></dl>
+</dd></dl>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">英文</label><div class="tab-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">open_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffering</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closefd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opener</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Asynchronous version of <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#open" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">open()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">AsyncIOWrapper[object]</span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <a class="reference internal" href="../glossary.html#term-asynchronous-file-object"><span class="xref std std-term">asynchronous file object</span></a></p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="k">assert</span> <span class="n">f</span><span class="o">.</span><span class="n">closed</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">参见</p>
+<p><a class="reference internal" href="#trio.Path.open" title="trio.Path.open"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.Path.open()</span></code></a></p>
+</div>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">wrap_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>This wraps any file object in a wrapper that provides an asynchronous
+file object interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/typing.html#typing.TypeVar" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">FileT</span></code>)</span>) -- a <a class="reference external" href="https://docs.python.org/zh-cn/3/glossary.html#term-file-object" title="（在 Python v3.13）"><span class="xref std std-term">file object</span></a></p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIOWrapper</span></code>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/typing.html#typing.TypeVar" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">FileT</span></code>)]</span></p>
+</dd>
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An <a class="reference internal" href="../glossary.html#term-asynchronous-file-object"><span class="xref std std-term">asynchronous file object</span></a> that wraps <code class="docutils literal notranslate"><span class="pre">file</span></code></p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">async_file</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">wrap_file</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="s1">'asdf'</span><span class="p">))</span>
+
+<span class="k">assert</span> <span class="k">await</span> <span class="n">async_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'asdf'</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py interface">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Asynchronous</span> <span class="pre">file</span> <span class="pre">interface</span></span></dt>
+<dd><p>Trio's asynchronous file objects have an interface that
+automatically adapts to the object being wrapped. Intuitively, you
+can mostly treat them like a regular <a class="reference external" href="https://docs.python.org/zh-cn/3/glossary.html#term-file-object" title="（在 Python v3.13）"><span class="xref std std-term">file object</span></a>, except
+adding an <code class="docutils literal notranslate"><span class="pre">await</span></code> in front of any of methods that do I/O. The
+definition of <a class="reference external" href="https://docs.python.org/zh-cn/3/glossary.html#term-file-object" title="（在 Python v3.13）"><span class="xref std std-term">file object</span></a> is a little vague in Python
+though, so here are the details:</p>
+<ul class="simple">
+<li><p>Synchronous attributes/methods: if any of the following
+attributes or methods are present, then they're re-exported
+unchanged: <code class="docutils literal notranslate"><span class="pre">closed</span></code>, <code class="docutils literal notranslate"><span class="pre">encoding</span></code>, <code class="docutils literal notranslate"><span class="pre">errors</span></code>, <code class="docutils literal notranslate"><span class="pre">fileno</span></code>,
+<code class="docutils literal notranslate"><span class="pre">isatty</span></code>, <code class="docutils literal notranslate"><span class="pre">newlines</span></code>, <code class="docutils literal notranslate"><span class="pre">readable</span></code>, <code class="docutils literal notranslate"><span class="pre">seekable</span></code>,
+<code class="docutils literal notranslate"><span class="pre">writable</span></code>, <code class="docutils literal notranslate"><span class="pre">buffer</span></code>, <code class="docutils literal notranslate"><span class="pre">raw</span></code>, <code class="docutils literal notranslate"><span class="pre">line_buffering</span></code>,
+<code class="docutils literal notranslate"><span class="pre">closefd</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">mode</span></code>, <code class="docutils literal notranslate"><span class="pre">getvalue</span></code>, <code class="docutils literal notranslate"><span class="pre">getbuffer</span></code>.</p></li>
+<li><p>Async methods: if any of the following methods are present, then
+they're re-exported as an async method: <code class="docutils literal notranslate"><span class="pre">flush</span></code>, <code class="docutils literal notranslate"><span class="pre">read</span></code>,
+<code class="docutils literal notranslate"><span class="pre">read1</span></code>, <code class="docutils literal notranslate"><span class="pre">readall</span></code>, <code class="docutils literal notranslate"><span class="pre">readinto</span></code>, <code class="docutils literal notranslate"><span class="pre">readline</span></code>,
+<code class="docutils literal notranslate"><span class="pre">readlines</span></code>, <code class="docutils literal notranslate"><span class="pre">seek</span></code>, <code class="docutils literal notranslate"><span class="pre">tell</span></code>, <code class="docutils literal notranslate"><span class="pre">truncate</span></code>, <code class="docutils literal notranslate"><span class="pre">write</span></code>,
+<code class="docutils literal notranslate"><span class="pre">writelines</span></code>, <code class="docutils literal notranslate"><span class="pre">readinto1</span></code>, <code class="docutils literal notranslate"><span class="pre">peek</span></code>, <code class="docutils literal notranslate"><span class="pre">detach</span></code>.</p></li>
+</ul>
+<p>Special notes:</p>
+<ul class="simple">
+<li><p>Async file objects implement Trio's
+<a class="reference internal" href="abs_api.html#trio.abc.AsyncResource" title="trio.abc.AsyncResource"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncResource</span></code></a> interface: you close them by
+calling <a class="reference internal" href="abs_api.html#trio.abc.AsyncResource.aclose" title="trio.abc.AsyncResource.aclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">aclose()</span></code></a> instead of
+<code class="docutils literal notranslate"><span class="pre">close</span></code> (!!), and they can be used as async context
+managers. Like all <a class="reference internal" href="abs_api.html#trio.abc.AsyncResource.aclose" title="trio.abc.AsyncResource.aclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">aclose()</span></code></a>
+methods, the <code class="docutils literal notranslate"><span class="pre">aclose</span></code> method on async file objects is
+guaranteed to close the file before returning, even if it is
+cancelled or otherwise raises an error.</p></li>
+<li><p>Using the same async file object from multiple tasks
+simultaneously: because the async methods on async file objects
+are implemented using threads, it's only safe to call two of them
+at the same time from different tasks IF the underlying
+synchronous file object is thread-safe. You should consult the
+documentation for the object you're wrapping. For objects
+returned from <a class="reference internal" href="#trio.open_file" title="trio.open_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.open_file()</span></code></a> or <a class="reference internal" href="#trio.Path.open" title="trio.Path.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">trio.Path.open()</span></code></a>,
+it depends on whether you open the file in binary mode or text
+mode: <a class="reference external" href="https://docs.python.org/3/library/io.html#multi-threading">binary mode files are task-safe/thread-safe, text mode
+files are not</a>.</p></li>
+<li><p>Async file objects can be used as async iterators to iterate over
+the lines of the file:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+      <span class="k">async</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+         <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">detach</span></code> method, if present, returns an async file object.</p></li>
+</ul>
+<p>This should include all the attributes exposed by classes in
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/io.html#module-io" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">io</span></code></a>. But if you're wrapping an object that has other
+attributes that aren't on the list above, then you can access them
+via the <code class="docutils literal notranslate"><span class="pre">.wrapped</span></code> attribute:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">wrapped</span></span></dt>
+<dd><p>The underlying synchronous file object.</p>
+</dd></dl>
+</dd></dl>
+</div>
+</div>
+</section>
+</section>
+</article>
+</div>
+<footer>
+<div class="related-pages">
+<a class="next-page" href="subprocess.html">
+<div class="page-info">
+<div class="context">
+<span>Next</span>
+</div>
+<div class="title">生成子进程</div>
+</div>
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+</a>
+<a class="prev-page" href="low_level.html">
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+<div class="page-info">
+<div class="context">
+<span>Previous</span>
+</div>
+<div class="title">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</div>
+</div>
+</a>
+</div>
+<div class="bottom-of-page">
+<div class="left-details">
+<div class="copyright">
+                Copyright © 2017, Nathaniel J. Smith
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+</div>
+<div class="right-details">
+<div class="icons">
+<a aria-label="GitHub" class="muted-link" href="https://github.com/hellowac/trio-zh-cn">
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 16 16">
+<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<aside class="toc-drawer">
+<div class="toc-sticky toc-scroll">
+<div class="toc-title-container">
+<span class="toc-title">
+            On this page
+          </span>
+</div>
+<div class="toc-tree-container">
+<div class="toc-tree">
+<ul>
+<li><a class="reference internal" href="#">异步文件系统 I/O</a><ul>
+<li><a class="reference internal" href="#id1">背景：异步文件 I/O 为何有用？答案可能会让您大吃一惊</a></li>
+<li><a class="reference internal" href="#api">API 概述</a></li>
+<li><a class="reference internal" href="#id4">异步路径对象</a><ul>
+<li><a class="reference internal" href="#trio.Path"><code class="docutils literal notranslate"><span class="pre">Path</span></code></a><ul>
+<li><a class="reference internal" href="#trio.Path.absolute"><code class="docutils literal notranslate"><span class="pre">Path.absolute()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.anchor"><code class="docutils literal notranslate"><span class="pre">Path.anchor</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.as_posix"><code class="docutils literal notranslate"><span class="pre">Path.as_posix()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.as_uri"><code class="docutils literal notranslate"><span class="pre">Path.as_uri()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.chmod"><code class="docutils literal notranslate"><span class="pre">Path.chmod()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.cwd"><code class="docutils literal notranslate"><span class="pre">Path.cwd()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.drive"><code class="docutils literal notranslate"><span class="pre">Path.drive</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.exists"><code class="docutils literal notranslate"><span class="pre">Path.exists()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.expanduser"><code class="docutils literal notranslate"><span class="pre">Path.expanduser()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.glob"><code class="docutils literal notranslate"><span class="pre">Path.glob()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.group"><code class="docutils literal notranslate"><span class="pre">Path.group()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.hardlink_to"><code class="docutils literal notranslate"><span class="pre">Path.hardlink_to()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.home"><code class="docutils literal notranslate"><span class="pre">Path.home()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_absolute"><code class="docutils literal notranslate"><span class="pre">Path.is_absolute()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_block_device"><code class="docutils literal notranslate"><span class="pre">Path.is_block_device()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_char_device"><code class="docutils literal notranslate"><span class="pre">Path.is_char_device()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_dir"><code class="docutils literal notranslate"><span class="pre">Path.is_dir()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_fifo"><code class="docutils literal notranslate"><span class="pre">Path.is_fifo()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_file"><code class="docutils literal notranslate"><span class="pre">Path.is_file()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_junction"><code class="docutils literal notranslate"><span class="pre">Path.is_junction()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_mount"><code class="docutils literal notranslate"><span class="pre">Path.is_mount()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_relative_to"><code class="docutils literal notranslate"><span class="pre">Path.is_relative_to()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_reserved"><code class="docutils literal notranslate"><span class="pre">Path.is_reserved()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_socket"><code class="docutils literal notranslate"><span class="pre">Path.is_socket()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.is_symlink"><code class="docutils literal notranslate"><span class="pre">Path.is_symlink()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.iterdir"><code class="docutils literal notranslate"><span class="pre">Path.iterdir()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.joinpath"><code class="docutils literal notranslate"><span class="pre">Path.joinpath()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.lchmod"><code class="docutils literal notranslate"><span class="pre">Path.lchmod()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.lstat"><code class="docutils literal notranslate"><span class="pre">Path.lstat()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.match"><code class="docutils literal notranslate"><span class="pre">Path.match()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.mkdir"><code class="docutils literal notranslate"><span class="pre">Path.mkdir()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.name"><code class="docutils literal notranslate"><span class="pre">Path.name</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.open"><code class="docutils literal notranslate"><span class="pre">Path.open()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.owner"><code class="docutils literal notranslate"><span class="pre">Path.owner()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.parent"><code class="docutils literal notranslate"><span class="pre">Path.parent</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.parents"><code class="docutils literal notranslate"><span class="pre">Path.parents</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.parts"><code class="docutils literal notranslate"><span class="pre">Path.parts</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.read_bytes"><code class="docutils literal notranslate"><span class="pre">Path.read_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.read_text"><code class="docutils literal notranslate"><span class="pre">Path.read_text()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.readlink"><code class="docutils literal notranslate"><span class="pre">Path.readlink()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.relative_to"><code class="docutils literal notranslate"><span class="pre">Path.relative_to()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.rename"><code class="docutils literal notranslate"><span class="pre">Path.rename()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.replace"><code class="docutils literal notranslate"><span class="pre">Path.replace()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.resolve"><code class="docutils literal notranslate"><span class="pre">Path.resolve()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.rglob"><code class="docutils literal notranslate"><span class="pre">Path.rglob()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.rmdir"><code class="docutils literal notranslate"><span class="pre">Path.rmdir()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.root"><code class="docutils literal notranslate"><span class="pre">Path.root</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.samefile"><code class="docutils literal notranslate"><span class="pre">Path.samefile()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.stat"><code class="docutils literal notranslate"><span class="pre">Path.stat()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.stem"><code class="docutils literal notranslate"><span class="pre">Path.stem</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.suffix"><code class="docutils literal notranslate"><span class="pre">Path.suffix</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.suffixes"><code class="docutils literal notranslate"><span class="pre">Path.suffixes</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.symlink_to"><code class="docutils literal notranslate"><span class="pre">Path.symlink_to()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.touch"><code class="docutils literal notranslate"><span class="pre">Path.touch()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.unlink"><code class="docutils literal notranslate"><span class="pre">Path.unlink()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.with_name"><code class="docutils literal notranslate"><span class="pre">Path.with_name()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.with_segments"><code class="docutils literal notranslate"><span class="pre">Path.with_segments()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.with_stem"><code class="docutils literal notranslate"><span class="pre">Path.with_stem()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.with_suffix"><code class="docutils literal notranslate"><span class="pre">Path.with_suffix()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.write_bytes"><code class="docutils literal notranslate"><span class="pre">Path.write_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Path.write_text"><code class="docutils literal notranslate"><span class="pre">Path.write_text()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#trio.PosixPath"><code class="docutils literal notranslate"><span class="pre">PosixPath</span></code></a></li>
+<li><a class="reference internal" href="#trio.WindowsPath"><code class="docutils literal notranslate"><span class="pre">WindowsPath</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#async-file-objects">异步文件对象</a><ul>
+<li><a class="reference internal" href="#trio.open_file"><code class="docutils literal notranslate"><span class="pre">open_file()</span></code></a></li>
+<li><a class="reference internal" href="#trio.wrap_file"><code class="docutils literal notranslate"><span class="pre">wrap_file()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Asynchronous-file-interface-.wrapped"><code class="docutils literal notranslate"><span class="pre">Asynchronous</span> <span class="pre">file</span> <span class="pre">interface(异步文件接口).wrapped</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div><script src="../_static/documentation_options.js?v=d2451d57"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+<script src="../_static/tabs.js?v=3ee01567"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/translations.js?v=beaddf03"></script>
+</body>
+</html>

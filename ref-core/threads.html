@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+
+<html class="no-js" data-content_root="../" lang="zh-CN">
+<head><meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/><meta content="width=device-width, initial-scale=1" name="viewport">
+<link href="../genindex.html" rel="index" title="索引"/><link href="../search.html" rel="search" title="搜索"/><link href="debugging.html" rel="next" title="交互式调试"/><link href="note_async_generator.html" rel="prev" title="异步生成器注意事项"/>
+<link href="../_static/favicon-32.png" rel="shortcut icon"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+<title>线程（如果必须） - Trio 0.27.0+dev 文档</title>
+<link href="../_static/pygments.css?v=fa44fd50" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo.css?v=354aac6f" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=125d5c1c" rel="stylesheet" type="text/css"/>
+<link href="../_static/tabs.css?v=4c969af8" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/hackrtd.css?v=2d9fc201" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo-extensions.css?v=302659d7" rel="stylesheet" type="text/css"/>
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></meta></head>
+<body>
+<script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+<symbol id="svg-toc" viewbox="0 0 24 24">
+<title>Contents</title>
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 1024 1024">
+<path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"></path>
+</svg>
+</symbol>
+<symbol id="svg-menu" viewbox="0 0 24 24">
+<title>Menu</title>
+<svg class="feather-menu" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<line x1="3" x2="21" y1="12" y2="12"></line>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<line x1="3" x2="21" y1="18" y2="18"></line>
+</svg>
+</symbol>
+<symbol id="svg-arrow-right" viewbox="0 0 24 24">
+<title>Expand</title>
+<svg class="feather-chevron-right" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</symbol>
+<symbol id="svg-sun" viewbox="0 0 24 24">
+<title>Light mode</title>
+<svg class="feather-sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="5"></circle>
+<line x1="12" x2="12" y1="1" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="23"></line>
+<line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line>
+<line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+<line x1="1" x2="3" y1="12" y2="12"></line>
+<line x1="21" x2="23" y1="12" y2="12"></line>
+<line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line>
+<line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+</svg>
+</symbol>
+<symbol id="svg-moon" viewbox="0 0 24 24">
+<title>Dark mode</title>
+<svg class="icon-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+</svg>
+</symbol>
+<symbol id="svg-sun-with-moon" viewbox="0 0 24 24">
+<title>Auto light/dark, in light mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z" style="opacity: 50%"></path>
+<line x1="14.5" x2="14.5" y1="3.25" y2="1.25"></line>
+<line x1="14.5" x2="14.5" y1="15.85" y2="17.85"></line>
+<line x1="10.044" x2="8.63" y1="5.094" y2="3.68"></line>
+<line x1="19" x2="20.414" y1="14.05" y2="15.464"></line>
+<line x1="8.2" x2="6.2" y1="9.55" y2="9.55"></line>
+<line x1="20.8" x2="22.8" y1="9.55" y2="9.55"></line>
+<line x1="10.044" x2="8.63" y1="14.006" y2="15.42"></line>
+<line x1="19" x2="20.414" y1="5.05" y2="3.636"></line>
+<circle cx="14.5" cy="9.55" r="3.6"></circle>
+</svg>
+</symbol>
+<symbol id="svg-moon-with-sun" viewbox="0 0 24 24">
+<title>Auto light/dark, in dark mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"></path>
+<line style="opacity: 50%" x1="18" x2="18" y1="3.705" y2="2.5"></line>
+<line style="opacity: 50%" x1="18" x2="18" y1="11.295" y2="12.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="4.816" y2="3.964"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="10.212" y2="11.063"></line>
+<line style="opacity: 50%" x1="14.205" x2="13.001" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="21.795" x2="23" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="10.184" y2="11.036"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="4.789" y2="3.937"></line>
+<circle cx="18" cy="7.5" r="2.169" style="opacity: 50%"></circle>
+</svg>
+</symbol>
+<symbol id="svg-pencil" viewbox="0 0 24 24">
+<svg class="icon-tabler-pencil-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path>
+<path d="M13.5 6.5l4 4"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+<symbol id="svg-eye" viewbox="0 0 24 24">
+<svg class="icon-tabler-eye-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+<path d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+</svg>
+<input class="sidebar-toggle" id="__navigation" name="__navigation" type="checkbox"/>
+<input class="sidebar-toggle" id="__toc" name="__toc" type="checkbox"/>
+<label class="overlay sidebar-overlay" for="__navigation">
+<div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+<div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+<div class="page">
+<header class="mobile-header">
+<div class="header-left">
+<label class="nav-overlay-icon" for="__navigation">
+<div class="visually-hidden">Toggle site navigation sidebar</div>
+<i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+</label>
+</div>
+<div class="header-center">
+<a href="../index.html"><div class="brand">Trio 0.27.0+dev 文档</div></a>
+</div>
+<div class="header-right">
+<div class="theme-toggle-container theme-toggle-header">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-header-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+</header>
+<aside class="sidebar-drawer">
+<div class="sidebar-container">
+<div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+<div class="sidebar-logo-container">
+<img alt="Logo" class="sidebar-logo" src="../_static/wordmark-transparent.svg"/>
+</div>
+<span class="sidebar-brand-text">Trio 0.27.0+dev 文档</span>
+</a><form action="../search.html" class="sidebar-search-container" method="get" role="search">
+<input aria-label="搜索" class="sidebar-search" name="q" placeholder="搜索"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+<p class="caption" role="heading"><span class="caption-text">Trio 友好且全面的手册：</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../awesome-trio-libraries.html">超棒的 Trio 库</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Trio 的核心功能</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Trio 的核心功能</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="run.html">运行 Trio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general_principles.html">一般原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_clock.html">时间和时钟</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cancel_timeout.html">取消和超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html">任务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_local_storeage.html">任务存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_sync.html">任务同步和通信</a></li>
+<li class="toctree-l2"><a class="reference internal" href="note_async_generator.html">异步生成器注意事项</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">线程（如果必须）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging.html">交互式调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exc_warn.html">异常和警告</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ref-io/index.html">Trio 中的 I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Trio 中的 I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/abs_api.html">抽象流 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/low_level.html">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/async_file_io.html">异步文件系统 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/subprocess.html">生成子进程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/signals.html">信号</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-testing.html">Trio 中的测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-lowlevel.html">自省和扩展 Trio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">设计和内部结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">发布历史</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">为 Trio 及相关项目做出贡献</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasing.html">准备发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">行为守则</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<div class="main">
+<div class="content">
+<div class="article-container">
+<a class="back-to-top muted-link" href="#">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+</svg>
+<span>Back to top</span>
+</a>
+<div class="content-icon-container">
+<div class="view-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/blob/sync-docs/cn_docs/source/ref-core/threads.rst?plain=true" title="View this page">
+<svg><use href="#svg-eye"></use></svg>
+<span class="visually-hidden">View this page</span>
+</a>
+</div><div class="edit-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/edit/sync-docs/cn_docs/source/ref-core/threads.rst" title="Edit this page">
+<svg><use href="#svg-pencil"></use></svg>
+<span class="visually-hidden">Edit this page</span>
+</a>
+</div><div class="theme-toggle-container theme-toggle-content">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-content-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+<article id="furo-main-content" role="main">
+<section id="threads">
+<span id="id1"></span><h1>线程（如果必须）<a class="headerlink" href="#threads" title="Link to this heading">¶</a></h1>
+<p><strong>Threads (if you must)</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>在一个完美的世界里，所有的第三方库和低级 API 都应该是原生的异步，并且与 Trio 集成，一切都会是幸福和美好的。</p>
+<p>然而，遗憾的是，这个世界（目前）并不存在。在此之前，你可能需要与一些非 Trio 的 API 进行交互，这些 API 做一些类似“阻塞”的事情。</p>
+<p>为了应对这一现实，Trio 提供了两个有用的工具，用于处理真实的操作系统级别的、类似于 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/threading.html#module-threading" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">threading</span></code></a> 模块风格的线程。首先，如果你在 Trio 中，但需要将一些阻塞 I/O 操作推送到线程中，你可以使用 <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> 。如果你在一个线程中，并且需要与 Trio 进行通信，你可以使用 <a class="reference internal" href="#trio.from_thread.run" title="trio.from_thread.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run()</span></code></a> 和 <a class="reference internal" href="#trio.from_thread.run_sync" title="trio.from_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run_sync()</span></code></a> 。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>In a perfect world, all third-party libraries and low-level APIs would
+be natively async and integrated into Trio, and all would be happiness
+and rainbows.</p>
+<p>That world, alas, does not (yet) exist. Until it does, you may find
+yourself needing to interact with non-Trio APIs that do rude things
+like "blocking".</p>
+<p>In acknowledgment of this reality, Trio provides two useful utilities
+for working with real, operating-system level,
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/threading.html#module-threading" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">threading</span></code></a>-module-style threads. First, if you're in Trio but
+need to push some blocking I/O into a thread, there's
+<a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>. And if you're in a thread and need
+to communicate back with Trio, you can use
+<a class="reference internal" href="#trio.from_thread.run" title="trio.from_thread.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run()</span></code></a> and <a class="reference internal" href="#trio.from_thread.run_sync" title="trio.from_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run_sync()</span></code></a>.</p>
+</div>
+</div>
+<section id="trio">
+<span id="worker-thread-limiting"></span><h2>Trio 关于管理工作线程的理念<a class="headerlink" href="#trio" title="Link to this heading">¶</a></h2>
+<p><strong>Trio's philosophy about managing worker threads</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<p>如果你使用过其他 I/O 框架，可能会遇到“线程池”这个概念，线程池通常实现为一个固定大小的线程集合，线程在等待任务分配时挂起。这解决了两个不同的问题：首先，反复使用相同的线程比每次都启动和停止一个新线程更有效；本质上，线程池充当了空闲线程的缓存。其次，固定大小的线程池避免了出现同时提交 100,000 个任务的情况，然后启动 100,000 个线程，导致系统过载并崩溃。相反，N 个线程开始执行前 N 个任务，而其他 (100,000 - N) 个任务则排队等待。这通常是你想要的行为，而这也是 <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> 默认的工作方式。</p>
+<p>这种线程池的缺点是，有时你需要更复杂的逻辑来控制同时运行的线程数量。例如，你可能想要一种策略：“最多允许 20 个线程，但其中最多 3 个线程可以执行与同一个用户账户相关的任务”，或者你可能想要一个根据系统条件动态调整大小的线程池。</p>
+<p>固定大小的策略甚至可能导致意外的 <a class="reference external" href="https://en.wikipedia.org/wiki/Deadlock">死锁</a>。假设我们有两种不同类型的阻塞任务需要在线程池中运行，类型 A 和类型 B。类型 A 比较简单：它运行并很快完成。但是类型 B 更复杂：它必须在中间停下来，等待其他工作完成，而这些工作包括执行一个类型 A 的任务。现在，假设你提交了 N 个类型 B 的任务到线程池。它们开始执行，然后最终提交一个或多个类型 A 的任务。但由于池中的每个线程都已经在忙，类型 A 的任务实际上没有开始执行——它们只是排队等候类型 B 的任务完成。但是类型 B 的任务永远不会完成，因为它们在等待类型 A 的任务。我们的系统发生了死锁。解决这个问题的理想方案是避免首先出现类型 B 的任务——通常最好将复杂的同步逻辑保留在主 Trio 线程中。但如果你不能这么做，那么你需要一个自定义的线程分配策略来跟踪不同类型任务的单独限制，确保类型 B 的任务不会占满类型 A 任务需要执行的所有线程槽。</p>
+<p>因此，我们可以看到，能够改变控制线程分配给任务的策略是很重要的。但在许多框架中，这需要从头开始实现一个新的线程池，这非常复杂；如果不同类型的任务需要不同的策略，那么你可能需要创建多个线程池，这样效率就低了，因为你实际上拥有两个不同的线程缓存，它们不能共享资源。</p>
+<p>Trio 解决这个问题的办法是将工作线程管理分为两层。下层负责接收阻塞 I/O 任务，并安排它们立即在某个工作线程上执行。它解决了管理线程时涉及的复杂并发问题，并负责像线程重用这样的优化，但没有入池控制策略：如果你给它 100,000 个任务，它会启动 100,000 个线程。上层负责提供策略，以确保不会发生这种情况——但由于它*只*需要关注策略，它可以更简单。事实上，唯一需要做的就是传递给 <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> 的 <code class="docutils literal notranslate"><span class="pre">limiter=</span></code> 参数。默认情况下，它是一个全局的 <code class="xref py py-class docutils literal notranslate"><span class="pre">CapacityLimiter</span></code> 对象，这为我们提供了经典的固定大小线程池行为。（请参阅 <a class="reference internal" href="#trio.to_thread.current_default_thread_limiter" title="trio.to_thread.current_default_thread_limiter"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.current_default_thread_limiter()</span></code></a>。）但是，如果你想为类型 A 任务和类型 B 任务使用“独立的线程池”，那么只需创建两个独立的 <code class="xref py py-class docutils literal notranslate"><span class="pre">CapacityLimiter</span></code> 对象，并在运行这些任务时传入它们。或者，下面是一个示例，定义了一个自定义策略，既尊重全局线程限制，同时又确保每个用户在任何时候最多只能使用 3 个线程：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CombinedLimiter</span><span class="p">:</span>
+   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">_first</span> <span class="o">=</span> <span class="n">first</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">_second</span> <span class="o">=</span> <span class="n">second</span>
+
+   <span class="k">async</span> <span class="k">def</span> <span class="nf">acquire_on_behalf_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">borrower</span><span class="p">):</span>
+         <span class="c1"># 获取两个限制器，确保出错时正确清理</span>
+         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first</span><span class="o">.</span><span class="n">acquire_on_behalf_of</span><span class="p">(</span><span class="n">borrower</span><span class="p">)</span>
+         <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_second</span><span class="o">.</span><span class="n">acquire_on_behalf_of</span><span class="p">(</span><span class="n">borrower</span><span class="p">)</span>
+         <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_first</span><span class="o">.</span><span class="n">release_on_behalf_of</span><span class="p">(</span><span class="n">borrower</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+   <span class="k">def</span> <span class="nf">release_on_behalf_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">borrower</span><span class="p">):</span>
+         <span class="c1"># 释放两个限制器，确保出错时正确清理</span>
+         <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_second</span><span class="o">.</span><span class="n">release_on_behalf_of</span><span class="p">(</span><span class="n">borrower</span><span class="p">)</span>
+         <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_first</span><span class="o">.</span><span class="n">release_on_behalf_of</span><span class="p">(</span><span class="n">borrower</span><span class="p">)</span>
+
+
+<span class="c1"># 使用弱引用字典，以免浪费内存来保存没有正在运行的工作线程的用户的限制器对象。</span>
+<span class="n">USER_LIMITERS</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">()</span>
+<span class="n">MAX_THREADS_PER_USER</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="k">def</span> <span class="nf">get_user_limiter</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+   <span class="k">try</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">USER_LIMITERS</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span>
+   <span class="k">except</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyError" title="KeyError"><span class="ne">KeyError</span></a><span class="p">:</span>
+      <span class="n">per_user_limiter</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">CapacityLimiter</span><span class="p">(</span><span class="n">MAX_THREADS_PER_USER</span><span class="p">)</span>
+      <span class="n">global_limiter</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">current_default_thread_limiter</span><span class="p">()</span>
+      <span class="c1"># 重要：首先获取 per_user_limiter，再获取 global_limiter。</span>
+      <span class="c1"># 如果我们同时为某个用户提交 100 个任务，我们希望</span>
+      <span class="c1"># 只允许其中 3 个任务竞争全局线程槽。</span>
+      <span class="n">combined_limiter</span> <span class="o">=</span> <span class="n">CombinedLimiter</span><span class="p">(</span><span class="n">per_user_limiter</span><span class="p">,</span> <span class="n">global_limiter</span><span class="p">)</span>
+      <span class="n">USER_LIMITERS</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_limiter</span>
+      <span class="k">return</span> <span class="n">combined_limiter</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run_sync_in_thread_for_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">sync_fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+   <span class="n">combined_limiter</span> <span class="o">=</span> <span class="n">get_user_limiter</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+   <span class="k">return</span> <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">to_thread</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">sync_fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">limiter</span><span class="o">=</span><span class="n">combined_limiter</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<p>If you've used other I/O frameworks, you may have encountered the
+concept of a "thread pool", which is most commonly implemented as a
+fixed size collection of threads that hang around waiting for jobs to
+be assigned to them. These solve two different problems: First,
+re-using the same threads over and over is more efficient than
+starting and stopping a new thread for every job you need done;
+basically, the pool acts as a kind of cache for idle threads. And
+second, having a fixed size avoids getting into a situation where
+100,000 jobs are submitted simultaneously, and then 100,000 threads
+are spawned and the system gets overloaded and crashes. Instead, the N
+threads start executing the first N jobs, while the other
+(100,000 - N) jobs sit in a queue and wait their turn. Which is
+generally what you want, and this is how
+<a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> works by default.</p>
+<p>The downside of this kind of thread pool is that sometimes, you need
+more sophisticated logic for controlling how many threads are run at
+once. For example, you might want a policy like "at most 20 threads
+total, but no more than 3 of those can be running jobs associated with
+the same user account", or you might want a pool whose size is
+dynamically adjusted over time in response to system conditions.</p>
+<p>It's even possible for a fixed-size policy to cause unexpected
+<a class="reference external" href="https://en.wikipedia.org/wiki/Deadlock">deadlocks</a>. Imagine a
+situation where we have two different types of blocking jobs that you
+want to run in the thread pool, type A and type B. Type A is pretty
+simple: it just runs and completes pretty quickly. But type B is more
+complicated: it has to stop in the middle and wait for some other work
+to finish, and that other work includes running a type A job. Now,
+suppose you submit N jobs of type B to the pool. They all start
+running, and then eventually end up submitting one or more jobs of
+type A. But since every thread in our pool is already busy, the type A
+jobs don't actually start running – they just sit in a queue waiting
+for the type B jobs to finish. But the type B jobs will never finish,
+because they're waiting for the type A jobs. Our system has
+deadlocked. The ideal solution to this problem is to avoid having type
+B jobs in the first place – generally it's better to keep complex
+synchronization logic in the main Trio thread. But if you can't do
+that, then you need a custom thread allocation policy that tracks
+separate limits for different types of jobs, and make it impossible
+for type B jobs to fill up all the slots that type A jobs need to run.</p>
+<p>So, we can see that it's important to be able to change the policy
+controlling the allocation of threads to jobs. But in many frameworks,
+this requires implementing a new thread pool from scratch, which is
+highly non-trivial; and if different types of jobs need different
+policies, then you may have to create multiple pools, which is
+inefficient because now you effectively have two different thread
+caches that aren't sharing resources.</p>
+<p>Trio's solution to this problem is to split worker thread management
+into two layers. The lower layer is responsible for taking blocking
+I/O jobs and arranging for them to run immediately on some worker
+thread. It takes care of solving the tricky concurrency problems
+involved in managing threads and is responsible for optimizations like
+re-using threads, but has no admission control policy: if you give it
+100,000 jobs, it will spawn 100,000 threads. The upper layer is
+responsible for providing the policy to make sure that this doesn't
+happen – but since it <em>only</em> has to worry about policy, it can be much
+simpler. In fact, all there is to it is the <code class="docutils literal notranslate"><span class="pre">limiter=</span></code> argument
+passed to <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>. This defaults to a global
+<code class="xref py py-class docutils literal notranslate"><span class="pre">CapacityLimiter</span></code> object, which gives us the classic fixed-size
+thread pool behavior. (See
+<a class="reference internal" href="#trio.to_thread.current_default_thread_limiter" title="trio.to_thread.current_default_thread_limiter"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.current_default_thread_limiter()</span></code></a>.) But if you
+want to use "separate pools" for type A jobs and type B jobs, then
+it's just a matter of creating two separate <code class="xref py py-class docutils literal notranslate"><span class="pre">CapacityLimiter</span></code>
+objects and passing them in when running these jobs. Or here's an
+example of defining a custom policy that respects the global thread
+limit, while making sure that no individual user can use more than 3
+threads at a time:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CombinedLimiter</span><span class="p">:</span>
+   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">_first</span> <span class="o">=</span> <span class="n">first</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">_second</span> <span class="o">=</span> <span class="n">second</span>
+
+   <span class="k">async</span> <span class="k">def</span> <span class="nf">acquire_on_behalf_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">borrower</span><span class="p">):</span>
+         <span class="c1"># Acquire both, being careful to clean up properly on error</span>
+         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first</span><span class="o">.</span><span class="n">acquire_on_behalf_of</span><span class="p">(</span><span class="n">borrower</span><span class="p">)</span>
+         <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_second</span><span class="o">.</span><span class="n">acquire_on_behalf_of</span><span class="p">(</span><span class="n">borrower</span><span class="p">)</span>
+         <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_first</span><span class="o">.</span><span class="n">release_on_behalf_of</span><span class="p">(</span><span class="n">borrower</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+   <span class="k">def</span> <span class="nf">release_on_behalf_of</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">borrower</span><span class="p">):</span>
+         <span class="c1"># Release both, being careful to clean up properly on error</span>
+         <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_second</span><span class="o">.</span><span class="n">release_on_behalf_of</span><span class="p">(</span><span class="n">borrower</span><span class="p">)</span>
+         <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_first</span><span class="o">.</span><span class="n">release_on_behalf_of</span><span class="p">(</span><span class="n">borrower</span><span class="p">)</span>
+
+
+<span class="c1"># Use a weak value dictionary, so that we don't waste memory holding</span>
+<span class="c1"># limiter objects for users who don't have any worker threads running.</span>
+<span class="n">USER_LIMITERS</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">()</span>
+<span class="n">MAX_THREADS_PER_USER</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="k">def</span> <span class="nf">get_user_limiter</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+   <span class="k">try</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">USER_LIMITERS</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span>
+   <span class="k">except</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyError" title="KeyError"><span class="ne">KeyError</span></a><span class="p">:</span>
+      <span class="n">per_user_limiter</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">CapacityLimiter</span><span class="p">(</span><span class="n">MAX_THREADS_PER_USER</span><span class="p">)</span>
+      <span class="n">global_limiter</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">current_default_thread_limiter</span><span class="p">()</span>
+      <span class="c1"># IMPORTANT: acquire the per_user_limiter before the global_limiter.</span>
+      <span class="c1"># If we get 100 jobs for a user at the same time, we want</span>
+      <span class="c1"># to only allow 3 of them at a time to even compete for the</span>
+      <span class="c1"># global thread slots.</span>
+      <span class="n">combined_limiter</span> <span class="o">=</span> <span class="n">CombinedLimiter</span><span class="p">(</span><span class="n">per_user_limiter</span><span class="p">,</span> <span class="n">global_limiter</span><span class="p">)</span>
+      <span class="n">USER_LIMITERS</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined_limiter</span>
+      <span class="k">return</span> <span class="n">combined_limiter</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">run_sync_in_thread_for_user</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">sync_fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+   <span class="n">combined_limiter</span> <span class="o">=</span> <span class="n">get_user_limiter</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+   <span class="k">return</span> <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">to_thread</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">sync_fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">limiter</span><span class="o">=</span><span class="n">combined_limiter</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="i-o">
+<span id="module-trio.to_thread"></span><h2>将阻塞 I/O 放入工作线程<a class="headerlink" href="#i-o" title="Link to this heading">¶</a></h2>
+<p><strong>Putting blocking I/O into worker threads</strong></p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.to_thread.run_sync">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.to_thread.</span></span><span class="sig-name descname"><span class="pre">run_sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sync_fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abandon_on_cancel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.to_thread.run_sync" title="Link to this definition">¶</a></dt>
+<dd><p>Convert a blocking operation into an async operation using a thread.</p>
+<p>These two lines are equivalent:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">sync_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+<span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">to_thread</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">sync_fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>except that if <code class="docutils literal notranslate"><span class="pre">sync_fn</span></code> takes a long time, then the first line will
+block the Trio loop while it runs, while the second line allows other Trio
+tasks to continue working while <code class="docutils literal notranslate"><span class="pre">sync_fn</span></code> runs. This is accomplished by
+pushing the call to <code class="docutils literal notranslate"><span class="pre">sync_fn(*args)</span></code> off into a worker thread.</p>
+<p>From inside the worker thread, you can get back into Trio using the
+functions in <cite>trio.from_thread</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sync_fn</strong> (<span class="sphinx_autodoc_typehints-type">Callable[..., RetT]</span>) -- An arbitrary synchronous callable.</p></li>
+<li><p><strong>*args</strong> (<span class="sphinx_autodoc_typehints-type">object</span>) -- Positional arguments to pass to sync_fn. If you need keyword
+arguments, use <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functools.html#functools.partial" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">functools.partial()</span></code></a>.</p></li>
+<li><p><strong>abandon_on_cancel</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- Whether to abandon this thread upon
+cancellation of this operation. See discussion below.</p></li>
+<li><p><strong>thread_name</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><em>str</em></a>) -- Optional string to set the name of the thread.
+Will always set <cite>threading.Thread.name</cite>, but only set the os name
+if pthread.h is available (i.e. most POSIX installations).
+pthread names are limited to 15 characters, and can be read from
+<code class="docutils literal notranslate"><span class="pre">/proc/&lt;PID&gt;/task/&lt;SPID&gt;/comm</span></code> or with <code class="docutils literal notranslate"><span class="pre">ps</span> <span class="pre">-eT</span></code>, among others.
+Defaults to <code class="docutils literal notranslate"><span class="pre">{sync_fn.__name__|None}</span> <span class="pre">from</span> <span class="pre">{trio.lowlevel.current_task().name}</span></code>.</p></li>
+<li><p><strong>limiter</strong> (<em>None</em><em>, or </em><em>CapacityLimiter-like object</em>) -- <p>An object used to limit the number of simultaneous threads. Most
+commonly this will be a <cite>~trio.CapacityLimiter</cite>, but it could be
+anything providing compatible
+<a class="reference internal" href="task_sync.html#trio.CapacityLimiter.acquire_on_behalf_of" title="trio.CapacityLimiter.acquire_on_behalf_of"><code class="xref py py-meth docutils literal notranslate"><span class="pre">acquire_on_behalf_of()</span></code></a> and
+<a class="reference internal" href="task_sync.html#trio.CapacityLimiter.release_on_behalf_of" title="trio.CapacityLimiter.release_on_behalf_of"><code class="xref py py-meth docutils literal notranslate"><span class="pre">release_on_behalf_of()</span></code></a> methods. This
+function will call <code class="docutils literal notranslate"><span class="pre">acquire_on_behalf_of</span></code> before starting the
+thread, and <code class="docutils literal notranslate"><span class="pre">release_on_behalf_of</span></code> after the thread has finished.</p>
+<p>If None (the default), uses the default <cite>~trio.CapacityLimiter</cite>, as
+returned by <a class="reference internal" href="#trio.to_thread.current_default_thread_limiter" title="trio.to_thread.current_default_thread_limiter"><code class="xref py py-func docutils literal notranslate"><span class="pre">current_default_thread_limiter()</span></code></a>.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Cancellation handling</strong>: Cancellation is a tricky issue here, because
+neither Python nor the operating systems it runs on provide any general
+mechanism for cancelling an arbitrary synchronous function running in a
+thread. This function will always check for cancellation on entry, before
+starting the thread. But once the thread is running, there are two ways it
+can handle being cancelled:</p>
+<ul>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=False</span></code>, the function ignores the cancellation and
+keeps going, just like if we had called <code class="docutils literal notranslate"><span class="pre">sync_fn</span></code> synchronously. This
+is the default behavior.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=True</span></code>, then this function immediately raises
+<cite>~trio.Cancelled</cite>. In this case <strong>the thread keeps running in
+background</strong> – we just abandon it to do whatever it's going to do, and
+silently discard any return value or errors that it raises. Only use
+this if you know that the operation is safe and side-effect free. (For
+example: <a class="reference internal" href="../ref-io/low_level.html#trio.socket.getaddrinfo" title="trio.socket.getaddrinfo"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.socket.getaddrinfo()</span></code></a> uses a thread with
+<code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=True</span></code>, because it doesn't really affect anything if a
+stray hostname lookup keeps running in the background.)</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">limiter</span></code> is only released after the thread has <em>actually</em>
+finished – which in the case of cancellation may be some time after this
+function has returned. If <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> finishes before the thread
+does, then the limiter release method will never be called at all.</p>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>You should not use this function to call long-running CPU-bound
+functions! In addition to the usual GIL-related reasons why using
+threads for CPU-bound work is not very effective in Python, there is an
+additional problem: on CPython, <a class="reference external" href="https://bugs.python.org/issue7946">CPU-bound threads tend to "starve out"
+IO-bound threads</a>, so using
+threads for CPU-bound work is likely to adversely affect the main
+thread running Trio. If you need to do this, you're better off using a
+worker process, or perhaps PyPy (which still has a GIL, but may do a
+better job of fairly allocating CPU time between threads).</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">RetT</span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whatever <code class="docutils literal notranslate"><span class="pre">sync_fn(*args)</span></code> returns.</p>
+</dd>
+<dt class="field-odd">抛出<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#Exception" title="（在 Python v3.13）"><strong>Exception</strong></a> -- Whatever <code class="docutils literal notranslate"><span class="pre">sync_fn(*args)</span></code> raises.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.to_thread.current_default_thread_limiter">
+<span class="sig-prename descclassname"><span class="pre">trio.to_thread.</span></span><span class="sig-name descname"><span class="pre">current_default_thread_limiter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.to_thread.current_default_thread_limiter" title="Link to this definition">¶</a></dt>
+<dd><p>Get the default <cite>~trio.CapacityLimiter</cite> used by
+<cite>trio.to_thread.run_sync</cite>.</p>
+<p>The most common reason to call this would be if you want to modify its
+<a class="reference internal" href="task_sync.html#trio.CapacityLimiter.total_tokens" title="trio.CapacityLimiter.total_tokens"><code class="xref py py-attr docutils literal notranslate"><span class="pre">total_tokens</span></code></a> attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="task_sync.html#trio.CapacityLimiter" title="trio.CapacityLimiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">CapacityLimiter</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+</section>
+<section id="module-trio.from_thread">
+<span id="id2"></span><h2>从另一个线程返回 Trio 线程<a class="headerlink" href="#module-trio.from_thread" title="Link to this heading">¶</a></h2>
+<p><strong>Getting back into the Trio thread from another thread</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.from_thread.run">
+<span class="sig-prename descclassname"><span class="pre">trio.from_thread.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">afn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trio_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.from_thread.run" title="Link to this definition">¶</a></dt>
+<dd><p>Run the given async function in the parent Trio thread, blocking until it
+is complete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">RetT</span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whatever <code class="docutils literal notranslate"><span class="pre">afn(*args)</span></code> returns.</p>
+</dd>
+</dl>
+<p>Returns or raises whatever the given function returns or raises. It
+can also raise exceptions of its own:</p>
+<dl class="field-list simple">
+<dt class="field-odd">抛出<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="exc_warn.html#trio.RunFinishedError" title="trio.RunFinishedError"><strong>RunFinishedError</strong></a> -- if the corresponding call to <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> has
+    already completed, or if the run has started its final cleanup phase
+    and can no longer spawn new system tasks.</p></li>
+<li><p><a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><strong>Cancelled</strong></a> -- If the original call to <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> is cancelled
+    (if <em>trio_token</em> is None) or the call to <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> completes
+    (if <em>trio_token</em> is not None) while <code class="docutils literal notranslate"><span class="pre">afn(*args)</span></code> is running,
+    then <em>afn</em> is likely to raise <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">trio.Cancelled</span></code></a>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="（在 Python v3.13）"><strong>RuntimeError</strong></a> -- if you try calling this from inside the Trio thread,
+    which would otherwise cause a deadlock, or if no <code class="docutils literal notranslate"><span class="pre">trio_token</span></code> was
+    provided, and we can't infer one from context.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#TypeError" title="（在 Python v3.13）"><strong>TypeError</strong></a> -- if <code class="docutils literal notranslate"><span class="pre">afn</span></code> is not an asynchronous function.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Locating a TrioToken</strong>: There are two ways to specify which
+<cite>trio.run</cite> loop to reenter:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Spawn this thread from <cite>trio.to_thread.run_sync</cite>. Trio will
+automatically capture the relevant Trio token and use it
+to re-enter the same Trio task.</p></li>
+<li><p>Pass a keyword argument, <code class="docutils literal notranslate"><span class="pre">trio_token</span></code> specifying a specific
+<cite>trio.run</cite> loop to re-enter. This is useful in case you have a
+"foreign" thread, spawned using some other framework, and still want
+to enter Trio, or if you want to use a new system task to call <code class="docutils literal notranslate"><span class="pre">afn</span></code>,
+maybe to avoid the cancellation context of a corresponding
+<cite>trio.to_thread.run_sync</cite> task. You can get this token from
+<a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.current_trio_token" title="trio.lowlevel.current_trio_token"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.lowlevel.current_trio_token()</span></code></a>.</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.from_thread.run_sync">
+<span class="sig-prename descclassname"><span class="pre">trio.from_thread.</span></span><span class="sig-name descname"><span class="pre">run_sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trio_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.from_thread.run_sync" title="Link to this definition">¶</a></dt>
+<dd><p>Run the given sync function in the parent Trio thread, blocking until it
+is complete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">RetT</span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whatever <code class="docutils literal notranslate"><span class="pre">fn(*args)</span></code> returns.</p>
+</dd>
+</dl>
+<p>Returns or raises whatever the given function returns or raises. It
+can also raise exceptions of its own:</p>
+<dl class="field-list simple">
+<dt class="field-odd">抛出<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="exc_warn.html#trio.RunFinishedError" title="trio.RunFinishedError"><strong>RunFinishedError</strong></a> -- if the corresponding call to <cite>trio.run</cite> has
+    already completed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="（在 Python v3.13）"><strong>RuntimeError</strong></a> -- if you try calling this from inside the Trio thread,
+    which would otherwise cause a deadlock or if no <code class="docutils literal notranslate"><span class="pre">trio_token</span></code> was
+    provided, and we can't infer one from context.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#TypeError" title="（在 Python v3.13）"><strong>TypeError</strong></a> -- if <code class="docutils literal notranslate"><span class="pre">fn</span></code> is an async function.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Locating a TrioToken</strong>: There are two ways to specify which
+<cite>trio.run</cite> loop to reenter:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Spawn this thread from <cite>trio.to_thread.run_sync</cite>. Trio will
+automatically capture the relevant Trio token and use it when you
+want to re-enter Trio.</p></li>
+<li><p>Pass a keyword argument, <code class="docutils literal notranslate"><span class="pre">trio_token</span></code> specifying a specific
+<cite>trio.run</cite> loop to re-enter. This is useful in case you have a
+"foreign" thread, spawned using some other framework, and still want
+to enter Trio, or if you want to use a new system task to call <code class="docutils literal notranslate"><span class="pre">fn</span></code>,
+maybe to avoid the cancellation context of a corresponding
+<cite>trio.to_thread.run_sync</cite> task.</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+<p>这通过一个示例可能会更清晰。这里我们演示如何启动一个子线程，然后使用 <a class="reference internal" href="task_sync.html#channels"><span class="std std-ref">memory channel</span></a> 在线程和 Trio 任务之间发送消息：</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">trio</span>
+
+
+<span class="k">def</span> <span class="nf">thread_fn</span><span class="p">(</span><span class="n">receive_from_trio</span><span class="p">,</span> <span class="n">send_to_trio</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Since we're in a thread, we can't call methods on Trio</span>
+        <span class="c1"># objects directly -- so we use trio.from_thread to call them.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">from_thread</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">receive_from_trio</span><span class="o">.</span><span class="n">receive</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">trio</span><span class="o">.</span><span class="n">EndOfChannel</span><span class="p">:</span>
+            <span class="n">trio</span><span class="o">.</span><span class="n">from_thread</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">send_to_trio</span><span class="o">.</span><span class="n">aclose</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">request</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">trio</span><span class="o">.</span><span class="n">from_thread</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">send_to_trio</span><span class="o">.</span><span class="n">send</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">send_to_thread</span><span class="p">,</span> <span class="n">receive_from_trio</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_memory_channel</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">send_to_trio</span><span class="p">,</span> <span class="n">receive_from_thread</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_memory_channel</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+        <span class="c1"># In a background thread, run:</span>
+        <span class="c1">#   thread_fn(receive_from_trio, send_to_trio)</span>
+        <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span>
+            <span class="n">trio</span><span class="o">.</span><span class="n">to_thread</span><span class="o">.</span><span class="n">run_sync</span><span class="p">,</span> <span class="n">thread_fn</span><span class="p">,</span> <span class="n">receive_from_trio</span><span class="p">,</span> <span class="n">send_to_trio</span>
+        <span class="p">)</span>
+
+        <span class="c1"># prints "1"</span>
+        <span class="k">await</span> <span class="n">send_to_thread</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">receive_from_thread</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
+
+        <span class="c1"># prints "2"</span>
+        <span class="k">await</span> <span class="n">send_to_thread</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">receive_from_thread</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
+
+        <span class="c1"># When we close the channel, it signals the thread to exit.</span>
+        <span class="k">await</span> <span class="n">send_to_thread</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
+
+        <span class="c1"># When we exit the nursery, it waits for the background thread to</span>
+        <span class="c1"># exit.</span>
+
+
+<span class="n">trio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">from_thread.run*</span></code> 函数重用调用 <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> 来运行你提供的函数的主任务，只要你使用默认的 <code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=False</span></code>，这样 Trio 就可以确保任务会继续存在并执行工作。如果你一开始传递了 <code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=True</span></code>，或者在回调 Trio 时提供了 <a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.TrioToken" title="trio.lowlevel.TrioToken"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrioToken</span></code></a>，那么你的函数将在一个新的系统任务中执行。因此， <a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.current_task" title="trio.lowlevel.current_task"><code class="xref py py-func docutils literal notranslate"><span class="pre">current_task()</span></code></a>、<a class="reference internal" href="cancel_timeout.html#trio.current_effective_deadline" title="trio.current_effective_deadline"><code class="xref py py-func docutils literal notranslate"><span class="pre">current_effective_deadline()</span></code></a> 或其他特定于任务树的值可能会根据关键字参数的值而有所不同。</p>
+</div>
+<p>你还可以使用 <a class="reference internal" href="#trio.from_thread.check_cancelled" title="trio.from_thread.check_cancelled"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.check_cancelled()</span></code></a> 来检查由 <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> 启动的线程是否已被取消。如果调用 <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_sync()</span></code></a> 被取消， <a class="reference internal" href="#trio.from_thread.check_cancelled" title="trio.from_thread.check_cancelled"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_cancelled()</span></code></a> 将引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.Cancelled()</span></code></a> 。它类似于 <code class="docutils literal notranslate"><span class="pre">trio.from_thread.run(trio.sleep,</span> <span class="pre">0)</span></code>，但更快。</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.from_thread.check_cancelled">
+<span class="sig-prename descclassname"><span class="pre">trio.from_thread.</span></span><span class="sig-name descname"><span class="pre">check_cancelled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.from_thread.check_cancelled" title="Link to this definition">¶</a></dt>
+<dd><p>Raise <cite>trio.Cancelled</cite> if the associated Trio task entered a cancelled status.
+:rtype: <span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<blockquote>
+<div><p>Only applicable to threads spawned by <cite>trio.to_thread.run_sync</cite>. Poll to allow
+<code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=False</span></code> threads to raise <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> at a suitable
+place, or to end abandoned <code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=True</span></code> threads sooner than they may
+otherwise.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">抛出<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><strong>Cancelled</strong></a> -- If the corresponding call to <cite>trio.to_thread.run_sync</cite> has had a
+    delivery of cancellation attempted against it, regardless of the value of
+    <code class="docutils literal notranslate"><span class="pre">abandon_on_cancel</span></code> supplied as an argument to it.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="（在 Python v3.13）"><strong>RuntimeError</strong></a> -- If this thread is not spawned from <cite>trio.to_thread.run_sync</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>To be precise, <a class="reference internal" href="#trio.from_thread.check_cancelled" title="trio.from_thread.check_cancelled"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_cancelled()</span></code></a> checks whether the task
+running <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> has ever been cancelled since the last
+time it was running a <a class="reference internal" href="#trio.from_thread.run" title="trio.from_thread.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run()</span></code></a> or <a class="reference internal" href="#trio.from_thread.run_sync" title="trio.from_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run_sync()</span></code></a>
+function. It may raise <cite>trio.Cancelled</cite> even if a cancellation occurred that was
+later hidden by a modification to <cite>trio.CancelScope.shield</cite> between the cancelled
+<cite>~trio.CancelScope</cite> and <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>. This differs from the
+behavior of normal Trio checkpoints, which raise <cite>~trio.Cancelled</cite> only if the
+cancellation is still active when the checkpoint executes. The distinction here is
+<em>exceedingly</em> unlikely to be relevant to your application, but we mention it
+for completeness.</p>
+</div>
+</dd></dl>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio.from_thread.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">afn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trio_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Run the given async function in the parent Trio thread, blocking until it
+is complete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">RetT</span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whatever <code class="docutils literal notranslate"><span class="pre">afn(*args)</span></code> returns.</p>
+</dd>
+</dl>
+<p>Returns or raises whatever the given function returns or raises. It
+can also raise exceptions of its own:</p>
+<dl class="field-list simple">
+<dt class="field-odd">抛出<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="exc_warn.html#trio.RunFinishedError" title="trio.RunFinishedError"><strong>RunFinishedError</strong></a> -- if the corresponding call to <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> has
+    already completed, or if the run has started its final cleanup phase
+    and can no longer spawn new system tasks.</p></li>
+<li><p><a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><strong>Cancelled</strong></a> -- If the original call to <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> is cancelled
+    (if <em>trio_token</em> is None) or the call to <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> completes
+    (if <em>trio_token</em> is not None) while <code class="docutils literal notranslate"><span class="pre">afn(*args)</span></code> is running,
+    then <em>afn</em> is likely to raise <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">trio.Cancelled</span></code></a>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="（在 Python v3.13）"><strong>RuntimeError</strong></a> -- if you try calling this from inside the Trio thread,
+    which would otherwise cause a deadlock, or if no <code class="docutils literal notranslate"><span class="pre">trio_token</span></code> was
+    provided, and we can't infer one from context.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#TypeError" title="（在 Python v3.13）"><strong>TypeError</strong></a> -- if <code class="docutils literal notranslate"><span class="pre">afn</span></code> is not an asynchronous function.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Locating a TrioToken</strong>: There are two ways to specify which
+<cite>trio.run</cite> loop to reenter:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Spawn this thread from <cite>trio.to_thread.run_sync</cite>. Trio will
+automatically capture the relevant Trio token and use it
+to re-enter the same Trio task.</p></li>
+<li><p>Pass a keyword argument, <code class="docutils literal notranslate"><span class="pre">trio_token</span></code> specifying a specific
+<cite>trio.run</cite> loop to re-enter. This is useful in case you have a
+"foreign" thread, spawned using some other framework, and still want
+to enter Trio, or if you want to use a new system task to call <code class="docutils literal notranslate"><span class="pre">afn</span></code>,
+maybe to avoid the cancellation context of a corresponding
+<cite>trio.to_thread.run_sync</cite> task. You can get this token from
+<a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.current_trio_token" title="trio.lowlevel.current_trio_token"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.lowlevel.current_trio_token()</span></code></a>.</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio.from_thread.</span></span><span class="sig-name descname"><span class="pre">run_sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trio_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Run the given sync function in the parent Trio thread, blocking until it
+is complete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">RetT</span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whatever <code class="docutils literal notranslate"><span class="pre">fn(*args)</span></code> returns.</p>
+</dd>
+</dl>
+<p>Returns or raises whatever the given function returns or raises. It
+can also raise exceptions of its own:</p>
+<dl class="field-list simple">
+<dt class="field-odd">抛出<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="exc_warn.html#trio.RunFinishedError" title="trio.RunFinishedError"><strong>RunFinishedError</strong></a> -- if the corresponding call to <cite>trio.run</cite> has
+    already completed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="（在 Python v3.13）"><strong>RuntimeError</strong></a> -- if you try calling this from inside the Trio thread,
+    which would otherwise cause a deadlock or if no <code class="docutils literal notranslate"><span class="pre">trio_token</span></code> was
+    provided, and we can't infer one from context.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#TypeError" title="（在 Python v3.13）"><strong>TypeError</strong></a> -- if <code class="docutils literal notranslate"><span class="pre">fn</span></code> is an async function.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Locating a TrioToken</strong>: There are two ways to specify which
+<cite>trio.run</cite> loop to reenter:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Spawn this thread from <cite>trio.to_thread.run_sync</cite>. Trio will
+automatically capture the relevant Trio token and use it when you
+want to re-enter Trio.</p></li>
+<li><p>Pass a keyword argument, <code class="docutils literal notranslate"><span class="pre">trio_token</span></code> specifying a specific
+<cite>trio.run</cite> loop to re-enter. This is useful in case you have a
+"foreign" thread, spawned using some other framework, and still want
+to enter Trio, or if you want to use a new system task to call <code class="docutils literal notranslate"><span class="pre">fn</span></code>,
+maybe to avoid the cancellation context of a corresponding
+<cite>trio.to_thread.run_sync</cite> task.</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+<p>This will probably be clearer with an example. Here we demonstrate how
+to spawn a child thread, and then use a <a class="reference internal" href="task_sync.html#channels"><span class="std std-ref">memory channel</span></a> to send messages between the thread and a Trio task:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">trio</span>
+
+
+<span class="k">def</span> <span class="nf">thread_fn</span><span class="p">(</span><span class="n">receive_from_trio</span><span class="p">,</span> <span class="n">send_to_trio</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Since we're in a thread, we can't call methods on Trio</span>
+        <span class="c1"># objects directly -- so we use trio.from_thread to call them.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">from_thread</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">receive_from_trio</span><span class="o">.</span><span class="n">receive</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">trio</span><span class="o">.</span><span class="n">EndOfChannel</span><span class="p">:</span>
+            <span class="n">trio</span><span class="o">.</span><span class="n">from_thread</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">send_to_trio</span><span class="o">.</span><span class="n">aclose</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">request</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">trio</span><span class="o">.</span><span class="n">from_thread</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">send_to_trio</span><span class="o">.</span><span class="n">send</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">send_to_thread</span><span class="p">,</span> <span class="n">receive_from_trio</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_memory_channel</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">send_to_trio</span><span class="p">,</span> <span class="n">receive_from_thread</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_memory_channel</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+        <span class="c1"># In a background thread, run:</span>
+        <span class="c1">#   thread_fn(receive_from_trio, send_to_trio)</span>
+        <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span>
+            <span class="n">trio</span><span class="o">.</span><span class="n">to_thread</span><span class="o">.</span><span class="n">run_sync</span><span class="p">,</span> <span class="n">thread_fn</span><span class="p">,</span> <span class="n">receive_from_trio</span><span class="p">,</span> <span class="n">send_to_trio</span>
+        <span class="p">)</span>
+
+        <span class="c1"># prints "1"</span>
+        <span class="k">await</span> <span class="n">send_to_thread</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">receive_from_thread</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
+
+        <span class="c1"># prints "2"</span>
+        <span class="k">await</span> <span class="n">send_to_thread</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">receive_from_thread</span><span class="o">.</span><span class="n">receive</span><span class="p">())</span>
+
+        <span class="c1"># When we close the channel, it signals the thread to exit.</span>
+        <span class="k">await</span> <span class="n">send_to_thread</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span>
+
+        <span class="c1"># When we exit the nursery, it waits for the background thread to</span>
+        <span class="c1"># exit.</span>
+
+
+<span class="n">trio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">from_thread.run*</span></code> functions reuse the host task that called
+<a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> to run your provided function, as long as you're
+using the default <code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=False</span></code> so Trio can be sure that the task will remain
+around to perform the work. If you pass <code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=True</span></code> at the outset, or if
+you provide a <a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.TrioToken" title="trio.lowlevel.TrioToken"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrioToken</span></code></a> when calling back in to Trio, your
+functions will be executed in a new system task. Therefore, the
+<a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.current_task" title="trio.lowlevel.current_task"><code class="xref py py-func docutils literal notranslate"><span class="pre">current_task()</span></code></a>, <a class="reference internal" href="cancel_timeout.html#trio.current_effective_deadline" title="trio.current_effective_deadline"><code class="xref py py-func docutils literal notranslate"><span class="pre">current_effective_deadline()</span></code></a>, or other
+task-tree specific values may differ depending on keyword argument values.</p>
+</div>
+<p>You can also use <a class="reference internal" href="#trio.from_thread.check_cancelled" title="trio.from_thread.check_cancelled"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.check_cancelled()</span></code></a> to check for cancellation from
+a thread that was spawned by <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>. If the call to
+<a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_sync()</span></code></a> was cancelled, then
+<a class="reference internal" href="#trio.from_thread.check_cancelled" title="trio.from_thread.check_cancelled"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_cancelled()</span></code></a> will raise <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.Cancelled()</span></code></a>.
+It's like <code class="docutils literal notranslate"><span class="pre">trio.from_thread.run(trio.sleep,</span> <span class="pre">0)</span></code>, but much faster.</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio.from_thread.</span></span><span class="sig-name descname"><span class="pre">check_cancelled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Raise <cite>trio.Cancelled</cite> if the associated Trio task entered a cancelled status.
+:rtype: <span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+<blockquote>
+<div><p>Only applicable to threads spawned by <cite>trio.to_thread.run_sync</cite>. Poll to allow
+<code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=False</span></code> threads to raise <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> at a suitable
+place, or to end abandoned <code class="docutils literal notranslate"><span class="pre">abandon_on_cancel=True</span></code> threads sooner than they may
+otherwise.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">抛出<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><strong>Cancelled</strong></a> -- If the corresponding call to <cite>trio.to_thread.run_sync</cite> has had a
+    delivery of cancellation attempted against it, regardless of the value of
+    <code class="docutils literal notranslate"><span class="pre">abandon_on_cancel</span></code> supplied as an argument to it.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="（在 Python v3.13）"><strong>RuntimeError</strong></a> -- If this thread is not spawned from <cite>trio.to_thread.run_sync</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>To be precise, <a class="reference internal" href="#trio.from_thread.check_cancelled" title="trio.from_thread.check_cancelled"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_cancelled()</span></code></a> checks whether the task
+running <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a> has ever been cancelled since the last
+time it was running a <a class="reference internal" href="#trio.from_thread.run" title="trio.from_thread.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run()</span></code></a> or <a class="reference internal" href="#trio.from_thread.run_sync" title="trio.from_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run_sync()</span></code></a>
+function. It may raise <cite>trio.Cancelled</cite> even if a cancellation occurred that was
+later hidden by a modification to <cite>trio.CancelScope.shield</cite> between the cancelled
+<cite>~trio.CancelScope</cite> and <a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>. This differs from the
+behavior of normal Trio checkpoints, which raise <cite>~trio.Cancelled</cite> only if the
+cancellation is still active when the checkpoint executes. The distinction here is
+<em>exceedingly</em> unlikely to be relevant to your application, but we mention it
+for completeness.</p>
+</div>
+</dd></dl>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2>线程和任务本地存储<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<p><strong>Threads and task-local storage</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">中文</label><div class="tab-content docutils container">
+<p>在使用线程时，你可以使用我们之前讨论的相同的 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/contextvars.html#module-contextvars" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">contextvars</span></code></a>，因为它们的值会被保留。</p>
+<p>这是通过在使用以下任何一种方式时自动复制 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/contextvars.html#module-contextvars" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">contextvars</span></code></a> 上下文来实现的：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#trio.from_thread.run" title="trio.from_thread.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#trio.from_thread.run_sync" title="trio.from_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run_sync()</span></code></a></p></li>
+</ul>
+<p>这意味着即使在工作线程中，或者从这些工作线程中的主/父 Trio 线程使用 <a class="reference internal" href="#trio.from_thread.run" title="trio.from_thread.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run()</span></code></a> 发送一个要运行的函数时，上下文变量的值仍然可以访问。</p>
+<p>但这也意味着，由于上下文并不是相同的，而是一个副本，如果你在这些函数（在线程中工作的函数）内部 <code class="xref py py-func docutils literal notranslate"><span class="pre">set()</span></code> 上下文变量的值，新的值只会在该上下文（被复制的上下文）中可用。因此，新的值将对该函数以及其他内部/子任务可用，但在父线程中将无法使用该值。</p>
+<p>如果你需要修改会保存在上下文变量中的值，并且需要从子线程中进行这些修改，你可以改为在顶层/父 Trio 线程的上下文变量中设置一个可变对象（例如字典）。然后，在子线程中，你可以 <code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code> 相同的对象，并修改其值。这样，你保持相同的对象在上下文变量中，并只在子线程中对其进行变更。</p>
+<p>通过这种方式，你可以在子线程中修改对象内容，并仍然能够在父线程中访问新的内容。</p>
+<p>以下是一个示例：</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">contextvars</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">trio</span>
+
+<span class="n">request_state</span> <span class="o">=</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">ContextVar</span><span class="p">(</span><span class="s2">"request_state"</span><span class="p">)</span>
+
+<span class="c1"># Blocking function that should be run on a thread</span>
+<span class="c1"># It could be reading or writing files, communicating with a database</span>
+<span class="c1"># with a driver not compatible with async / await, etc.</span>
+<span class="k">def</span> <span class="nf">work_in_thread</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="c1"># Only use request_state.get() inside the worker thread</span>
+    <span class="n">state_value</span> <span class="o">=</span> <span class="n">request_state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">current_user_id</span> <span class="o">=</span> <span class="n">state_value</span><span class="p">[</span><span class="s2">"current_user_id"</span><span class="p">]</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># this would be some blocking call, like reading a file</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processed user </span><span class="si">{</span><span class="n">current_user_id</span><span class="si">}</span><span class="s2"> with message </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2"> in a thread worker"</span><span class="p">)</span>
+    <span class="c1"># Modify/mutate the state object, without setting the entire</span>
+    <span class="c1"># contextvar with request_state.set()</span>
+    <span class="n">state_value</span><span class="p">[</span><span class="s2">"msg"</span><span class="p">]</span> <span class="o">=</span> <span class="n">msg</span>
+
+
+<span class="c1"># An example "request handler" that does some work itself and also</span>
+<span class="c1"># spawns some helper tasks in threads to execute blocking code.</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">current_user_id</span><span class="p">):</span>
+    <span class="c1"># Write to task-local storage:</span>
+    <span class="n">current_state</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"current_user_id"</span><span class="p">:</span> <span class="n">current_user_id</span><span class="p">,</span> <span class="s2">"msg"</span><span class="p">:</span> <span class="s2">""</span><span class="p">}</span>
+    <span class="n">request_state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+
+    <span class="c1"># Here the current implicit contextvars context will be automatically copied</span>
+    <span class="c1"># inside the worker thread</span>
+    <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">to_thread</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">work_in_thread</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Hello </span><span class="si">{</span><span class="n">current_user_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="c1"># Extract the value set inside the thread in the same object stored in a contextvar</span>
+    <span class="n">new_msg</span> <span class="o">=</span> <span class="n">current_state</span><span class="p">[</span><span class="s2">"msg"</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"New contextvar value from worker thread for user </span><span class="si">{</span><span class="n">current_user_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">new_msg</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># Spawn several "request handlers" simultaneously, to simulate a</span>
+<span class="c1"># busy server handling multiple requests at the same time.</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">handle_request</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+
+<span class="n">trio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>运行该脚本会输出：</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processed user 2 with message Hello 2 in a thread worker
+Processed user 0 with message Hello 0 in a thread worker
+Processed user 1 with message Hello 1 in a thread worker
+New contextvar value from worker thread for user 2: Hello 2
+New contextvar value from worker thread for user 1: Hello 1
+New contextvar value from worker thread for user 0: Hello 0
+</pre></div>
+</div>
+<p>如果你使用 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/contextvars.html#module-contextvars" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">contextvars</span></code></a> 或者你正在使用一个使用它们的库，现在你知道它们在 Trio 中使用线程时是如何交互的。</p>
+<p>但要记住，在许多情况下， <em>不</em> 在自己的代码中使用上下文变量，而是通过参数传递值，可能会更简单，因为它可能更明确，且更容易推理。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>上下文会自动被复制，而不是使用相同的父上下文，因为单个上下文不能在多个线程中使用， <a class="reference external" href="https://docs.python.org/zh-cn/3/library/contextvars.html#module-contextvars" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">contextvars</span></code></a> 不支持这种做法。</p>
+</div>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">英文</label><div class="tab-content docutils container">
+<p>When working with threads, you can use the same <a class="reference external" href="https://docs.python.org/zh-cn/3/library/contextvars.html#module-contextvars" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">contextvars</span></code></a> we discussed above,
+because their values are preserved.</p>
+<p>This is done by automatically copying the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/contextvars.html#module-contextvars" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">contextvars</span></code></a> context when you use any of:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#trio.to_thread.run_sync" title="trio.to_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#trio.from_thread.run" title="trio.from_thread.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#trio.from_thread.run_sync" title="trio.from_thread.run_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.from_thread.run_sync()</span></code></a></p></li>
+</ul>
+<p>That means that the values of the context variables are accessible even in worker
+threads, or when sending a function to be run in the main/parent Trio thread using
+<cite>trio.from_thread.run</cite> <em>from</em> one of these worker threads.</p>
+<p>But it also means that as the context is not the same but a copy, if you <code class="xref py py-func docutils literal notranslate"><span class="pre">set()</span></code> the
+context variable value <em>inside</em> one of these functions that work in threads, the
+new value will only be available in that context (that was copied). So, the new value
+will be available for that function and other internal/children tasks, but the value
+won't be available in the parent thread.</p>
+<p>If you need to modify values that would live in the context variables and you need to
+make those modifications from the child threads, you can instead set a mutable object
+(e.g. a dictionary) in the context variable of the top level/parent Trio thread.
+Then in the children, instead of setting the context variable, you can <code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code> the same
+object, and modify its values. That way you keep the same object in the context
+variable and only mutate it in child threads.</p>
+<p>This way, you can modify the object content in child threads and still access the
+new content in the parent thread.</p>
+<p>Here's an example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">contextvars</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">trio</span>
+
+<span class="n">request_state</span> <span class="o">=</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">ContextVar</span><span class="p">(</span><span class="s2">"request_state"</span><span class="p">)</span>
+
+<span class="c1"># Blocking function that should be run on a thread</span>
+<span class="c1"># It could be reading or writing files, communicating with a database</span>
+<span class="c1"># with a driver not compatible with async / await, etc.</span>
+<span class="k">def</span> <span class="nf">work_in_thread</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="c1"># Only use request_state.get() inside the worker thread</span>
+    <span class="n">state_value</span> <span class="o">=</span> <span class="n">request_state</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">current_user_id</span> <span class="o">=</span> <span class="n">state_value</span><span class="p">[</span><span class="s2">"current_user_id"</span><span class="p">]</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># this would be some blocking call, like reading a file</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Processed user </span><span class="si">{</span><span class="n">current_user_id</span><span class="si">}</span><span class="s2"> with message </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2"> in a thread worker"</span><span class="p">)</span>
+    <span class="c1"># Modify/mutate the state object, without setting the entire</span>
+    <span class="c1"># contextvar with request_state.set()</span>
+    <span class="n">state_value</span><span class="p">[</span><span class="s2">"msg"</span><span class="p">]</span> <span class="o">=</span> <span class="n">msg</span>
+
+
+<span class="c1"># An example "request handler" that does some work itself and also</span>
+<span class="c1"># spawns some helper tasks in threads to execute blocking code.</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">current_user_id</span><span class="p">):</span>
+    <span class="c1"># Write to task-local storage:</span>
+    <span class="n">current_state</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"current_user_id"</span><span class="p">:</span> <span class="n">current_user_id</span><span class="p">,</span> <span class="s2">"msg"</span><span class="p">:</span> <span class="s2">""</span><span class="p">}</span>
+    <span class="n">request_state</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+
+    <span class="c1"># Here the current implicit contextvars context will be automatically copied</span>
+    <span class="c1"># inside the worker thread</span>
+    <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">to_thread</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">work_in_thread</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Hello </span><span class="si">{</span><span class="n">current_user_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="c1"># Extract the value set inside the thread in the same object stored in a contextvar</span>
+    <span class="n">new_msg</span> <span class="o">=</span> <span class="n">current_state</span><span class="p">[</span><span class="s2">"msg"</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"New contextvar value from worker thread for user </span><span class="si">{</span><span class="n">current_user_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">new_msg</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># Spawn several "request handlers" simultaneously, to simulate a</span>
+<span class="c1"># busy server handling multiple requests at the same time.</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">handle_request</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+
+<span class="n">trio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Running that script will result in the output:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processed user 2 with message Hello 2 in a thread worker
+Processed user 0 with message Hello 0 in a thread worker
+Processed user 1 with message Hello 1 in a thread worker
+New contextvar value from worker thread for user 2: Hello 2
+New contextvar value from worker thread for user 1: Hello 1
+New contextvar value from worker thread for user 0: Hello 0
+</pre></div>
+</div>
+<p>If you are using <a class="reference external" href="https://docs.python.org/zh-cn/3/library/contextvars.html#module-contextvars" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">contextvars</span></code></a> or you are using a library that uses them, now you
+know how they interact when working with threads in Trio.</p>
+<p>But have in mind that in many cases it might be a lot simpler to <em>not</em> use context
+variables in your own code and instead pass values in arguments, as it might be more
+explicit and might be easier to reason about.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The context is automatically copied instead of using the same parent context because
+a single context can't be used in more than one thread, it's not supported by
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/contextvars.html#module-contextvars" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">contextvars</span></code></a>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+</article>
+</div>
+<footer>
+<div class="related-pages">
+<a class="next-page" href="debugging.html">
+<div class="page-info">
+<div class="context">
+<span>Next</span>
+</div>
+<div class="title">交互式调试</div>
+</div>
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+</a>
+<a class="prev-page" href="note_async_generator.html">
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+<div class="page-info">
+<div class="context">
+<span>Previous</span>
+</div>
+<div class="title">异步生成器注意事项</div>
+</div>
+</a>
+</div>
+<div class="bottom-of-page">
+<div class="left-details">
+<div class="copyright">
+                Copyright © 2017, Nathaniel J. Smith
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+</div>
+<div class="right-details">
+<div class="icons">
+<a aria-label="GitHub" class="muted-link" href="https://github.com/hellowac/trio-zh-cn">
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 16 16">
+<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<aside class="toc-drawer">
+<div class="toc-sticky toc-scroll">
+<div class="toc-title-container">
+<span class="toc-title">
+            On this page
+          </span>
+</div>
+<div class="toc-tree-container">
+<div class="toc-tree">
+<ul>
+<li><a class="reference internal" href="#">线程（如果必须）</a><ul>
+<li><a class="reference internal" href="#trio">Trio 关于管理工作线程的理念</a></li>
+<li><a class="reference internal" href="#i-o">将阻塞 I/O 放入工作线程</a><ul>
+<li><a class="reference internal" href="#trio.to_thread.run_sync"><code class="docutils literal notranslate"><span class="pre">run_sync()</span></code></a></li>
+<li><a class="reference internal" href="#trio.to_thread.current_default_thread_limiter"><code class="docutils literal notranslate"><span class="pre">current_default_thread_limiter()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-trio.from_thread">从另一个线程返回 Trio 线程</a><ul>
+<li><a class="reference internal" href="#trio.from_thread.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+<li><a class="reference internal" href="#trio.from_thread.run_sync"><code class="docutils literal notranslate"><span class="pre">run_sync()</span></code></a></li>
+<li><a class="reference internal" href="#trio.from_thread.check_cancelled"><code class="docutils literal notranslate"><span class="pre">check_cancelled()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">线程和任务本地存储</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div><script src="../_static/documentation_options.js?v=d2451d57"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+<script src="../_static/tabs.js?v=3ee01567"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/translations.js?v=beaddf03"></script>
+</body>
+</html>

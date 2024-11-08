@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+
+<html class="no-js" data-content_root="../" lang="zh-CN">
+<head><meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/><meta content="width=device-width, initial-scale=1" name="viewport">
+<link href="../genindex.html" rel="index" title="索引"/><link href="../search.html" rel="search" title="搜索"/><link href="time_clock.html" rel="next" title="时间和时钟"/><link href="run.html" rel="prev" title="运行 Trio"/>
+<link href="../_static/favicon-32.png" rel="shortcut icon"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+<title>一般原则 - Trio 0.27.0+dev 文档</title>
+<link href="../_static/pygments.css?v=fa44fd50" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo.css?v=354aac6f" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=125d5c1c" rel="stylesheet" type="text/css"/>
+<link href="../_static/tabs.css?v=4c969af8" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/hackrtd.css?v=2d9fc201" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo-extensions.css?v=302659d7" rel="stylesheet" type="text/css"/>
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></meta></head>
+<body>
+<script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+<symbol id="svg-toc" viewbox="0 0 24 24">
+<title>Contents</title>
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 1024 1024">
+<path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"></path>
+</svg>
+</symbol>
+<symbol id="svg-menu" viewbox="0 0 24 24">
+<title>Menu</title>
+<svg class="feather-menu" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<line x1="3" x2="21" y1="12" y2="12"></line>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<line x1="3" x2="21" y1="18" y2="18"></line>
+</svg>
+</symbol>
+<symbol id="svg-arrow-right" viewbox="0 0 24 24">
+<title>Expand</title>
+<svg class="feather-chevron-right" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</symbol>
+<symbol id="svg-sun" viewbox="0 0 24 24">
+<title>Light mode</title>
+<svg class="feather-sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="5"></circle>
+<line x1="12" x2="12" y1="1" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="23"></line>
+<line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line>
+<line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+<line x1="1" x2="3" y1="12" y2="12"></line>
+<line x1="21" x2="23" y1="12" y2="12"></line>
+<line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line>
+<line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+</svg>
+</symbol>
+<symbol id="svg-moon" viewbox="0 0 24 24">
+<title>Dark mode</title>
+<svg class="icon-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+</svg>
+</symbol>
+<symbol id="svg-sun-with-moon" viewbox="0 0 24 24">
+<title>Auto light/dark, in light mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z" style="opacity: 50%"></path>
+<line x1="14.5" x2="14.5" y1="3.25" y2="1.25"></line>
+<line x1="14.5" x2="14.5" y1="15.85" y2="17.85"></line>
+<line x1="10.044" x2="8.63" y1="5.094" y2="3.68"></line>
+<line x1="19" x2="20.414" y1="14.05" y2="15.464"></line>
+<line x1="8.2" x2="6.2" y1="9.55" y2="9.55"></line>
+<line x1="20.8" x2="22.8" y1="9.55" y2="9.55"></line>
+<line x1="10.044" x2="8.63" y1="14.006" y2="15.42"></line>
+<line x1="19" x2="20.414" y1="5.05" y2="3.636"></line>
+<circle cx="14.5" cy="9.55" r="3.6"></circle>
+</svg>
+</symbol>
+<symbol id="svg-moon-with-sun" viewbox="0 0 24 24">
+<title>Auto light/dark, in dark mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"></path>
+<line style="opacity: 50%" x1="18" x2="18" y1="3.705" y2="2.5"></line>
+<line style="opacity: 50%" x1="18" x2="18" y1="11.295" y2="12.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="4.816" y2="3.964"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="10.212" y2="11.063"></line>
+<line style="opacity: 50%" x1="14.205" x2="13.001" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="21.795" x2="23" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="10.184" y2="11.036"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="4.789" y2="3.937"></line>
+<circle cx="18" cy="7.5" r="2.169" style="opacity: 50%"></circle>
+</svg>
+</symbol>
+<symbol id="svg-pencil" viewbox="0 0 24 24">
+<svg class="icon-tabler-pencil-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path>
+<path d="M13.5 6.5l4 4"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+<symbol id="svg-eye" viewbox="0 0 24 24">
+<svg class="icon-tabler-eye-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+<path d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+</svg>
+<input class="sidebar-toggle" id="__navigation" name="__navigation" type="checkbox"/>
+<input class="sidebar-toggle" id="__toc" name="__toc" type="checkbox"/>
+<label class="overlay sidebar-overlay" for="__navigation">
+<div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+<div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+<div class="page">
+<header class="mobile-header">
+<div class="header-left">
+<label class="nav-overlay-icon" for="__navigation">
+<div class="visually-hidden">Toggle site navigation sidebar</div>
+<i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+</label>
+</div>
+<div class="header-center">
+<a href="../index.html"><div class="brand">Trio 0.27.0+dev 文档</div></a>
+</div>
+<div class="header-right">
+<div class="theme-toggle-container theme-toggle-header">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-header-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+</header>
+<aside class="sidebar-drawer">
+<div class="sidebar-container">
+<div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+<div class="sidebar-logo-container">
+<img alt="Logo" class="sidebar-logo" src="../_static/wordmark-transparent.svg"/>
+</div>
+<span class="sidebar-brand-text">Trio 0.27.0+dev 文档</span>
+</a><form action="../search.html" class="sidebar-search-container" method="get" role="search">
+<input aria-label="搜索" class="sidebar-search" name="q" placeholder="搜索"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+<p class="caption" role="heading"><span class="caption-text">Trio 友好且全面的手册：</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../awesome-trio-libraries.html">超棒的 Trio 库</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Trio 的核心功能</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Trio 的核心功能</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="run.html">运行 Trio</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">一般原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_clock.html">时间和时钟</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cancel_timeout.html">取消和超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html">任务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_local_storeage.html">任务存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_sync.html">任务同步和通信</a></li>
+<li class="toctree-l2"><a class="reference internal" href="note_async_generator.html">异步生成器注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threads.html">线程（如果必须）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging.html">交互式调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exc_warn.html">异常和警告</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ref-io/index.html">Trio 中的 I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Trio 中的 I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/abs_api.html">抽象流 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/low_level.html">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/async_file_io.html">异步文件系统 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/subprocess.html">生成子进程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/signals.html">信号</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-testing.html">Trio 中的测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-lowlevel.html">自省和扩展 Trio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">设计和内部结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">发布历史</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">为 Trio 及相关项目做出贡献</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasing.html">准备发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">行为守则</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<div class="main">
+<div class="content">
+<div class="article-container">
+<a class="back-to-top muted-link" href="#">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+</svg>
+<span>Back to top</span>
+</a>
+<div class="content-icon-container">
+<div class="view-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/blob/sync-docs/cn_docs/source/ref-core/general_principles.rst?plain=true" title="View this page">
+<svg><use href="#svg-eye"></use></svg>
+<span class="visually-hidden">View this page</span>
+</a>
+</div><div class="edit-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/edit/sync-docs/cn_docs/source/ref-core/general_principles.rst" title="Edit this page">
+<svg><use href="#svg-pencil"></use></svg>
+<span class="visually-hidden">Edit this page</span>
+</a>
+</div><div class="theme-toggle-container theme-toggle-content">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-content-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+<article id="furo-main-content" role="main">
+<section id="module-trio">
+<span id="id1"></span><h1>一般原则<a class="headerlink" href="#module-trio" title="Link to this heading">¶</a></h1>
+<p><strong>General principles</strong></p>
+<section id="checkpoints">
+<span id="id2"></span><h2>检查点<a class="headerlink" href="#checkpoints" title="Link to this heading">¶</a></h2>
+<p><strong>Checkpoints</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>在使用 Trio 编写代码时，理解 <em>检查点</em> 的概念非常重要。Trio 的许多函数充当了检查点。</p>
+<p>检查点有两个作用：</p>
+<ol class="arabic simple">
+<li><p>它是 Trio 检查取消操作的一个点。例如，如果调用您函数的代码设置了超时，并且超时已经过期，那么在您的函数执行到下一个检查点时，Trio 会引发一个 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常。有关更多详细信息，请参见下文的 <a class="reference internal" href="cancel_timeout.html#cancellation"><span class="std std-ref">取消和超时</span></a>。</p></li>
+<li><p>它是 Trio 调度器检查其调度策略的一个点，用来判断是否是切换到另一个任务的好时机，并可能会执行此操作。（目前，这个检查非常简单：调度器在每个检查点都会切换。但 <a class="reference external" href="https://github.com/python-trio/trio/issues/32">将来这可能会改变</a>。）</p></li>
+</ol>
+<p>在编写 Trio 代码时，您需要跟踪检查点的位置。为什么？首先，因为检查点需要额外的注意：每当您执行检查点时，您需要准备好处理 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 错误，或者准备好让另一个任务运行并 <a class="reference external" href="https://glyph.twistedmatrix.com/2014/02/unyielding.html">重新安排一些状态</a>。其次，您还需要确保有 <em>足够</em> 的检查点：如果您的代码没有定期通过检查点，那么它会慢慢发现并响应取消操作，而且—更糟糕的是—由于 Trio 是一个协作多任务系统，调度器 <em>唯一</em> 可以切换任务的地方就是检查点，这也会阻止调度器在不同任务之间公平分配时间，并对所有其他代码在同一进程中的响应延迟产生不利影响。（非正式地说，一个做这种事情的任务被称为“霸占运行循环”。）</p>
+<p>因此，当您进行使用 Trio 的项目的代码审查时，您需要考虑的一件事是是否有足够的检查点，以及每个检查点是否被正确处理。当然，这意味着您需要一种识别检查点的方法。如何做到这一点呢？基本原则是，任何阻塞操作都必须是一个检查点。这是有道理的：如果一个操作阻塞，那么它可能会阻塞很长时间，而您希望能够在超时过期时取消它；无论如何，在这个任务被阻塞时，我们希望调度另一个任务来运行，这样我们的代码就能充分利用 CPU。</p>
+<p>但是，如果我们想要编写正确的代码，那么这个原则有点太模糊和不精确，无法提供足够的帮助。我们如何知道哪些函数可能会阻塞？如果一个函数有时会阻塞，但有时不会，这取决于传入的参数/网络速度/月相如何？当我们感到压力山大、睡眠不足，但仍希望正确进行代码审查时，我们如何找到检查点的位置，并希望将思维精力保留用于思考实际的逻辑，而不是担心检查点？</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>When writing code using Trio, it's very important to understand the
+concept of a <em>checkpoint</em>. Many of Trio's functions act as checkpoints.</p>
+<p>A checkpoint is two things:</p>
+<ol class="arabic simple">
+<li><p>It's a point where Trio checks for cancellation. For example, if
+the code that called your function set a timeout, and that timeout
+has expired, then the next time your function executes a checkpoint
+Trio will raise a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception. See
+<a class="reference internal" href="cancel_timeout.html#cancellation"><span class="std std-ref">取消和超时</span></a> below for more details.</p></li>
+<li><p>It's a point where the Trio scheduler checks its scheduling policy
+to see if it's a good time to switch to another task, and
+potentially does so. (Currently, this check is very simple: the
+scheduler always switches at every checkpoint. But <a class="reference external" href="https://github.com/python-trio/trio/issues/32">this might
+change in the future</a>.)</p></li>
+</ol>
+<p>When writing Trio code, you need to keep track of where your
+checkpoints are. Why? First, because checkpoints require extra
+scrutiny: whenever you execute a checkpoint, you need to be prepared
+to handle a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> error, or for another task to run and
+<a class="reference external" href="https://glyph.twistedmatrix.com/2014/02/unyielding.html">rearrange some state out from under you</a>. And
+second, because you also need to make sure that you have <em>enough</em>
+checkpoints: if your code doesn't pass through a checkpoint on a
+regular basis, then it will be slow to notice and respond to
+cancellation and – much worse – since Trio is a cooperative
+multi-tasking system where the <em>only</em> place the scheduler can switch
+tasks is at checkpoints, it'll also prevent the scheduler from fairly
+allocating time between different tasks and adversely effect the
+response latency of all the other code running in the same
+process. (Informally we say that a task that does this is "hogging the
+run loop".)</p>
+<p>So when you're doing code review on a project that uses Trio, one of
+the things you'll want to think about is whether there are enough
+checkpoints, and whether each one is handled correctly. Of course this
+means you need a way to recognize checkpoints. How do you do that?
+The underlying principle is that any operation that blocks has to be a
+checkpoint. This makes sense: if an operation blocks, then it might
+block for a long time, and you'll want to be able to cancel it if a
+timeout expires; and in any case, while this task is blocked we want
+another task to be scheduled to run so our code can make full use of
+the CPU.</p>
+<p>But if we want to write correct code in practice, then this principle
+is a little too sloppy and imprecise to be useful. How do we know
+which functions might block?  What if a function blocks sometimes, but
+not others, depending on the arguments passed / network speed / phase
+of the moon? How do we figure out where the checkpoints are when
+we're stressed and sleep deprived but still want to get this code
+review right, and would prefer to reserve our mental energy for
+thinking about the actual logic instead of worrying about checkpoints?</p>
+</div>
+</div>
+<section id="checkpoint-rule">
+<span id="id3"></span><h3>检查点规则<a class="headerlink" href="#checkpoint-rule" title="Link to this heading">¶</a></h3>
+<p><strong>Checkpoint Rule</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<p>不用担心——Trio 会为您提供帮助。由于检查点非常重要并且无处不在，我们使得跟踪它们变得尽可能简单。以下是一些规则：</p>
+<ul class="simple">
+<li><p>常规（同步）函数永远不包含任何检查点。</p></li>
+<li><p>如果您调用 Trio 提供的异步函数（<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">&lt;something</span> <span class="pre">in</span> <span class="pre">trio&gt;</span></code>），并且它没有引发异常，那么它 <em>始终</em> 会作为一个检查点。（如果它引发异常，它可能会充当检查点，也可能不会。）</p></li>
+<li><p>这包括异步迭代器：如果您写了 <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">for</span> <span class="pre">...</span> <span class="pre">in</span> <span class="pre">&lt;Trio</span> <span class="pre">object&gt;</span></code>，那么在每次循环迭代中至少会有一个检查点，即使可迭代对象为空，它也会执行检查点。</p></li>
+<li><p>异步上下文管理器的部分例外： <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> 块的入口和退出都被定义为异步函数；但是，对于某些类型的异步上下文管理器，通常只有其中一个能够阻塞，这意味着只有那个函数会作为检查点。具体情况会在每个案例中进行文档说明。</p>
+<ul>
+<li><p><a class="reference internal" href="tasks.html#trio.open_nursery" title="trio.open_nursery"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.open_nursery()</span></code></a> 是该规则的一个进一步例外。</p></li>
+</ul>
+</li>
+<li><p>第三方异步函数/迭代器/上下文管理器也可以充当检查点；如果您看到 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">&lt;something&gt;</span></code> 或其类似函数，那么它 <em>可能</em> 是一个检查点。因此，为了安全起见，您应该准备好在这里发生调度或取消。</p></li>
+</ul>
+<p>我们区分 Trio 函数和其他函数的原因是我们不能对第三方代码做任何保证。检查点属性是一个传递性属性：如果函数 A 充当检查点，并且您编写一个调用函数 A 的函数，那么您的函数也会充当检查点。如果您没有这么做，那么它就不是。因此，没人会阻止某人编写一个像这样的函数：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 技术上是合法的，但风格很差：</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">why_is_this_async</span><span class="p">():</span>
+   <span class="k">return</span> <span class="mi">7</span>
+</pre></div>
+</div>
+<p>它从不调用 Trio 的任何异步函数。虽然这是一个异步函数，但它不是一个检查点。但是，为什么要让一个函数变成异步函数，如果它从不调用任何异步函数呢？这是可能的，但这是一个坏主意。如果您有一个没有调用任何异步函数的函数，那么您应该将其设置为同步。使用您函数的人会感谢您，因为这样可以明确表示您的函数不是一个检查点，他们的代码审查也会更快。</p>
+<p>（还记得在教程中我们强调了 <a class="reference internal" href="../tutorial.html#async-sandwich"><span class="std std-ref">"async sandwich"</span></a> 的重要性吗？它意味着 <code class="docutils literal notranslate"><span class="pre">await</span></code> 最终成为一个标记，显示您在调用一个调用一个 ... 最终调用 Trio 内置的异步函数的函数？异步性的传递性是 Python 强加的技术要求，但由于它恰好与检查点的传递性相匹配，我们能够利用它帮助您跟踪检查点。很巧妙吧？）</p>
+<p>一个稍微棘手的情况是像这样的函数：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">sleep_or_not</span><span class="p">(</span><span class="n">should_sleep</span><span class="p">):</span>
+   <span class="k">if</span> <span class="n">should_sleep</span><span class="p">:</span>
+      <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+   <span class="k">else</span><span class="p">:</span>
+      <span class="k">pass</span>
+</pre></div>
+</div>
+<p>如果您传递给它一个 <cite>should_sleep</cite> 为真值，它将作为一个检查点，但在其他情况下则不会。这就是为什么我们强调 Trio 自己的异步函数是 <em>无条件</em> 检查点的原因：它们 <em>始终</em> 会检查取消操作并检查调度，而不管传递给它们的参数是什么。如果您发现 Trio 中的某个异步函数没有遵循这个规则，那么它就是一个 bug，您应该 <a class="reference external" href="https://github.com/python-trio/trio/issues">告诉我们</a>。</p>
+<p>在 Trio 内部，我们对这一点非常挑剔，因为 Trio 是整个系统的基础，因此我们认为付出额外的努力使事情更加可预测是值得的。至于您的代码有多挑剔，就由您决定。为了给您一个更现实的例子，看看实际生活中这种问题是什么样的，考虑以下函数：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">recv_exactly</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">nbytes</span><span class="p">):</span>
+   <span class="n">data</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#bytearray" title="bytearray"><span class="nb">bytearray</span></a><span class="p">()</span>
+   <span class="k">while</span> <span class="n">nbytes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+         <span class="c1"># recv() 每次最多读取 'nbytes' 字节</span>
+         <span class="n">chunk</span> <span class="o">=</span> <span class="k">await</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">nbytes</span><span class="p">)</span>
+         <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+            <span class="k">raise</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="RuntimeError"><span class="ne">RuntimeError</span></a><span class="p">(</span><span class="s2">"socket 意外关闭"</span><span class="p">)</span>
+         <span class="n">nbytes</span> <span class="o">-=</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#len" title="len"><span class="nb">len</span></a><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+         <span class="n">data</span> <span class="o">+=</span> <span class="n">chunk</span>
+   <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>如果 <cite>nbytes</cite> 大于零，则它将至少调用一次 <code class="docutils literal notranslate"><span class="pre">sock.recv</span></code>，而 <code class="docutils literal notranslate"><span class="pre">recv</span></code> 是一个 Trio 异步函数，因此是一个无条件检查点。因此，在这种情况下，<code class="docutils literal notranslate"><span class="pre">recv_exactly</span></code> 充当了检查点。但是如果我们执行 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">recv_exactly(sock,</span> <span class="pre">0)</span></code>，它将立即返回一个空缓冲区，而不会执行任何检查点。如果这是 Trio 本身的一个函数，那么这是不可接受的，但您可能会决定不想在自己的代码中担心这种小的边缘情况。</p>
+<p>如果您确实想要小心，或者如果您有一些没有足够检查点的 CPU 密集型代码，那么了解 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">trio.sleep(0)</span></code> 是一种惯用方法，可以在不做任何其他操作的情况下执行一个检查点，并且 <a class="reference internal" href="../reference-testing.html#trio.testing.assert_checkpoints" title="trio.testing.assert_checkpoints"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.testing.assert_checkpoints()</span></code></a> 可以用来测试任意代码块是否包含检查点，这将非常有用。</p>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<p>Don't worry – Trio's got your back. Since checkpoints are important
+and ubiquitous, we make it as simple as possible to keep track of
+them. Here are the rules:</p>
+<ul class="simple">
+<li><p>Regular (synchronous) functions never contain any checkpoints.</p></li>
+<li><p>If you call an async function provided by Trio (<a href="#id4"><span class="problematic" id="id5">``</span></a>await</p></li>
+</ul>
+<p>&lt;something in trio&gt;``), and it doesn't raise an exception,
+then it <em>always</em> acts as a checkpoint. (If it does raise an
+exception, it might act as a checkpoint or might not.)</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>This includes async iterators: If you write <a href="#id6"><span class="problematic" id="id7">``</span></a>async for ... in &lt;a</dt><dd><p>trio object&gt;``, then there will be at least one checkpoint in
+each iteration of the loop, and it will still checkpoint if the
+iterable is empty.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Partial exception for async context managers:</dt><dd><p>Both the entry and exit of an <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> block are
+defined as async functions; but for a
+particular type of async context manager, it's often the
+case that only one of them is able to block, which means
+only that one will act as a checkpoint. This is documented
+on a case-by-case basis.</p>
+<ul>
+<li><p><a class="reference internal" href="tasks.html#trio.open_nursery" title="trio.open_nursery"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.open_nursery()</span></code></a> is a further exception to this rule.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Third-party async functions / iterators / context managers can act</p></li>
+</ul>
+<p>as checkpoints; if you see <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">&lt;something&gt;</span></code> or one of its
+friends, then that <em>might</em> be a checkpoint. So to be safe, you
+should prepare for scheduling or cancellation happening there.</p>
+<p>The reason we distinguish between Trio functions and other functions
+is that we can't make any guarantees about third party
+code. Checkpoint-ness is a transitive property: if function A acts as
+a checkpoint, and you write a function that calls function A, then
+your function also acts as a checkpoint. If you don't, then it
+isn't. So there's nothing stopping someone from writing a function
+like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># technically legal, but bad style:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">why_is_this_async</span><span class="p">():</span>
+   <span class="k">return</span> <span class="mi">7</span>
+</pre></div>
+</div>
+<p>that never calls any of Trio's async functions. This is an async
+function, but it's not a checkpoint. But why make a function async if
+it never calls any async functions? It's possible, but it's a bad
+idea. If you have a function that's not calling any async functions,
+then you should make it synchronous. The people who use your function
+will thank you, because it makes it obvious that your function is not
+a checkpoint, and their code reviews will go faster.</p>
+<p>(Remember how in the tutorial we emphasized the importance of the
+<a class="reference internal" href="../tutorial.html#async-sandwich"><span class="std std-ref">"async sandwich"</span></a>, and the way it means that
+<code class="docutils literal notranslate"><span class="pre">await</span></code> ends up being a marker that shows when you're calling a
+function that calls a function that ... eventually calls one of Trio's
+built-in async functions? The transitivity of async-ness is a
+technical requirement that Python imposes, but since it exactly
+matches the transitivity of checkpoint-ness, we're able to exploit it
+to help you keep track of checkpoints. Pretty sneaky, eh?)</p>
+<p>A slightly trickier case is a function like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">sleep_or_not</span><span class="p">(</span><span class="n">should_sleep</span><span class="p">):</span>
+   <span class="k">if</span> <span class="n">should_sleep</span><span class="p">:</span>
+      <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+   <span class="k">else</span><span class="p">:</span>
+      <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Here the function acts as a checkpoint if you call it with
+<code class="docutils literal notranslate"><span class="pre">should_sleep</span></code> set to a true value, but not otherwise. This is why
+we emphasize that Trio's own async functions are <em>unconditional</em> checkpoints:
+they <em>always</em> check for cancellation and check for scheduling,
+regardless of what arguments they're passed. If you find an async
+function in Trio that doesn't follow this rule, then it's a bug and
+you should <a class="reference external" href="https://github.com/python-trio/trio/issues">let us know</a>.</p>
+<p>Inside Trio, we're very picky about this, because Trio is the
+foundation of the whole system so we think it's worth the extra effort
+to make things extra predictable. It's up to you how picky you want to
+be in your code. To give you a more realistic example of what this
+kind of issue looks like in real life, consider this function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">recv_exactly</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">nbytes</span><span class="p">):</span>
+   <span class="n">data</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#bytearray" title="bytearray"><span class="nb">bytearray</span></a><span class="p">()</span>
+   <span class="k">while</span> <span class="n">nbytes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+         <span class="c1"># recv() reads up to 'nbytes' bytes each time</span>
+         <span class="n">chunk</span> <span class="o">=</span> <span class="k">await</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">nbytes</span><span class="p">)</span>
+         <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+            <span class="k">raise</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="RuntimeError"><span class="ne">RuntimeError</span></a><span class="p">(</span><span class="s2">"socket unexpected closed"</span><span class="p">)</span>
+         <span class="n">nbytes</span> <span class="o">-=</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#len" title="len"><span class="nb">len</span></a><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+         <span class="n">data</span> <span class="o">+=</span> <span class="n">chunk</span>
+   <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>If called with an <code class="docutils literal notranslate"><span class="pre">nbytes</span></code> that's greater than zero, then it will
+call <code class="docutils literal notranslate"><span class="pre">sock.recv</span></code> at least once, and <code class="docutils literal notranslate"><span class="pre">recv</span></code> is an async Trio
+function, and thus an unconditional checkpoint. So in this case,
+<code class="docutils literal notranslate"><span class="pre">recv_exactly</span></code> acts as a checkpoint. But if we do <code class="docutils literal notranslate"><span class="pre">await</span>
+<span class="pre">recv_exactly(sock,</span> <span class="pre">0)</span></code>, then it will immediately return an empty
+buffer without executing a checkpoint. If this were a function in
+Trio itself, then this wouldn't be acceptable, but you may decide you
+don't want to worry about this kind of minor edge case in your own
+code.</p>
+<p>If you do want to be careful, or if you have some CPU-bound code that
+doesn't have enough checkpoints in it, then it's useful to know that
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">trio.sleep(0)</span></code> is an idiomatic way to execute a checkpoint
+without doing anything else, and that
+<a class="reference internal" href="../reference-testing.html#trio.testing.assert_checkpoints" title="trio.testing.assert_checkpoints"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.testing.assert_checkpoints()</span></code></a> can be used to test that an
+arbitrary block of code contains a checkpoint.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2>线程安全<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<p><strong>Thread safety</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 的绝大多数 API <em>不是</em> 线程安全的：它只能在 <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> 的调用内部使用。本手册不会在各个调用上单独说明这一点；除非特别注明，否则您应该假设除 Trio 线程外的任何地方都不安全调用任何 Trio 函数。（但如果您确实需要与线程一起工作，请 <a class="reference internal" href="threads.html#threads"><span class="std std-ref">参见下面</span></a>。）</p>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<p>The vast majority of Trio's API is <em>not</em> thread safe: it can only be
+used from inside a call to <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a>. This manual doesn't
+bother documenting this on individual calls; unless specifically noted
+otherwise, you should assume that it isn't safe to call any Trio
+functions from anywhere except the Trio thread. (But <a class="reference internal" href="threads.html#threads"><span class="std std-ref">see below</span></a> if you really do need to work with threads.)</p>
+</div>
+</div>
+</section>
+</section>
+</article>
+</div>
+<footer>
+<div class="related-pages">
+<a class="next-page" href="time_clock.html">
+<div class="page-info">
+<div class="context">
+<span>Next</span>
+</div>
+<div class="title">时间和时钟</div>
+</div>
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+</a>
+<a class="prev-page" href="run.html">
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+<div class="page-info">
+<div class="context">
+<span>Previous</span>
+</div>
+<div class="title">运行 Trio</div>
+</div>
+</a>
+</div>
+<div class="bottom-of-page">
+<div class="left-details">
+<div class="copyright">
+                Copyright © 2017, Nathaniel J. Smith
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+</div>
+<div class="right-details">
+<div class="icons">
+<a aria-label="GitHub" class="muted-link" href="https://github.com/hellowac/trio-zh-cn">
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 16 16">
+<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<aside class="toc-drawer">
+<div class="toc-sticky toc-scroll">
+<div class="toc-title-container">
+<span class="toc-title">
+            On this page
+          </span>
+</div>
+<div class="toc-tree-container">
+<div class="toc-tree">
+<ul>
+<li><a class="reference internal" href="#">一般原则</a><ul>
+<li><a class="reference internal" href="#checkpoints">检查点</a><ul>
+<li><a class="reference internal" href="#checkpoint-rule">检查点规则</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id8">线程安全</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div><script src="../_static/documentation_options.js?v=d2451d57"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+<script src="../_static/tabs.js?v=3ee01567"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/translations.js?v=beaddf03"></script>
+</body>
+</html>

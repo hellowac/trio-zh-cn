@@ -1,0 +1,664 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="genindex.html" /><link rel="search" title="搜索" href="search.html" /><link rel="next" title="Trio 的核心功能" href="ref-core/index.html" /><link rel="prev" title="教程" href="tutorial.html" />
+
+    <link rel="shortcut icon" href="_static/favicon-32.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>超棒的 Trio 库 - Trio 0.27.0+dev 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-codeautolink.css?v=125d5c1c" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/hackrtd.css?v=2d9fc201" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">Trio 0.27.0+dev 文档</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/wordmark-transparent.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Trio 0.27.0+dev 文档</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Trio 友好且全面的手册：</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">教程</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">超棒的 Trio 库</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="ref-core/index.html">Trio 的核心功能</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Trio 的核心功能</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/run.html">运行 Trio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/general_principles.html">一般原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/time_clock.html">时间和时钟</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/cancel_timeout.html">取消和超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/tasks.html">任务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/task_local_storeage.html">任务存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/task_sync.html">任务同步和通信</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/note_async_generator.html">异步生成器注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/threads.html">线程（如果必须）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/debugging.html">交互式调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/exc_warn.html">异常和警告</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="ref-io/index.html">Trio 中的 I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Trio 中的 I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ref-io/abs_api.html">抽象流 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-io/low_level.html">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-io/async_file_io.html">异步文件系统 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-io/subprocess.html">生成子进程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-io/signals.html">信号</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference-testing.html">Trio 中的测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-lowlevel.html">自省和扩展 Trio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">设计和内部结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">发布历史</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">为 Trio 及相关项目做出贡献</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">准备发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code-of-conduct.html">行为守则</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/blob/sync-docs/cn_docs/source/awesome-trio-libraries.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/edit/sync-docs/cn_docs/source/awesome-trio-libraries.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="trio">
+<h1>超棒的 Trio 库<a class="headerlink" href="#trio" title="Link to this heading">¶</a></h1>
+<p><strong>Awesome Trio Libraries</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>您已经完成了教程，并且对构建具有异步功能的优秀新应用程序和库充满热情。然而，为了完成更多有用的工作，您将希望使用一些支持 Trio 风格并发的优秀库。这个列表并不完整，但它提供了一个起点。另一个发现 Trio 兼容库的好方法是通过在 PyPI 上搜索 <code class="docutils literal notranslate"><span class="pre">Framework</span> <span class="pre">::</span> <span class="pre">Trio</span></code> 标签 -&gt; <a class="reference external" href="https://pypi.org/search/?c=Framework+%3A%3A+Trio">PyPI 搜索</a></p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>You have completed the tutorial, and are enthusiastic about building
+great new applications and libraries with async functionality.
+However, to get much useful work done you will want to use some of
+the great libraries that support Trio-flavoured concurrency. This list
+is not complete, but gives a starting point. Another great way to find
+Trio-compatible libraries is to search on PyPI for the <code class="docutils literal notranslate"><span class="pre">Framework</span> <span class="pre">::</span> <span class="pre">Trio</span></code>
+tag -&gt; <a class="reference external" href="https://pypi.org/search/?c=Framework+%3A%3A+Trio">PyPI Search</a></p>
+</div>
+</div>
+<section id="id1">
+<h2>入门<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<p><strong>Getting Started</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/python-trio/cookiecutter-trio">cookiecutter-trio</a> - 这是使用 Trio 的 Python 项目的 cookiecutter 模板。通过提供一堆预配置的样板，它可以轻松启动新项目。</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/pytest-trio">pytest-trio</a> - Pytest 插件，用于测试启用异步的 Trio 函数。</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/sphinxcontrib-trio">sphinxcontrib-trio</a> - 使 Sphinx 更好地记录 Python 函数和方法。特别是，它可以轻松记录异步函数。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/python-trio/cookiecutter-trio">cookiecutter-trio</a> - This is a cookiecutter template for Python projects that use Trio. It makes it easy to start a new project, by providing a bunch of preconfigured boilerplate.</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/pytest-trio">pytest-trio</a> - Pytest plugin to test async-enabled Trio functions.</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/sphinxcontrib-trio">sphinxcontrib-trio</a> - Make Sphinx better at documenting Python functions and methods. In particular, it makes it easy to document async functions.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="web-html">
+<h2>Web 和 HTML<a class="headerlink" href="#web-html" title="Link to this heading">¶</a></h2>
+<p><strong>Web and HTML</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.python-httpx.org/">httpx</a> - HTTPX 是一个功能完备的 Python 3 HTTP 客户端，提供同步和异步 API，支持 HTTP/1.1 和 HTTP/2。</p></li>
+<li><p><a class="reference external" href="https://github.com/HyperionGray/trio-websocket">trio-websocket</a> - 一个 WebSocket 客户端和服务器实现，致力于安全性、正确性和易用性。</p></li>
+<li><p><a class="reference external" href="https://github.com/pgjones/quart-trio">quart-trio</a> - 类似于 Flask，但适用于 Trio。一个简单而强大的框架，用于构建异步 Web 应用和 REST API。提示：这是一个基于 ASGI 的框架，因此您还需要一个支持 ASGI 的 HTTP 服务器。</p></li>
+<li><p><a class="reference external" href="https://github.com/pgjones/hypercorn">hypercorn</a> - 一个 HTTP 服务器，用于托管您的 ASGI 应用。支持 HTTP/1.1、HTTP/2、HTTP/3 和 WebSockets。可以作为独立服务器运行，或嵌入到更大的 Trio 应用中。与 <code class="docutils literal notranslate"><span class="pre">quart-trio</span></code> 或任何其他 Trio 兼容的 ASGI 框架一起使用。</p></li>
+<li><p><a class="reference external" href="https://github.com/smurfix/deframed">DeFramed</a> - DeFramed 是一个 Web 非框架，支持以 99% 服务器为中心的 Web 编程方法，包括对 <a class="reference external" href="https://github.com/dddomodossola/remi">Remi</a> GUI 库的支持。</p></li>
+<li><p><a class="reference external" href="https://github.com/groove-x/pura">pura</a> - 一个简单的 Web 框架，用于将实时图形可视化嵌入到 Trio 应用中，支持在开发过程中检查和操作程序状态。</p></li>
+<li><p><a class="reference external" href="https://scalpel.readthedocs.io/en/latest/">pyscalpel</a> - 一个快速且强大的网页抓取库。</p></li>
+<li><p><a class="reference external" href="https://github.com/klen/muffin">muffin</a> - Muffin 是一个快速、简单的 ASGI Web 框架。</p></li>
+<li><p><a class="reference external" href="https://github.com/klen/asgi-tools">asgi-tools</a> - 快速构建轻量级 ASGI 应用的工具（还包含一个具有生命周期和 WebSocket 支持的测试客户端）。</p></li>
+<li><p><a class="reference external" href="https://github.com/encode/starlette">starlette</a> - 一款小巧但闪亮的 ASGI 框架。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.python-httpx.org/">httpx</a> - HTTPX is a fully featured HTTP client for Python 3, which provides sync and async APIs, and support for both HTTP/1.1 and HTTP/2.</p></li>
+<li><p><a class="reference external" href="https://github.com/HyperionGray/trio-websocket">trio-websocket</a> - A WebSocket client and server implementation striving for safety, correctness, and ergonomics.</p></li>
+<li><p><a class="reference external" href="https://github.com/pgjones/quart-trio">quart-trio</a> - Like Flask, but for Trio. A simple and powerful framework for building async web applications and REST APIs. Tip: this is an ASGI-based framework, so you'll also need an HTTP server with ASGI support.</p></li>
+<li><p><a class="reference external" href="https://github.com/pgjones/hypercorn">hypercorn</a> - An HTTP server for hosting your ASGI apps. Supports HTTP/1.1, HTTP/2, HTTP/3, and Websockets. Can be run as a standalone server, or embedded in a larger Trio app. Use it with <code class="docutils literal notranslate"><span class="pre">quart-trio</span></code>, or any other Trio-compatible ASGI framework.</p></li>
+<li><p><a class="reference external" href="https://github.com/smurfix/deframed">DeFramed</a> - DeFramed is a Web non-framework that supports a 99%-server-centric approach to Web coding, including support for the <a class="reference external" href="https://github.com/dddomodossola/remi">Remi</a> GUI library.</p></li>
+<li><p><a class="reference external" href="https://github.com/groove-x/pura">pura</a> - A simple web framework for embedding realtime graphical visualization into Trio apps, enabling inspection and manipulation of program state during development.</p></li>
+<li><p><a class="reference external" href="https://scalpel.readthedocs.io/en/latest/">pyscalpel</a> - A fast and powerful webscraping library.</p></li>
+<li><p><a class="reference external" href="https://github.com/klen/muffin">muffin</a> - Muffin is a fast, simple ASGI web-framework</p></li>
+<li><p><a class="reference external" href="https://github.com/klen/asgi-tools">asgi-tools</a> - Tools to quickly build lightest ASGI apps (also contains a test client with lifespan, websocket support)</p></li>
+<li><p><a class="reference external" href="https://github.com/encode/starlette">starlette</a> - The little ASGI framework that shines.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="id2">
+<h2>数据库<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p><strong>Database</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/python-trio/triopg">triopg</a> - 基于 asyncpg 的 Trio PostgreSQL 客户端。</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/trio-mysql">trio-mysql</a> - 纯 Python MySQL 客户端。</p></li>
+<li><p><a class="reference external" href="https://github.com/RazerM/sqlalchemy_aio">sqlalchemy_aio</a> - 为 SQLAlchemy 核心添加 asyncio 和 Trio 支持，衍生自 alchimia。</p></li>
+<li><p><a class="reference external" href="https://github.com/Tronic/redio">redio</a> - 纯 Python 和 Trio 实现的 Redis 客户端。</p></li>
+<li><p><a class="reference external" href="https://github.com/omnidots/trio_redis">trio_redis</a> - 一个为 Trio 提供的 Redis 客户端，依赖 hiredis-py。</p></li>
+<li><p><a class="reference external" href="https://github.com/M-o-a-T/asyncakumuli">asyncakumuli</a> - <a class="reference external" href="https://akumuli.org/">Akumuli</a> 时间序列数据库的客户端。</p></li>
+<li><p><a class="reference external" href="https://github.com/klen/aio-databases">aio-databases</a> - 为各种数据库（如 triopg、trio-mysql）提供异步支持。</p></li>
+<li><p><a class="reference external" href="https://github.com/klen/peewee-aio">peewee-aio</a> - 支持 Trio 的 Peewee 异步 ORM（triopg、trio-mysql）。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/python-trio/triopg">triopg</a> - PostgreSQL client for Trio based on asyncpg.</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/trio-mysql">trio-mysql</a> - Pure Python MySQL Client.</p></li>
+<li><p><a class="reference external" href="https://github.com/RazerM/sqlalchemy_aio">sqlalchemy_aio</a> - Add asyncio and Trio support to SQLAlchemy core, derived from alchimia.</p></li>
+<li><p><a class="reference external" href="https://github.com/Tronic/redio">redio</a> - Redis client, pure Python and Trio.</p></li>
+<li><p><a class="reference external" href="https://github.com/omnidots/trio_redis">trio_redis</a> - A Redis client for Trio. Depends on hiredis-py.</p></li>
+<li><p><a class="reference external" href="https://github.com/M-o-a-T/asyncakumuli">asyncakumuli</a> - Client for the <a class="reference external" href="https://akumuli.org/">Akumuli</a> time series database.</p></li>
+<li><p><a class="reference external" href="https://github.com/klen/aio-databases">aio-databases</a> - Async Support for various databases (triopg, trio-mysql)</p></li>
+<li><p><a class="reference external" href="https://github.com/klen/peewee-aio">peewee-aio</a> - Peewee Async ORM with trio support (triopg, trio-mysql).</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2>物联网<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<p><strong>IOT</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/M-o-a-T/distmqtt">DistMQTT</a> - DistMQTT 是一个开源的 MQTT 客户端和代理实现。它是 hbmqtt 的一个分支，支持 anyio 和 DistKV。</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/trio-gpio">asyncgpio</a> - 允许轻松访问您的 Raspberry Pi 或类似嵌入式计算机上的 GPIO 引脚。</p></li>
+<li><p><a class="reference external" href="https://github.com/M-o-a-T/asyncowfs">asyncowfs</a> - 为 1wire 传感器和执行器提供高级、面向对象的访问。</p></li>
+<li><p><a class="reference external" href="https://github.com/M-o-a-T/distkv">DistKV</a> - 一个持久的、分布式的、无主的键值存储，支持异步通知以及一些与 IoT 相关的插件。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/M-o-a-T/distmqtt">DistMQTT</a> - DistMQTT is an open source MQTT client and broker implementation. It is a fork of hbmqtt with support for anyio and DistKV.</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/trio-gpio">asyncgpio</a> - Allows easy access to the GPIO pins on your Raspberry Pi or similar embedded computer.</p></li>
+<li><p><a class="reference external" href="https://github.com/M-o-a-T/asyncowfs">asyncowfs</a> - High-level, object-oriented access to 1wire sensors and actors.</p></li>
+<li><p><a class="reference external" href="https://github.com/M-o-a-T/distkv">DistKV</a> - a persistent, distributed, master-less key/value storage with async notification and some IoT-related plug-ins.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2>构建命令行应用程序<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<p><strong>Building Command Line Apps</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/python-trio/trio-click">trio-click</a> - Python 组合命令行工具，Trio 兼容版本。</p></li>
+<li><p><a class="reference external" href="https://github.com/urwid/urwid">urwid</a> - Urwid 是一个用于 Python 的控制台用户界面库。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"><label class="tab-label" for="tab-set--5-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/python-trio/trio-click">trio-click</a> - Python composable command line utility, trio-compatible version.</p></li>
+<li><p><a class="reference external" href="https://github.com/urwid/urwid">urwid</a> - Urwid is a console user interface library for Python.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="gui">
+<h2>构建 GUI 应用程序<a class="headerlink" href="#gui" title="Link to this heading">¶</a></h2>
+<p><strong>Building GUI Apps</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--6-input--1" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://qtrio.readthedocs.io/en/stable/">QTrio</a> - Trio 与 PyQt 或 PySide Qt 包装库的集成。使用 Trio 的 <a class="reference internal" href="reference-lowlevel.html#guest-mode"><span class="std std-ref">guest mode</span></a>。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--6-input--2" name="tab-set--6" type="radio"><label class="tab-label" for="tab-set--6-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://qtrio.readthedocs.io/en/stable/">QTrio</a> - Integration between Trio and either the PyQt or PySide Qt wrapper libraries.  Uses Trio's <a class="reference internal" href="reference-lowlevel.html#guest-mode"><span class="std std-ref">guest mode</span></a>.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="id5">
+<h2>多核/多处理<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<p><strong>Multi-Core/Multiprocessing</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--7-input--1" name="tab-set--7" type="radio"><label class="tab-label" for="tab-set--7-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/goodboy/tractor">tractor</a> - 一个实验性的 Trionic（即结构化并发）&quot;actor 模型&quot;，用于分布式多核 Python。</p></li>
+<li><p><a class="reference external" href="https://github.com/ethereum/trio-run-in-process">Trio run_in_process</a> - 基于 Trio 的 API，用于在单独的进程中运行代码。</p></li>
+<li><p><a class="reference external" href="https://trio-parallel.readthedocs.io/">trio-parallel</a> - Trio 的 CPU 并行性支持</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--7-input--2" name="tab-set--7" type="radio"><label class="tab-label" for="tab-set--7-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/goodboy/tractor">tractor</a> - An experimental, trionic (aka structured concurrent) &quot;actor model&quot; for distributed multi-core Python.</p></li>
+<li><p><a class="reference external" href="https://github.com/ethereum/trio-run-in-process">Trio run_in_process</a> - Trio based API for running code in a separate process.</p></li>
+<li><p><a class="reference external" href="https://trio-parallel.readthedocs.io/">trio-parallel</a> - CPU parallelism for Trio</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="id6">
+<h2>流处理<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<p><strong>Stream Processing</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--8-input--1" name="tab-set--8" type="radio"><label class="tab-label" for="tab-set--8-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/andersea/slurry">Slurry</a> - Slurry 是一个用于构建基于 Trio 的反应式数据处理应用程序的微框架。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--8-input--2" name="tab-set--8" type="radio"><label class="tab-label" for="tab-set--8-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/andersea/slurry">Slurry</a> - Slurry is a microframework for building reactive, data processing applications with Trio.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="rpc">
+<h2>RPC<a class="headerlink" href="#rpc" title="Link to this heading">¶</a></h2>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--9-input--1" name="tab-set--9" type="radio"><label class="tab-label" for="tab-set--9-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/python-trio/purerpc">purepc</a> - 使用 anyio 实现的原生异步 Python gRPC 客户端和服务器实现。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--9-input--2" name="tab-set--9" type="radio"><label class="tab-label" for="tab-set--9-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/python-trio/purerpc">purepc</a> - Native, async Python gRPC client and server implementation using anyio.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="id7">
+<h2>测试<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
+<p><strong>Testing</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--10-input--1" name="tab-set--10" type="radio"><label class="tab-label" for="tab-set--10-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/python-trio/pytest-trio">pytest-trio</a> - Trio 的 Pytest 插件。</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/hypothesis-trio">hypothesis-trio</a> - Hypothesis 开箱即用地支持 Trio 用于 <code class="docutils literal notranslate"><span class="pre">&#64;given(...)</span></code> 测试；此扩展提供 Trio 兼容的有状态测试。</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/trustme">trustme</a> - 为挑剔的测试者提供的高质量 TLS 证书，您可以随时等待。</p></li>
+<li><p><a class="reference external" href="https://github.com/klen/pytest-aio">pytest-aio</a> - 支持 trio、curio、asyncio 的 Pytest 插件。</p></li>
+<li><p><a class="reference external" href="https://github.com/etianen/logot">logot</a> - 测试您的异步代码是否正确记录日志。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--10-input--2" name="tab-set--10" type="radio"><label class="tab-label" for="tab-set--10-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/python-trio/pytest-trio">pytest-trio</a> - Pytest plugin for trio.</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/hypothesis-trio">hypothesis-trio</a> - Hypothesis supports Trio out of the box for <code class="docutils literal notranslate"><span class="pre">&#64;given(...)</span></code> tests; this extension provides Trio-compatible stateful testing.</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/trustme">trustme</a> - #1 quality TLS certs while you wait, for the discerning tester.</p></li>
+<li><p><a class="reference external" href="https://github.com/klen/pytest-aio">pytest-aio</a> - Pytest plugin with support for trio, curio, asyncio</p></li>
+<li><p><a class="reference external" href="https://github.com/etianen/logot">logot</a> - Test whether your async code is logging correctly.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="id10">
+<h2>工具和实用程序<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
+<p><strong>Tools and Utilities</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--11-input--1" name="tab-set--11" type="radio"><label class="tab-label" for="tab-set--11-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/groove-x/trio-util">trio-util</a> - 一组用于 Trio 异步/等待框架的工具。</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/flake8-async">flake8-async</a> - 用于 Trio、AnyIO 和/或 asyncio 中各种问题的高度意见化的 linter。可以作为 flake8 插件运行，或作为独立工具，支持自动修复某些错误。</p></li>
+<li><p><a class="reference external" href="https://github.com/oremanj/tricycle">tricycle</a> - 这是一个有趣但可能尚未完全证明的 Trio 扩展库。</p></li>
+<li><p><a class="reference external" href="https://github.com/jd/tenacity">tenacity</a> - 支持异步/等待的 Python 重试库。</p></li>
+<li><p><a class="reference external" href="https://github.com/belm0/perf-timer">perf-timer</a> - 带有 Trio 异步支持的代码计时器（参见 <code class="docutils literal notranslate"><span class="pre">TrioPerfTimer</span></code>）。收集代码块的执行时间，排除协程未调度时的时间，例如阻塞 I/O 和睡眠期间。还提供 <code class="docutils literal notranslate"><span class="pre">trio_perf_counter()</span></code> 用于低级计时。</p></li>
+<li><p><a class="reference external" href="https://github.com/florimondmanca/aiometer">aiometer</a> - 并发执行大量任务，同时控制并发限制。</p></li>
+<li><p><a class="reference external" href="https://linkdd.github.io/triotp">triotp</a> - Python Trio 的 OTP 框架。</p></li>
+<li><p><a class="reference external" href="https://github.com/arthur-tacca/aioresult">aioresult</a> - 获取 Trio 或 anyio 中后台异步函数的返回值，带有一个简单的 Future 类和等待工具。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--11-input--2" name="tab-set--11" type="radio"><label class="tab-label" for="tab-set--11-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/groove-x/trio-util">trio-util</a> - An assortment of utilities for the Trio async/await framework.</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/flake8-async">flake8-async</a> - Highly opinionated linter for various sorts of problems in Trio, AnyIO and/or asyncio. Can run as a flake8 plugin, or standalone with support for autofixing some errors.</p></li>
+<li><p><a class="reference external" href="https://github.com/oremanj/tricycle">tricycle</a> - This is a library of interesting-but-maybe-not-yet-fully-proven extensions to Trio.</p></li>
+<li><p><a class="reference external" href="https://github.com/jd/tenacity">tenacity</a> - Retrying library for Python with async/await support.</p></li>
+<li><p><a class="reference external" href="https://github.com/belm0/perf-timer">perf-timer</a> - A code timer with Trio async support (see <code class="docutils literal notranslate"><span class="pre">TrioPerfTimer</span></code>).  Collects execution time of a block of code excluding time when the coroutine isn't scheduled, such as during blocking I/O and sleep.  Also offers <code class="docutils literal notranslate"><span class="pre">trio_perf_counter()</span></code> for low-level timing.</p></li>
+<li><p><a class="reference external" href="https://github.com/florimondmanca/aiometer">aiometer</a> - Execute lots of tasks concurrently while controlling concurrency limits</p></li>
+<li><p><a class="reference external" href="https://linkdd.github.io/triotp">triotp</a> - OTP framework for Python Trio</p></li>
+<li><p><a class="reference external" href="https://github.com/arthur-tacca/aioresult">aioresult</a> - Get the return value of a background async function in Trio or anyio, along with a simple Future class and wait utilities</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="trio-asyncio">
+<h2>Trio/Asyncio 互操作性<a class="headerlink" href="#trio-asyncio" title="Link to this heading">¶</a></h2>
+<p><strong>Trio/Asyncio Interoperability</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--12-input--1" name="tab-set--12" type="radio"><label class="tab-label" for="tab-set--12-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/hellowac/anyio-zh-cn">anyio</a> - AnyIO 是一个异步兼容性 API，允许针对它编写的应用程序和库在 asyncio 或 trio 上无需修改即可运行。</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/sniffio">sniffio</a> - 这是一个小型包，唯一的目的就是让你检测你的代码正在使用哪个异步库。</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/trio-asyncio">trio-asyncio</a> - Trio-Asyncio 让你可以在 Trio 应用中使用许多 asyncio 库。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--12-input--2" name="tab-set--12" type="radio"><label class="tab-label" for="tab-set--12-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/agronholm/anyio">anyio</a> - AnyIO is a asynchronous compatibility API that allows applications and libraries written against it to run unmodified on asyncio or trio.</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/sniffio">sniffio</a> - This is a tiny package whose only purpose is to let you detect which async library your code is running under.</p></li>
+<li><p><a class="reference external" href="https://github.com/python-trio/trio-asyncio">trio-asyncio</a> - Trio-Asyncio lets you use many asyncio libraries from your Trio app.</p></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="ref-core/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Trio 的核心功能</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="tutorial.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">教程</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2017, Nathaniel J. Smith
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/hellowac/trio-zh-cn" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">超棒的 Trio 库</a><ul>
+<li><a class="reference internal" href="#id1">入门</a></li>
+<li><a class="reference internal" href="#web-html">Web 和 HTML</a></li>
+<li><a class="reference internal" href="#id2">数据库</a></li>
+<li><a class="reference internal" href="#id3">物联网</a></li>
+<li><a class="reference internal" href="#id4">构建命令行应用程序</a></li>
+<li><a class="reference internal" href="#gui">构建 GUI 应用程序</a></li>
+<li><a class="reference internal" href="#id5">多核/多处理</a></li>
+<li><a class="reference internal" href="#id6">流处理</a></li>
+<li><a class="reference internal" href="#rpc">RPC</a></li>
+<li><a class="reference internal" href="#id7">测试</a></li>
+<li><a class="reference internal" href="#id10">工具和实用程序</a></li>
+<li><a class="reference internal" href="#trio-asyncio">Trio/Asyncio 互操作性</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=d2451d57"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="_static/tabs.js?v=3ee01567"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>

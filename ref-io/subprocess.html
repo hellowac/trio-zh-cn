@@ -1,0 +1,1578 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="信号" href="signals.html" /><link rel="prev" title="异步文件系统 I/O" href="async_file_io.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon-32.png"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>生成子进程 - Trio 0.27.0+dev 文档</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-codeautolink.css?v=125d5c1c" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/hackrtd.css?v=2d9fc201" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Trio 0.27.0+dev 文档</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/wordmark-transparent.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Trio 0.27.0+dev 文档</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Trio 友好且全面的手册：</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../awesome-trio-libraries.html">超棒的 Trio 库</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ref-core/index.html">Trio 的核心功能</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Trio 的核心功能</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/run.html">运行 Trio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/general_principles.html">一般原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/time_clock.html">时间和时钟</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/cancel_timeout.html">取消和超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/tasks.html">任务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/task_local_storeage.html">任务存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/task_sync.html">任务同步和通信</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/note_async_generator.html">异步生成器注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/threads.html">线程（如果必须）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/debugging.html">交互式调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-core/exc_warn.html">异常和警告</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Trio 中的 I/O</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Trio 中的 I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="abs_api.html">抽象流 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="low_level.html">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async_file_io.html">异步文件系统 I/O</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">生成子进程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signals.html">信号</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-testing.html">Trio 中的测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-lowlevel.html">自省和扩展 Trio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">设计和内部结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">发布历史</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">为 Trio 及相关项目做出贡献</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasing.html">准备发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">行为守则</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/blob/sync-docs/cn_docs/source/ref-io/subprocess.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/edit/sync-docs/cn_docs/source/ref-io/subprocess.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="subprocess">
+<span id="id1"></span><h1>生成子进程<a class="headerlink" href="#subprocess" title="Link to this heading">¶</a></h1>
+<p><strong>Spawning subprocesses</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 提供了支持生成其他程序作为子进程、通过管道与它们通信、发送信号并等待它们退出的功能。</p>
+<p>大多数情况下，这通过我们的高级接口 <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run_process()</span></code></a> 来完成。它允许您运行一个进程直到完成，同时可选地捕获输出，或者将其运行在后台任务中，并在进程运行时与之交互：</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.run_process">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">run_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">b''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_stdout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_stderr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deliver_cancel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">TASK_STATUS_IGNORED</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.run_process" title="Link to this definition">¶</a></dt>
+<dd><p>Run <code class="docutils literal notranslate"><span class="pre">command</span></code> in a subprocess and wait for it to complete.</p>
+<p>This function can be called in two different ways.</p>
+<p>One option is a direct call, like:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">completed_process_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">run_process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, it returns a <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CompletedProcess" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">subprocess.CompletedProcess</span></code></a> instance
+describing the results. Use this if you want to treat a process like a
+function call.</p>
+<p>The other option is to run it as a task using <cite>Nursery.start</cite> – the enhanced version
+of <cite>~Nursery.start_soon</cite> that lets a task pass back a value during startup:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="k">await</span> <span class="n">nursery</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">trio</span><span class="o">.</span><span class="n">run_process</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, <cite>~Nursery.start</cite> returns a <cite>Process</cite> object that you can use
+to interact with the process while it's running. Use this if you want to
+treat a process like a background task.</p>
+<p>Either way, <cite>run_process</cite> makes sure that the process has exited before
+returning, handles cancellation, optionally checks for errors, and
+provides some convenient shorthands for dealing with the child's
+input/output.</p>
+<p><strong>Input:</strong> <cite>run_process</cite> supports all the same <code class="docutils literal notranslate"><span class="pre">stdin=</span></code> arguments as
+<cite>subprocess.Popen</cite>. In addition, if you simply want to pass in some fixed
+data, you can pass a plain <cite>bytes</cite> object, and <cite>run_process</cite> will take
+care of setting up a pipe, feeding in the data you gave, and then sending
+end-of-file. The default is <code class="docutils literal notranslate"><span class="pre">b&quot;&quot;</span></code>, which means that the child will receive
+an empty stdin. If you want the child to instead read from the parent's
+stdin, use <code class="docutils literal notranslate"><span class="pre">stdin=None</span></code>.</p>
+<p><strong>Output:</strong> By default, any output produced by the subprocess is
+passed through to the standard output and error streams of the
+parent Trio process.</p>
+<p>When calling <cite>run_process</cite> directly, you can capture the subprocess's output by
+passing <code class="docutils literal notranslate"><span class="pre">capture_stdout=True</span></code> to capture the subprocess's standard output, and/or
+<code class="docutils literal notranslate"><span class="pre">capture_stderr=True</span></code> to capture its standard error. Captured data is collected up
+by Trio into an in-memory buffer, and then provided as the
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CompletedProcess.stdout" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stdout</span></code></a> and/or
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CompletedProcess.stderr" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stderr</span></code></a> attributes of the returned
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CompletedProcess" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompletedProcess</span></code></a> object. The value for any stream that was not
+captured will be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>If you want to capture both stdout and stderr while keeping them
+separate, pass <code class="docutils literal notranslate"><span class="pre">capture_stdout=True,</span> <span class="pre">capture_stderr=True</span></code>.</p>
+<p>If you want to capture both stdout and stderr but mixed together
+in the order they were printed, use: <code class="docutils literal notranslate"><span class="pre">capture_stdout=True,</span> <span class="pre">stderr=subprocess.STDOUT</span></code>.
+This directs the child's stderr into its stdout, so the combined
+output will be available in the <cite>~subprocess.CompletedProcess.stdout</cite>
+attribute.</p>
+<p>If you're using <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">nursery.start(trio.run_process,</span> <span class="pre">...)</span></code> and want to capture
+the subprocess's output for further processing, then use <code class="docutils literal notranslate"><span class="pre">stdout=subprocess.PIPE</span></code>
+and then make sure to read the data out of the <cite>Process.stdout</cite> stream. If you want
+to capture stderr separately, use <code class="docutils literal notranslate"><span class="pre">stderr=subprocess.PIPE</span></code>. If you want to capture
+both, but mixed together in the correct order, use <code class="docutils literal notranslate"><span class="pre">stdout=subprocess.PIPE,</span>
+<span class="pre">stderr=subprocess.STDOUT</span></code>.</p>
+<p><strong>Error checking:</strong> If the subprocess exits with a nonzero status
+code, indicating failure, <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_process()</span></code></a> raises a
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CalledProcessError" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">subprocess.CalledProcessError</span></code></a> exception rather than
+returning normally. The captured outputs are still available as
+the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CalledProcessError.stdout" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stdout</span></code></a> and
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CalledProcessError.stderr" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stderr</span></code></a> attributes of that
+exception.  To disable this behavior, so that <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_process()</span></code></a>
+returns normally even if the subprocess exits abnormally, pass <code class="docutils literal notranslate"><span class="pre">check=False</span></code>.</p>
+<p>Note that this can make the <code class="docutils literal notranslate"><span class="pre">capture_stdout</span></code> and <code class="docutils literal notranslate"><span class="pre">capture_stderr</span></code>
+arguments useful even when starting <cite>run_process</cite> as a task: if you only
+care about the output if the process fails, then you can enable capturing
+and then read the output off of the <cite>~subprocess.CalledProcessError</cite>.</p>
+<p><strong>Cancellation:</strong> If cancelled, <cite>run_process</cite> sends a termination
+request to the subprocess, then waits for it to fully exit. The
+<code class="docutils literal notranslate"><span class="pre">deliver_cancel</span></code> argument lets you control how the process is terminated.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><cite>run_process</cite> is intentionally similar to the standard library
+<cite>subprocess.run</cite>, but some of the defaults are different. Specifically, we
+default to:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">check=True</span></code>, because <a class="reference external" href="https://www.python.org/dev/peps/pep-0020/">&quot;errors should never pass silently / unless
+explicitly silenced&quot;</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stdin=b&quot;&quot;</span></code>, because it produces less-confusing results if a subprocess
+unexpectedly tries to read from stdin.</p></li>
+</ul>
+<p>To get the <cite>subprocess.run</cite> semantics, use <code class="docutils literal notranslate"><span class="pre">check=False,</span> <span class="pre">stdin=None</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#list" title="（在 Python v3.13）"><em>list</em></a><em> or </em><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><em>str</em></a>) -- The command to run. Typically this is a
+sequence of strings such as <code class="docutils literal notranslate"><span class="pre">['ls',</span> <span class="pre">'-l',</span> <span class="pre">'directory</span> <span class="pre">with</span> <span class="pre">spaces']</span></code>,
+where the first element names the executable to invoke and the other
+elements specify its arguments. With <code class="docutils literal notranslate"><span class="pre">shell=True</span></code> in the
+<code class="docutils literal notranslate"><span class="pre">**options</span></code>, or on Windows, <code class="docutils literal notranslate"><span class="pre">command</span></code> may alternatively
+be a string, which will be parsed following platform-dependent
+<a class="reference internal" href="#subprocess-quoting"><span class="std std-ref">quoting rules</span></a>.</p></li>
+<li><p><strong>stdin</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#bytes" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bytes</span></code></a>, subprocess.PIPE, file descriptor, or None) -- <p>The
+bytes to provide to the subprocess on its standard input stream, or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> if the subprocess's standard input should come from the
+same place as the parent Trio process's standard input. As is the
+case with the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#module-subprocess" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code></a> module, you can also pass a file
+descriptor or an object with a <code class="docutils literal notranslate"><span class="pre">fileno()</span></code> method, in which case
+the subprocess's standard input will come from that file.</p>
+<p>When starting <cite>run_process</cite> as a background task, you can also use
+<code class="docutils literal notranslate"><span class="pre">stdin=subprocess.PIPE</span></code>, in which case <cite>Process.stdin</cite> will be a
+<cite>~trio.abc.SendStream</cite> that you can use to send data to the child.</p>
+</p></li>
+<li><p><strong>capture_stdout</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- If true, capture the bytes that the subprocess
+writes to its standard output stream and return them in the
+<cite>~subprocess.CompletedProcess.stdout</cite> attribute of the returned
+<cite>subprocess.CompletedProcess</cite> or <cite>subprocess.CalledProcessError</cite>.</p></li>
+<li><p><strong>capture_stderr</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- If true, capture the bytes that the subprocess
+writes to its standard error stream and return them in the
+<cite>~subprocess.CompletedProcess.stderr</cite> attribute of the returned
+<cite>~subprocess.CompletedProcess</cite> or <cite>subprocess.CalledProcessError</cite>.</p></li>
+<li><p><strong>check</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- If false, don't validate that the subprocess exits
+successfully. You should be sure to check the
+<code class="docutils literal notranslate"><span class="pre">returncode</span></code> attribute of the returned object if you pass
+<code class="docutils literal notranslate"><span class="pre">check=False</span></code>, so that errors don't pass silently.</p></li>
+<li><p><strong>deliver_cancel</strong> (<em>async function</em><em> or </em><em>None</em>) -- <p>If <cite>run_process</cite> is cancelled,
+then it needs to kill the child process. There are multiple ways to
+do this, so we let you customize it.</p>
+<p>If you pass None (the default), then the behavior depends on the
+platform:</p>
+<ul>
+<li><p>On Windows, Trio calls <code class="docutils literal notranslate"><span class="pre">TerminateProcess</span></code>, which should kill the
+process immediately.</p></li>
+<li><p>On Unix-likes, the default behavior is to send a <code class="docutils literal notranslate"><span class="pre">SIGTERM</span></code>, wait
+5 seconds, and send a <code class="docutils literal notranslate"><span class="pre">SIGKILL</span></code>.</p></li>
+</ul>
+<p>Alternatively, you can customize this behavior by passing in an
+arbitrary async function, which will be called with the <cite>Process</cite>
+object as an argument. For example, the default Unix behavior could
+be implemented like this:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">my_deliver_cancel</span><span class="p">(</span><span class="n">process</span><span class="p">):</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">send_signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">send_signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When the process actually exits, the <code class="docutils literal notranslate"><span class="pre">deliver_cancel</span></code> function
+will automatically be cancelled – so if the process exits after
+<code class="docutils literal notranslate"><span class="pre">SIGTERM</span></code>, then we'll never reach the <code class="docutils literal notranslate"><span class="pre">SIGKILL</span></code>.</p>
+<p>In any case, <cite>run_process</cite> will always wait for the child process to
+exit before raising <cite>Cancelled</cite>.</p>
+</p></li>
+<li><p><strong>**options</strong> (<span class="sphinx_autodoc_typehints-type">object</span>) -- <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_process()</span></code></a> also accepts any <a class="reference internal" href="#subprocess-options"><span class="std std-ref">general subprocess
+options</span></a> and passes them on to the
+<a class="reference internal" href="#trio.Process" title="trio.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></a> constructor. This includes the
+<code class="docutils literal notranslate"><span class="pre">stdout</span></code> and <code class="docutils literal notranslate"><span class="pre">stderr</span></code> options, which provide additional
+redirection possibilities such as <code class="docutils literal notranslate"><span class="pre">stderr=subprocess.STDOUT</span></code>,
+<code class="docutils literal notranslate"><span class="pre">stdout=subprocess.DEVNULL</span></code>, or file descriptors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type">subprocess.CompletedProcess[bytes]</span></p>
+</dd>
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>When called normally – a <cite>subprocess.CompletedProcess</cite> instance
+describing the return code and outputs.</p>
+<p>When called via <cite>Nursery.start</cite> – a <cite>trio.Process</cite> instance.</p>
+</p>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#UnicodeError" title="（在 Python v3.13）"><strong>UnicodeError</strong></a> -- if <code class="docutils literal notranslate"><span class="pre">stdin</span></code> is specified as a Unicode string, rather
+    than bytes</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> -- if multiple redirections are specified for the same
+    stream, e.g., both <code class="docutils literal notranslate"><span class="pre">capture_stdout=True</span></code> and
+    <code class="docutils literal notranslate"><span class="pre">stdout=subprocess.DEVNULL</span></code></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CalledProcessError" title="（在 Python v3.13）"><strong>subprocess.CalledProcessError</strong></a> -- if <code class="docutils literal notranslate"><span class="pre">check=False</span></code> is not passed
+    and the process exits with a nonzero exit status</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#OSError" title="（在 Python v3.13）"><strong>OSError</strong></a> -- if an error is encountered starting or communicating with
+    the process</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ExceptionGroup" title="（在 Python v3.13）"><strong>ExceptionGroup</strong></a> -- if exceptions occur in <code class="docutils literal notranslate"><span class="pre">deliver_cancel</span></code>,
+    or when exceptions occur when communicating with the subprocess.
+    If strict_exception_groups is set to false in the global context,
+    which is deprecated, then single exceptions will be collapsed.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The child process runs in the same process group as the parent
+Trio process, so a Ctrl+C will be delivered simultaneously to both
+parent and child. If you don't want this behavior, consult your
+platform's documentation for starting child processes in a different
+process group.</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="trio._subprocess.HasFileno">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio._subprocess.</span></span><span class="sig-name descname"><span class="pre">HasFileno</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Protocol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio._subprocess.HasFileno" title="Link to this definition">¶</a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/zh-cn/3/library/typing.html#typing.Protocol" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Represents any file-like object that has a file descriptor.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio._subprocess.HasFileno.fileno">
+<span class="sig-name descname"><span class="pre">fileno</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio._subprocess.HasFileno.fileno" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio._subprocess.StrOrBytesPath">
+<span class="sig-prename descclassname"><span class="pre">trio._subprocess.</span></span><span class="sig-name descname"><span class="pre">StrOrBytesPath</span></span><a class="headerlink" href="#trio._subprocess.StrOrBytesPath" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#bytes" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/os.html#os.PathLike" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathLike</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/os.html#os.PathLike" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathLike</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#bytes" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>] 的别名</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="trio.Process">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">Process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">popen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stderr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Process" title="Link to this definition">¶</a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#object" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A child process. Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">subprocess.Popen</span></code></a>, but async.</p>
+<p>This class has no public constructor. The most common way to get a
+<cite>Process</cite> object is to combine <cite>Nursery.start</cite> with <cite>run_process</cite>:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">process_object</span> <span class="o">=</span> <span class="k">await</span> <span class="n">nursery</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">run_process</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This way, <cite>run_process</cite> supervises the process and makes sure that it is
+cleaned up properly, while optionally checking the return value, feeding
+it input, and so on.</p>
+<p>If you need more control – for example, because you want to spawn a child
+process that outlives your program – then another option is to use
+<cite>trio.lowlevel.open_process</cite>:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">process_object</span> <span class="o">=</span> <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">lowlevel</span><span class="o">.</span><span class="n">open_process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.Process.args">
+<span class="sig-name descname"><span class="pre">args</span></span><a class="headerlink" href="#trio.Process.args" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">command</span></code> passed at construction time,
+specifying the process to execute and its arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）">str</a> or <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#list" title="（在 Python v3.13）">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.Process.pid">
+<span class="sig-name descname"><span class="pre">pid</span></span><a class="headerlink" href="#trio.Process.pid" title="Link to this definition">¶</a></dt>
+<dd><p>The process ID of the child process managed by this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.Process.stdin">
+<span class="sig-name descname"><span class="pre">stdin</span></span><a class="headerlink" href="#trio.Process.stdin" title="Link to this definition">¶</a></dt>
+<dd><p>A stream connected to the child's
+standard input stream: when you write bytes here, they become available
+for the child to read. Only available if the <a class="reference internal" href="#trio.Process" title="trio.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></a>
+was constructed using <code class="docutils literal notranslate"><span class="pre">stdin=PIPE</span></code>; otherwise this will be None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="abs_api.html#trio.abc.SendStream" title="trio.abc.SendStream">trio.abc.SendStream</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.Process.stdout">
+<span class="sig-name descname"><span class="pre">stdout</span></span><a class="headerlink" href="#trio.Process.stdout" title="Link to this definition">¶</a></dt>
+<dd><p>A stream connected to
+the child's standard output stream: when the child writes to
+standard output, the written bytes become available for you
+to read here. Only available if the <a class="reference internal" href="#trio.Process" title="trio.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></a> was
+constructed using <code class="docutils literal notranslate"><span class="pre">stdout=PIPE</span></code>; otherwise this will be None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="abs_api.html#trio.abc.ReceiveStream" title="trio.abc.ReceiveStream">trio.abc.ReceiveStream</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.Process.stderr">
+<span class="sig-name descname"><span class="pre">stderr</span></span><a class="headerlink" href="#trio.Process.stderr" title="Link to this definition">¶</a></dt>
+<dd><p>A stream connected to
+the child's standard error stream: when the child writes to
+standard error, the written bytes become available for you
+to read here. Only available if the <a class="reference internal" href="#trio.Process" title="trio.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></a> was
+constructed using <code class="docutils literal notranslate"><span class="pre">stderr=PIPE</span></code>; otherwise this will be None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="abs_api.html#trio.abc.ReceiveStream" title="trio.abc.ReceiveStream">trio.abc.ReceiveStream</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.Process.stdio">
+<span class="sig-name descname"><span class="pre">stdio</span></span><a class="headerlink" href="#trio.Process.stdio" title="Link to this definition">¶</a></dt>
+<dd><p>A stream that sends data to
+the child's standard input and receives from the child's standard
+output. Only available if both <a class="reference internal" href="#trio.Process.stdin" title="trio.Process.stdin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stdin</span></code></a> and <a class="reference internal" href="#trio.Process.stdout" title="trio.Process.stdout"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stdout</span></code></a> are
+available; otherwise this will be None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="abs_api.html#trio.StapledStream" title="trio.StapledStream">trio.StapledStream</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.Process.returncode">
+<span class="sig-name descname"><span class="pre">returncode</span></span><a class="headerlink" href="#trio.Process.returncode" title="Link to this definition">¶</a></dt>
+<dd><p>The exit status of the process (an integer), or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it's
+still running.</p>
+<p>By convention, a return code of zero indicates success.  On
+UNIX, negative values indicate termination due to a signal,
+e.g., -11 if terminated by signal 11 (<code class="docutils literal notranslate"><span class="pre">SIGSEGV</span></code>).  On
+Windows, a process that exits due to a call to
+<a class="reference internal" href="#id5" title="trio.Process.terminate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Process.terminate()</span></code></a> will have an exit status of 1.</p>
+<p>Unlike the standard library <cite>subprocess.Popen.returncode</cite>, you don't
+have to call <cite>poll</cite> or <cite>wait</cite> to update this attribute; it's
+automatically updated as needed, and will always give you the latest
+information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Process.wait">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Process.wait" title="Link to this definition">¶</a></dt>
+<dd><p>Block until the process exits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>The exit status of the process; see <a class="reference internal" href="#id3" title="trio.Process.returncode"><code class="xref py py-attr docutils literal notranslate"><span class="pre">returncode</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Process.poll">
+<span class="sig-name descname"><span class="pre">poll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Process.poll" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the exit status of the process (an integer), or <code class="docutils literal notranslate"><span class="pre">None</span></code> if
+it's still running.</p>
+<p>Note that on Trio (unlike the standard library <cite>subprocess.Popen</cite>),
+<code class="docutils literal notranslate"><span class="pre">process.poll()</span></code> and <code class="docutils literal notranslate"><span class="pre">process.returncode</span></code> always give the same
+result. See <cite>returncode</cite> for more details. This method is only
+included to make it easier to port code from <cite>subprocess</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Process.kill">
+<span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Process.kill" title="Link to this definition">¶</a></dt>
+<dd><p>Immediately terminate the process.</p>
+<p>On UNIX, this is equivalent to
+<code class="docutils literal notranslate"><span class="pre">send_signal(signal.SIGKILL)</span></code>.  On Windows, it calls
+<code class="docutils literal notranslate"><span class="pre">TerminateProcess</span></code>. In both cases, the process cannot
+prevent itself from being killed, but the termination will be
+delivered asynchronously; use <a class="reference internal" href="#id6" title="trio.Process.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a> if you want to
+ensure the process is actually dead before proceeding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Process.terminate">
+<span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.Process.terminate" title="Link to this definition">¶</a></dt>
+<dd><p>Terminate the process, politely if possible.</p>
+<p>On UNIX, this is equivalent to
+<code class="docutils literal notranslate"><span class="pre">send_signal(signal.SIGTERM)</span></code>; by convention this requests
+graceful termination, but a misbehaving or buggy process might
+ignore it. On Windows, <a class="reference internal" href="#id5" title="trio.Process.terminate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">terminate()</span></code></a> forcibly terminates the
+process in the same manner as <a class="reference internal" href="#id0" title="trio.Process.kill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">kill()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Process.send_signal">
+<span class="sig-name descname"><span class="pre">send_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Process.send_signal" title="Link to this definition">¶</a></dt>
+<dd><p>Send signal <code class="docutils literal notranslate"><span class="pre">sig</span></code> to the process.</p>
+<p>On UNIX, <code class="docutils literal notranslate"><span class="pre">sig</span></code> may be any signal defined in the
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/signal.html#module-signal" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">signal</span></code></a> module, such as <code class="docutils literal notranslate"><span class="pre">signal.SIGINT</span></code> or
+<code class="docutils literal notranslate"><span class="pre">signal.SIGTERM</span></code>. On Windows, it may be anything accepted by
+the standard library <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen.send_signal" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subprocess.Popen.send_signal()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen.communicate" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">communicate()</span></code></a> 不是 <a class="reference internal" href="#trio.Process" title="trio.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></a> 对象上的方法；对于简单的捕获，正常调用 <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_process()</span></code></a>，或者如果您有特殊需求，可以自己编写循环。 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen.communicate" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">communicate()</span></code></a> 在标准库中有非常不寻常的取消行为（在某些平台上，它会生成一个后台线程，在超时过期后仍然继续从子进程读取），我们希望提供一个更少惊讶的接口。</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd><p>Immediately terminate the process.</p>
+<p>On UNIX, this is equivalent to
+<code class="docutils literal notranslate"><span class="pre">send_signal(signal.SIGKILL)</span></code>.  On Windows, it calls
+<code class="docutils literal notranslate"><span class="pre">TerminateProcess</span></code>. In both cases, the process cannot
+prevent itself from being killed, but the termination will be
+delivered asynchronously; use <a class="reference internal" href="#id6" title="trio.Process.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a> if you want to
+ensure the process is actually dead before proceeding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">poll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the exit status of the process (an integer), or <code class="docutils literal notranslate"><span class="pre">None</span></code> if
+it's still running.</p>
+<p>Note that on Trio (unlike the standard library <cite>subprocess.Popen</cite>),
+<code class="docutils literal notranslate"><span class="pre">process.poll()</span></code> and <code class="docutils literal notranslate"><span class="pre">process.returncode</span></code> always give the same
+result. See <cite>returncode</cite> for more details. This method is only
+included to make it easier to port code from <cite>subprocess</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id3">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">returncode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><span class="pre">None</span></a></em><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<dd><p>The exit status of the process (an integer), or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it's
+still running.</p>
+<p>By convention, a return code of zero indicates success.  On
+UNIX, negative values indicate termination due to a signal,
+e.g., -11 if terminated by signal 11 (<code class="docutils literal notranslate"><span class="pre">SIGSEGV</span></code>).  On
+Windows, a process that exits due to a call to
+<a class="reference internal" href="#id5" title="trio.Process.terminate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Process.terminate()</span></code></a> will have an exit status of 1.</p>
+<p>Unlike the standard library <cite>subprocess.Popen.returncode</cite>, you don't
+have to call <cite>poll</cite> or <cite>wait</cite> to update this attribute; it's
+automatically updated as needed, and will always give you the latest
+information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">send_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
+<dd><p>Send signal <code class="docutils literal notranslate"><span class="pre">sig</span></code> to the process.</p>
+<p>On UNIX, <code class="docutils literal notranslate"><span class="pre">sig</span></code> may be any signal defined in the
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/signal.html#module-signal" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">signal</span></code></a> module, such as <code class="docutils literal notranslate"><span class="pre">signal.SIGINT</span></code> or
+<code class="docutils literal notranslate"><span class="pre">signal.SIGTERM</span></code>. On Windows, it may be anything accepted by
+the standard library <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen.send_signal" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subprocess.Popen.send_signal()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<dd><p>Terminate the process, politely if possible.</p>
+<p>On UNIX, this is equivalent to
+<code class="docutils literal notranslate"><span class="pre">send_signal(signal.SIGTERM)</span></code>; by convention this requests
+graceful termination, but a misbehaving or buggy process might
+ignore it. On Windows, <a class="reference internal" href="#id5" title="trio.Process.terminate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">terminate()</span></code></a> forcibly terminates the
+process in the same manner as <a class="reference internal" href="#id0" title="trio.Process.kill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">kill()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
+<dd><p>Block until the process exits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>The exit status of the process; see <a class="reference internal" href="#id3" title="trio.Process.returncode"><code class="xref py py-attr docutils literal notranslate"><span class="pre">returncode</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>如果 <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run_process()</span></code></a> 太有限制，我们还提供了一个低级 API， <a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.open_process" title="trio.lowlevel.open_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.lowlevel.open_process()</span></code></a>。例如，如果您想生成一个将比父进程生命周期更长并且会成为孤儿的子进程，那么 <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_process()</span></code></a> 做不到这一点，但 <a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.open_process" title="trio.lowlevel.open_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">open_process()</span></code></a> 可以。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>Trio provides support for spawning other programs as subprocesses,
+communicating with them via pipes, sending them signals, and waiting
+for them to exit.</p>
+<p>Most of the time, this is done through our high-level interface,
+<a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run_process()</span></code></a>. It lets you either run a process to completion
+while optionally capturing the output, or else run it in a background
+task and interact with it while it's running:</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">await</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">run_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">b''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_stdout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_stderr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deliver_cancel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">TASK_STATUS_IGNORED</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Run <code class="docutils literal notranslate"><span class="pre">command</span></code> in a subprocess and wait for it to complete.</p>
+<p>This function can be called in two different ways.</p>
+<p>One option is a direct call, like:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">completed_process_info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">run_process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, it returns a <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CompletedProcess" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">subprocess.CompletedProcess</span></code></a> instance
+describing the results. Use this if you want to treat a process like a
+function call.</p>
+<p>The other option is to run it as a task using <cite>Nursery.start</cite> – the enhanced version
+of <cite>~Nursery.start_soon</cite> that lets a task pass back a value during startup:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">process</span> <span class="o">=</span> <span class="k">await</span> <span class="n">nursery</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">trio</span><span class="o">.</span><span class="n">run_process</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, <cite>~Nursery.start</cite> returns a <cite>Process</cite> object that you can use
+to interact with the process while it's running. Use this if you want to
+treat a process like a background task.</p>
+<p>Either way, <cite>run_process</cite> makes sure that the process has exited before
+returning, handles cancellation, optionally checks for errors, and
+provides some convenient shorthands for dealing with the child's
+input/output.</p>
+<p><strong>Input:</strong> <cite>run_process</cite> supports all the same <code class="docutils literal notranslate"><span class="pre">stdin=</span></code> arguments as
+<cite>subprocess.Popen</cite>. In addition, if you simply want to pass in some fixed
+data, you can pass a plain <cite>bytes</cite> object, and <cite>run_process</cite> will take
+care of setting up a pipe, feeding in the data you gave, and then sending
+end-of-file. The default is <code class="docutils literal notranslate"><span class="pre">b&quot;&quot;</span></code>, which means that the child will receive
+an empty stdin. If you want the child to instead read from the parent's
+stdin, use <code class="docutils literal notranslate"><span class="pre">stdin=None</span></code>.</p>
+<p><strong>Output:</strong> By default, any output produced by the subprocess is
+passed through to the standard output and error streams of the
+parent Trio process.</p>
+<p>When calling <cite>run_process</cite> directly, you can capture the subprocess's output by
+passing <code class="docutils literal notranslate"><span class="pre">capture_stdout=True</span></code> to capture the subprocess's standard output, and/or
+<code class="docutils literal notranslate"><span class="pre">capture_stderr=True</span></code> to capture its standard error. Captured data is collected up
+by Trio into an in-memory buffer, and then provided as the
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CompletedProcess.stdout" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stdout</span></code></a> and/or
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CompletedProcess.stderr" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stderr</span></code></a> attributes of the returned
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CompletedProcess" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompletedProcess</span></code></a> object. The value for any stream that was not
+captured will be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>If you want to capture both stdout and stderr while keeping them
+separate, pass <code class="docutils literal notranslate"><span class="pre">capture_stdout=True,</span> <span class="pre">capture_stderr=True</span></code>.</p>
+<p>If you want to capture both stdout and stderr but mixed together
+in the order they were printed, use: <code class="docutils literal notranslate"><span class="pre">capture_stdout=True,</span> <span class="pre">stderr=subprocess.STDOUT</span></code>.
+This directs the child's stderr into its stdout, so the combined
+output will be available in the <cite>~subprocess.CompletedProcess.stdout</cite>
+attribute.</p>
+<p>If you're using <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">nursery.start(trio.run_process,</span> <span class="pre">...)</span></code> and want to capture
+the subprocess's output for further processing, then use <code class="docutils literal notranslate"><span class="pre">stdout=subprocess.PIPE</span></code>
+and then make sure to read the data out of the <cite>Process.stdout</cite> stream. If you want
+to capture stderr separately, use <code class="docutils literal notranslate"><span class="pre">stderr=subprocess.PIPE</span></code>. If you want to capture
+both, but mixed together in the correct order, use <code class="docutils literal notranslate"><span class="pre">stdout=subprocess.PIPE,</span>
+<span class="pre">stderr=subprocess.STDOUT</span></code>.</p>
+<p><strong>Error checking:</strong> If the subprocess exits with a nonzero status
+code, indicating failure, <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_process()</span></code></a> raises a
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CalledProcessError" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">subprocess.CalledProcessError</span></code></a> exception rather than
+returning normally. The captured outputs are still available as
+the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CalledProcessError.stdout" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stdout</span></code></a> and
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CalledProcessError.stderr" title="（在 Python v3.13）"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stderr</span></code></a> attributes of that
+exception.  To disable this behavior, so that <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_process()</span></code></a>
+returns normally even if the subprocess exits abnormally, pass <code class="docutils literal notranslate"><span class="pre">check=False</span></code>.</p>
+<p>Note that this can make the <code class="docutils literal notranslate"><span class="pre">capture_stdout</span></code> and <code class="docutils literal notranslate"><span class="pre">capture_stderr</span></code>
+arguments useful even when starting <cite>run_process</cite> as a task: if you only
+care about the output if the process fails, then you can enable capturing
+and then read the output off of the <cite>~subprocess.CalledProcessError</cite>.</p>
+<p><strong>Cancellation:</strong> If cancelled, <cite>run_process</cite> sends a termination
+request to the subprocess, then waits for it to fully exit. The
+<code class="docutils literal notranslate"><span class="pre">deliver_cancel</span></code> argument lets you control how the process is terminated.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><cite>run_process</cite> is intentionally similar to the standard library
+<cite>subprocess.run</cite>, but some of the defaults are different. Specifically, we
+default to:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">check=True</span></code>, because <a class="reference external" href="https://www.python.org/dev/peps/pep-0020/">&quot;errors should never pass silently / unless
+explicitly silenced&quot;</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stdin=b&quot;&quot;</span></code>, because it produces less-confusing results if a subprocess
+unexpectedly tries to read from stdin.</p></li>
+</ul>
+<p>To get the <cite>subprocess.run</cite> semantics, use <code class="docutils literal notranslate"><span class="pre">check=False,</span> <span class="pre">stdin=None</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#list" title="（在 Python v3.13）"><em>list</em></a><em> or </em><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><em>str</em></a>) -- The command to run. Typically this is a
+sequence of strings such as <code class="docutils literal notranslate"><span class="pre">['ls',</span> <span class="pre">'-l',</span> <span class="pre">'directory</span> <span class="pre">with</span> <span class="pre">spaces']</span></code>,
+where the first element names the executable to invoke and the other
+elements specify its arguments. With <code class="docutils literal notranslate"><span class="pre">shell=True</span></code> in the
+<code class="docutils literal notranslate"><span class="pre">**options</span></code>, or on Windows, <code class="docutils literal notranslate"><span class="pre">command</span></code> may alternatively
+be a string, which will be parsed following platform-dependent
+<a class="reference internal" href="#subprocess-quoting"><span class="std std-ref">quoting rules</span></a>.</p></li>
+<li><p><strong>stdin</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#bytes" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bytes</span></code></a>, subprocess.PIPE, file descriptor, or None) -- <p>The
+bytes to provide to the subprocess on its standard input stream, or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> if the subprocess's standard input should come from the
+same place as the parent Trio process's standard input. As is the
+case with the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#module-subprocess" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code></a> module, you can also pass a file
+descriptor or an object with a <code class="docutils literal notranslate"><span class="pre">fileno()</span></code> method, in which case
+the subprocess's standard input will come from that file.</p>
+<p>When starting <cite>run_process</cite> as a background task, you can also use
+<code class="docutils literal notranslate"><span class="pre">stdin=subprocess.PIPE</span></code>, in which case <cite>Process.stdin</cite> will be a
+<cite>~trio.abc.SendStream</cite> that you can use to send data to the child.</p>
+</p></li>
+<li><p><strong>capture_stdout</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- If true, capture the bytes that the subprocess
+writes to its standard output stream and return them in the
+<cite>~subprocess.CompletedProcess.stdout</cite> attribute of the returned
+<cite>subprocess.CompletedProcess</cite> or <cite>subprocess.CalledProcessError</cite>.</p></li>
+<li><p><strong>capture_stderr</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- If true, capture the bytes that the subprocess
+writes to its standard error stream and return them in the
+<cite>~subprocess.CompletedProcess.stderr</cite> attribute of the returned
+<cite>~subprocess.CompletedProcess</cite> or <cite>subprocess.CalledProcessError</cite>.</p></li>
+<li><p><strong>check</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- If false, don't validate that the subprocess exits
+successfully. You should be sure to check the
+<code class="docutils literal notranslate"><span class="pre">returncode</span></code> attribute of the returned object if you pass
+<code class="docutils literal notranslate"><span class="pre">check=False</span></code>, so that errors don't pass silently.</p></li>
+<li><p><strong>deliver_cancel</strong> (<em>async function</em><em> or </em><em>None</em>) -- <p>If <cite>run_process</cite> is cancelled,
+then it needs to kill the child process. There are multiple ways to
+do this, so we let you customize it.</p>
+<p>If you pass None (the default), then the behavior depends on the
+platform:</p>
+<ul>
+<li><p>On Windows, Trio calls <code class="docutils literal notranslate"><span class="pre">TerminateProcess</span></code>, which should kill the
+process immediately.</p></li>
+<li><p>On Unix-likes, the default behavior is to send a <code class="docutils literal notranslate"><span class="pre">SIGTERM</span></code>, wait
+5 seconds, and send a <code class="docutils literal notranslate"><span class="pre">SIGKILL</span></code>.</p></li>
+</ul>
+<p>Alternatively, you can customize this behavior by passing in an
+arbitrary async function, which will be called with the <cite>Process</cite>
+object as an argument. For example, the default Unix behavior could
+be implemented like this:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">my_deliver_cancel</span><span class="p">(</span><span class="n">process</span><span class="p">):</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">send_signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">send_signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When the process actually exits, the <code class="docutils literal notranslate"><span class="pre">deliver_cancel</span></code> function
+will automatically be cancelled – so if the process exits after
+<code class="docutils literal notranslate"><span class="pre">SIGTERM</span></code>, then we'll never reach the <code class="docutils literal notranslate"><span class="pre">SIGKILL</span></code>.</p>
+<p>In any case, <cite>run_process</cite> will always wait for the child process to
+exit before raising <cite>Cancelled</cite>.</p>
+</p></li>
+<li><p><strong>**options</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#object" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></span>) -- <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_process()</span></code></a> also accepts any <a class="reference internal" href="#subprocess-options"><span class="std std-ref">general subprocess
+options</span></a> and passes them on to the
+<a class="reference internal" href="#trio.Process" title="trio.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></a> constructor. This includes the
+<code class="docutils literal notranslate"><span class="pre">stdout</span></code> and <code class="docutils literal notranslate"><span class="pre">stderr</span></code> options, which provide additional
+redirection possibilities such as <code class="docutils literal notranslate"><span class="pre">stderr=subprocess.STDOUT</span></code>,
+<code class="docutils literal notranslate"><span class="pre">stdout=subprocess.DEVNULL</span></code>, or file descriptors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CompletedProcess" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompletedProcess</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#bytes" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>When called normally – a <cite>subprocess.CompletedProcess</cite> instance
+describing the return code and outputs.</p>
+<p>When called via <cite>Nursery.start</cite> – a <cite>trio.Process</cite> instance.</p>
+</p>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#UnicodeError" title="（在 Python v3.13）"><strong>UnicodeError</strong></a> -- if <code class="docutils literal notranslate"><span class="pre">stdin</span></code> is specified as a Unicode string, rather
+    than bytes</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> -- if multiple redirections are specified for the same
+    stream, e.g., both <code class="docutils literal notranslate"><span class="pre">capture_stdout=True</span></code> and
+    <code class="docutils literal notranslate"><span class="pre">stdout=subprocess.DEVNULL</span></code></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.CalledProcessError" title="（在 Python v3.13）"><strong>subprocess.CalledProcessError</strong></a> -- if <code class="docutils literal notranslate"><span class="pre">check=False</span></code> is not passed
+    and the process exits with a nonzero exit status</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#OSError" title="（在 Python v3.13）"><strong>OSError</strong></a> -- if an error is encountered starting or communicating with
+    the process</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ExceptionGroup" title="（在 Python v3.13）"><strong>ExceptionGroup</strong></a> -- if exceptions occur in <code class="docutils literal notranslate"><span class="pre">deliver_cancel</span></code>,
+    or when exceptions occur when communicating with the subprocess.
+    If strict_exception_groups is set to false in the global context,
+    which is deprecated, then single exceptions will be collapsed.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The child process runs in the same process group as the parent
+Trio process, so a Ctrl+C will be delivered simultaneously to both
+parent and child. If you don't want this behavior, consult your
+platform's documentation for starting child processes in a different
+process group.</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio._subprocess.</span></span><span class="sig-name descname"><span class="pre">HasFileno</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Protocol</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/zh-cn/3/library/typing.html#typing.Protocol" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Represents any file-like object that has a file descriptor.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">fileno</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio._subprocess.</span></span><span class="sig-name descname"><span class="pre">StrOrBytesPath</span></span></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#bytes" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/os.html#os.PathLike" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathLike</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/os.html#os.PathLike" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathLike</span></code></a>[<a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#bytes" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>] 的别名</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">Process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">popen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stderr</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#object" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A child process. Like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">subprocess.Popen</span></code></a>, but async.</p>
+<p>This class has no public constructor. The most common way to get a
+<cite>Process</cite> object is to combine <cite>Nursery.start</cite> with <cite>run_process</cite>:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">process_object</span> <span class="o">=</span> <span class="k">await</span> <span class="n">nursery</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">run_process</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This way, <cite>run_process</cite> supervises the process and makes sure that it is
+cleaned up properly, while optionally checking the return value, feeding
+it input, and so on.</p>
+<p>If you need more control – for example, because you want to spawn a child
+process that outlives your program – then another option is to use
+<cite>trio.lowlevel.open_process</cite>:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">process_object</span> <span class="o">=</span> <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">lowlevel</span><span class="o">.</span><span class="n">open_process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">args</span></span></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">command</span></code> passed at construction time,
+specifying the process to execute and its arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#str" title="（在 Python v3.13）">str</a> or <a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#list" title="（在 Python v3.13）">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">pid</span></span></dt>
+<dd><p>The process ID of the child process managed by this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">stdin</span></span></dt>
+<dd><p>A stream connected to the child's
+standard input stream: when you write bytes here, they become available
+for the child to read. Only available if the <a class="reference internal" href="#trio.Process" title="trio.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></a>
+was constructed using <code class="docutils literal notranslate"><span class="pre">stdin=PIPE</span></code>; otherwise this will be None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="abs_api.html#trio.abc.SendStream" title="trio.abc.SendStream">trio.abc.SendStream</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">stdout</span></span></dt>
+<dd><p>A stream connected to
+the child's standard output stream: when the child writes to
+standard output, the written bytes become available for you
+to read here. Only available if the <a class="reference internal" href="#trio.Process" title="trio.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></a> was
+constructed using <code class="docutils literal notranslate"><span class="pre">stdout=PIPE</span></code>; otherwise this will be None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="abs_api.html#trio.abc.ReceiveStream" title="trio.abc.ReceiveStream">trio.abc.ReceiveStream</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">stderr</span></span></dt>
+<dd><p>A stream connected to
+the child's standard error stream: when the child writes to
+standard error, the written bytes become available for you
+to read here. Only available if the <a class="reference internal" href="#trio.Process" title="trio.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></a> was
+constructed using <code class="docutils literal notranslate"><span class="pre">stderr=PIPE</span></code>; otherwise this will be None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="abs_api.html#trio.abc.ReceiveStream" title="trio.abc.ReceiveStream">trio.abc.ReceiveStream</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">stdio</span></span></dt>
+<dd><p>A stream that sends data to
+the child's standard input and receives from the child's standard
+output. Only available if both <a class="reference internal" href="#trio.Process.stdin" title="trio.Process.stdin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stdin</span></code></a> and <a class="reference internal" href="#trio.Process.stdout" title="trio.Process.stdout"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stdout</span></code></a> are
+available; otherwise this will be None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="abs_api.html#trio.StapledStream" title="trio.StapledStream">trio.StapledStream</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">returncode</span></span></dt>
+<dd><p>The exit status of the process (an integer), or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it's
+still running.</p>
+<p>By convention, a return code of zero indicates success.  On
+UNIX, negative values indicate termination due to a signal,
+e.g., -11 if terminated by signal 11 (<code class="docutils literal notranslate"><span class="pre">SIGSEGV</span></code>).  On
+Windows, a process that exits due to a call to
+<a class="reference internal" href="#id5" title="trio.Process.terminate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Process.terminate()</span></code></a> will have an exit status of 1.</p>
+<p>Unlike the standard library <cite>subprocess.Popen.returncode</cite>, you don't
+have to call <cite>poll</cite> or <cite>wait</cite> to update this attribute; it's
+automatically updated as needed, and will always give you the latest
+information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Block until the process exits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>The exit status of the process; see <a class="reference internal" href="#id3" title="trio.Process.returncode"><code class="xref py py-attr docutils literal notranslate"><span class="pre">returncode</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">poll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Returns the exit status of the process (an integer), or <code class="docutils literal notranslate"><span class="pre">None</span></code> if
+it's still running.</p>
+<p>Note that on Trio (unlike the standard library <cite>subprocess.Popen</cite>),
+<code class="docutils literal notranslate"><span class="pre">process.poll()</span></code> and <code class="docutils literal notranslate"><span class="pre">process.returncode</span></code> always give the same
+result. See <cite>returncode</cite> for more details. This method is only
+included to make it easier to port code from <cite>subprocess</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Immediately terminate the process.</p>
+<p>On UNIX, this is equivalent to
+<code class="docutils literal notranslate"><span class="pre">send_signal(signal.SIGKILL)</span></code>.  On Windows, it calls
+<code class="docutils literal notranslate"><span class="pre">TerminateProcess</span></code>. In both cases, the process cannot
+prevent itself from being killed, but the termination will be
+delivered asynchronously; use <a class="reference internal" href="#id6" title="trio.Process.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a> if you want to
+ensure the process is actually dead before proceeding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Terminate the process, politely if possible.</p>
+<p>On UNIX, this is equivalent to
+<code class="docutils literal notranslate"><span class="pre">send_signal(signal.SIGTERM)</span></code>; by convention this requests
+graceful termination, but a misbehaving or buggy process might
+ignore it. On Windows, <a class="reference internal" href="#id5" title="trio.Process.terminate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">terminate()</span></code></a> forcibly terminates the
+process in the same manner as <a class="reference internal" href="#id0" title="trio.Process.kill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">kill()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">send_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Send signal <code class="docutils literal notranslate"><span class="pre">sig</span></code> to the process.</p>
+<p>On UNIX, <code class="docutils literal notranslate"><span class="pre">sig</span></code> may be any signal defined in the
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/signal.html#module-signal" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">signal</span></code></a> module, such as <code class="docutils literal notranslate"><span class="pre">signal.SIGINT</span></code> or
+<code class="docutils literal notranslate"><span class="pre">signal.SIGTERM</span></code>. On Windows, it may be anything accepted by
+the standard library <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen.send_signal" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subprocess.Popen.send_signal()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen.communicate" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">communicate()</span></code></a> is not provided as a
+method on <a class="reference internal" href="#trio.Process" title="trio.Process"><code class="xref py py-class docutils literal notranslate"><span class="pre">Process</span></code></a> objects; call <a class="reference internal" href="#trio.run_process" title="trio.run_process"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_process()</span></code></a>
+normally for simple capturing, or write the loop yourself if you
+have unusual needs. <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen.communicate" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">communicate()</span></code></a> has
+quite unusual cancellation behavior in the standard library (on
+some platforms it spawns a background thread which continues to
+read from the child process even after the timeout has expired)
+and we wanted to provide an interface with fewer surprises.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Immediately terminate the process.</p>
+<p>On UNIX, this is equivalent to
+<code class="docutils literal notranslate"><span class="pre">send_signal(signal.SIGKILL)</span></code>.  On Windows, it calls
+<code class="docutils literal notranslate"><span class="pre">TerminateProcess</span></code>. In both cases, the process cannot
+prevent itself from being killed, but the termination will be
+delivered asynchronously; use <a class="reference internal" href="#id6" title="trio.Process.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">wait()</span></code></a> if you want to
+ensure the process is actually dead before proceeding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">poll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Returns the exit status of the process (an integer), or <code class="docutils literal notranslate"><span class="pre">None</span></code> if
+it's still running.</p>
+<p>Note that on Trio (unlike the standard library <cite>subprocess.Popen</cite>),
+<code class="docutils literal notranslate"><span class="pre">process.poll()</span></code> and <code class="docutils literal notranslate"><span class="pre">process.returncode</span></code> always give the same
+result. See <cite>returncode</cite> for more details. This method is only
+included to make it easier to port code from <cite>subprocess</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">returncode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><span class="pre">None</span></a></em></dt>
+<dd><p>The exit status of the process (an integer), or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it's
+still running.</p>
+<p>By convention, a return code of zero indicates success.  On
+UNIX, negative values indicate termination due to a signal,
+e.g., -11 if terminated by signal 11 (<code class="docutils literal notranslate"><span class="pre">SIGSEGV</span></code>).  On
+Windows, a process that exits due to a call to
+<a class="reference internal" href="#id5" title="trio.Process.terminate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Process.terminate()</span></code></a> will have an exit status of 1.</p>
+<p>Unlike the standard library <cite>subprocess.Popen.returncode</cite>, you don't
+have to call <cite>poll</cite> or <cite>wait</cite> to update this attribute; it's
+automatically updated as needed, and will always give you the latest
+information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">send_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Send signal <code class="docutils literal notranslate"><span class="pre">sig</span></code> to the process.</p>
+<p>On UNIX, <code class="docutils literal notranslate"><span class="pre">sig</span></code> may be any signal defined in the
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/signal.html#module-signal" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">signal</span></code></a> module, such as <code class="docutils literal notranslate"><span class="pre">signal.SIGINT</span></code> or
+<code class="docutils literal notranslate"><span class="pre">signal.SIGTERM</span></code>. On Windows, it may be anything accepted by
+the standard library <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen.send_signal" title="（在 Python v3.13）"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subprocess.Popen.send_signal()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">terminate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Terminate the process, politely if possible.</p>
+<p>On UNIX, this is equivalent to
+<code class="docutils literal notranslate"><span class="pre">send_signal(signal.SIGTERM)</span></code>; by convention this requests
+graceful termination, but a misbehaving or buggy process might
+ignore it. On Windows, <a class="reference internal" href="#id5" title="trio.Process.terminate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">terminate()</span></code></a> forcibly terminates the
+process in the same manner as <a class="reference internal" href="#id0" title="trio.Process.kill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">kill()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Block until the process exits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#int" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span></p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p>The exit status of the process; see <a class="reference internal" href="#id3" title="trio.Process.returncode"><code class="xref py py-attr docutils literal notranslate"><span class="pre">returncode</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p>If <cite>trio.run_process</cite> is too limiting, we also offer a low-level API,
+<cite>trio.lowlevel.open_process</cite>. For example, if you want to spawn a
+child process that will outlive the parent process and be
+orphaned, then <cite>~trio.run_process</cite> can't do that, but
+<cite>~trio.lowlevel.open_process</cite> can.</p>
+</div>
+</div>
+<section id="subprocess-options">
+<span id="id7"></span><h2>启动子进程的选项<a class="headerlink" href="#subprocess-options" title="Link to this heading">¶</a></h2>
+<p><strong>Options for starting subprocesses</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 的所有子进程 API 都接受标准 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#module-subprocess" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code></a> 模块使用的众多关键字参数，用于控制进程启动的环境以及与之通信的机制。这些参数可以在以下文档中看到 <code class="docutils literal notranslate"><span class="pre">**options</span></code> 时传递。请参见 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#module-subprocess" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code></a> 文档中的 <a class="reference external" href="https://docs.python.org/3/library/subprocess.html#popen-constructor">完整列表</a> 或者 <a class="reference external" href="https://docs.python.org/3/library/subprocess.html#frequently-used-arguments">常用参数</a> 。（您可能需要 <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">subprocess</span></code> 才能访问像 <code class="docutils literal notranslate"><span class="pre">PIPE</span></code> 或 <code class="docutils literal notranslate"><span class="pre">DEVNULL</span></code> 这样的常量。）</p>
+<p>目前，Trio 始终使用无缓冲的字节流与进程通信，因此不支持 <code class="docutils literal notranslate"><span class="pre">encoding</span></code>、 <code class="docutils literal notranslate"><span class="pre">errors</span></code>、<code class="docutils literal notranslate"><span class="pre">universal_newlines</span></code> （别名 <code class="docutils literal notranslate"><span class="pre">text</span></code> ）和 <code class="docutils literal notranslate"><span class="pre">bufsize</span></code> 选项。</p>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<p>All of Trio's subprocess APIs accept the numerous keyword arguments used
+by the standard <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#module-subprocess" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code></a> module to control the environment in
+which a process starts and the mechanisms used for communicating with
+it.  These may be passed wherever you see <code class="docutils literal notranslate"><span class="pre">**options</span></code> in the
+documentation below.  See the <a class="reference external" href="https://docs.python.org/3/library/subprocess.html#popen-constructor">full list</a>
+or just the <a class="reference external" href="https://docs.python.org/3/library/subprocess.html#frequently-used-arguments">frequently used ones</a>
+in the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#module-subprocess" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code></a> documentation. (You may need to <code class="docutils literal notranslate"><span class="pre">import</span>
+<span class="pre">subprocess</span></code> in order to access constants such as <code class="docutils literal notranslate"><span class="pre">PIPE</span></code> or
+<code class="docutils literal notranslate"><span class="pre">DEVNULL</span></code>.)</p>
+<p>Currently, Trio always uses unbuffered byte streams for communicating
+with a process, so it does not support the <code class="docutils literal notranslate"><span class="pre">encoding</span></code>, <code class="docutils literal notranslate"><span class="pre">errors</span></code>,
+<code class="docutils literal notranslate"><span class="pre">universal_newlines</span></code> (alias <code class="docutils literal notranslate"><span class="pre">text</span></code>), and <code class="docutils literal notranslate"><span class="pre">bufsize</span></code>
+options.</p>
+</div>
+</div>
+</section>
+<section id="subprocess-quoting">
+<span id="id8"></span><h2>引用：比您想知道的更多<a class="headerlink" href="#subprocess-quoting" title="Link to this heading">¶</a></h2>
+<p><strong>Quoting: more than you wanted to know</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 的子进程 API 通常需要将要运行的命令及其参数作为字符串序列传递，其中序列的第一个元素指定要运行的命令，剩余的元素指定命令的参数，每个参数占一个元素。采用这种形式是因为它可以避免潜在的引号陷阱；例如，你可以运行 <code class="docutils literal notranslate"><span class="pre">[&quot;cp&quot;,</span> <span class="pre">&quot;-f&quot;,</span> <span class="pre">source_file,</span> <span class="pre">dest_file]</span></code>，而无需担心 <code class="docutils literal notranslate"><span class="pre">source_file</span></code> 或 <code class="docutils literal notranslate"><span class="pre">dest_file</span></code> 是否包含空格。</p>
+<p>如果你只在 UNIX 上运行不使用 <code class="docutils literal notranslate"><span class="pre">shell=True</span></code> 的子进程，那么指定命令时只需知道这些。如果你使用 <code class="docutils literal notranslate"><span class="pre">shell=True</span></code> 或在 Windows 上运行，可能需要阅读本节的其余部分，以便了解潜在的陷阱。</p>
+<p>在 UNIX 上使用 <code class="docutils literal notranslate"><span class="pre">shell=True</span></code> 时，必须将命令指定为一个单一字符串，这个字符串将被传递给 shell，类似于你在交互式提示符下输入的方式。这个选项的优点是它允许你使用 shell 功能，比如管道和重定向，而不需要编写处理它们的代码。例如，你可以写 <code class="docutils literal notranslate"><span class="pre">Process(&quot;ls</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">some_string&quot;,</span> <span class="pre">shell=True)</span></code>。缺点是你必须考虑到 shell 的引用规则，通常需要通过 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/shlex.html#shlex.quote" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">shlex.quote()</span></code></a> 来包装可能包含空格、引号或其他 shell 元字符的任何参数。如果你不这样做，那么看似安全的 <code class="docutils literal notranslate"><span class="pre">f&quot;ls</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">{some_string}&quot;</span></code> 在调用时，若 <code class="docutils literal notranslate"><span class="pre">some_string</span> <span class="pre">=</span> <span class="pre">&quot;foo;</span> <span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/&quot;</span></code>，可能会导致灾难。</p>
+<p>在 Windows 上，进程生成的基本 API（<code class="docutils literal notranslate"><span class="pre">CreateProcess()</span></code> 系统调用）接受一个字符串而不是列表，实际上是子进程决定如何将这个字符串拆分为单独的参数。由于 C 语言规定 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 应该接受一个参数列表，<em>大多数</em> 你遇到的程序将遵循 Microsoft C/C++ 运行时使用的规则。<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">subprocess.Popen</span></code></a>，因此 Trio 也使用这些规则将参数序列转换为字符串，这些规则在 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#module-subprocess" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code></a> 模块中有 <a class="reference external" href="https://docs.python.org/3/library/subprocess.html#converting-argument-sequence">文档记录</a>。没有文档化的 Python 标准库函数可以直接执行该转换，因此即使在 Windows 上，你几乎总是需要传递参数序列而不是字符串。但如果你启动的程序不能按标准方式将命令行拆分回单独的参数，那么你可能需要传递一个字符串来解决这个问题。（或者你可能只是运气不好：据我所知，Windows 批处理文件没有办法传递包含双引号的参数。）</p>
+<p>在 Windows 上使用 <code class="docutils literal notranslate"><span class="pre">shell=True</span></code> 时，情况变得更加混乱。现在，有两个独立的引用规则应用：一个由 Windows 命令 shell <code class="docutils literal notranslate"><span class="pre">CMD.EXE</span></code> 使用，另一个由被启动的进程使用，而且它们是 <em>不同的</em>。（而且没有 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/shlex.html#shlex.quote" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">shlex.quote()</span></code></a> 来帮助你：它使用 UNIX 风格的引用规则，即使在 Windows 上也是如此。）大多数由 shell 解释的特殊字符 <code class="docutils literal notranslate"><span class="pre">&amp;&lt;&gt;()^|</span></code> 如果 shell 认为它们在双引号内，则不被视为特殊字符，但 <code class="docutils literal notranslate"><span class="pre">%FOO%</span></code> 环境变量替换仍然有效，而且 shell 没有提供在双引号字符串内写入双引号的办法。双引号外部，任何字符（包括双引号）都可以使用前导 <code class="docutils literal notranslate"><span class="pre">^</span></code> 来转义。但由于管道通过在子 shell 中运行每个命令来处理，因此可能需要多层转义：</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span>^^^<span class="p">&amp;</span>x<span class="w"> </span><span class="p">|</span><span class="w"> </span>find<span class="w"> </span><span class="s2">&quot;x&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>find<span class="w"> </span><span class="s2">&quot;x&quot;</span><span class="w">          </span><span class="c1"># prints: &amp;x</span>
+</pre></div>
+</div>
+<p>如果你将管道与 <code class="docutils literal notranslate"><span class="pre">()</span></code> 分组结合使用，可能需要更多层的转义：</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="o">(</span><span class="nb">echo</span><span class="w"> </span>^^^^^^^<span class="p">&amp;</span>x<span class="w"> </span><span class="p">|</span><span class="w"> </span>find<span class="w"> </span><span class="s2">&quot;x&quot;</span><span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>find<span class="w"> </span><span class="s2">&quot;x&quot;</span><span class="w">    </span><span class="c1"># prints: &amp;x</span>
+</pre></div>
+</div>
+<p>由于进程创建接受一个字符串参数，<code class="docutils literal notranslate"><span class="pre">CMD.EXE</span></code> 的引用规则不会影响单词拆分，并且在 <code class="docutils literal notranslate"><span class="pre">CMD.EXE</span></code> 扩展过程中不会删除双引号。双引号很麻烦，因为 <code class="docutils literal notranslate"><span class="pre">CMD.EXE</span></code> 处理它们的方式与 MSVC 运行时规则不同；例如：</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>prog.exe<span class="w"> </span><span class="s2">&quot;foo \&quot;bar\&quot; baz&quot;</span>
+</pre></div>
+</div>
+<p>程序会看到一个参数 <code class="docutils literal notranslate"><span class="pre">foo</span> <span class="pre">&quot;bar&quot;</span> <span class="pre">baz</span></code>，但 <code class="docutils literal notranslate"><span class="pre">CMD.EXE</span></code> 认为 <code class="docutils literal notranslate"><span class="pre">bar\</span></code> 没有被引用，而 <code class="docutils literal notranslate"><span class="pre">foo</span> <span class="pre">\</span></code> 和 <code class="docutils literal notranslate"><span class="pre">baz</span></code> 被认为是引用的。所有这些使得在 Windows 上可靠地插入任何内容到 <code class="docutils literal notranslate"><span class="pre">shell=True</span></code> 命令行中变得非常困难，Trio 退回到 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#module-subprocess" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code></a> 的行为：如果你传递一个包含 <code class="docutils literal notranslate"><span class="pre">shell=True</span></code> 的序列，它会像 <code class="docutils literal notranslate"><span class="pre">shell=False</span></code> 一样进行引用，并且最好不要包含你未计划使用的任何 shell 元字符。</p>
+<p>进一步阅读：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://stackoverflow.com/questions/30620876/how-to-properly-escape-filenames-in-windows-cmd-exe">https://stackoverflow.com/questions/30620876/how-to-properly-escape-filenames-in-windows-cmd-exe</a></p></li>
+<li><p><a class="reference external" href="https://stackoverflow.com/questions/4094699/how-does-the-windows-command-interpreter-cmd-exe-parse-scripts">https://stackoverflow.com/questions/4094699/how-does-the-windows-command-interpreter-cmd-exe-parse-scripts</a></p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<p>The command to run and its arguments usually must be passed to Trio's
+subprocess APIs as a sequence of strings, where the first element in
+the sequence specifies the command to run and the remaining elements
+specify its arguments, one argument per element. This form is used
+because it avoids potential quoting pitfalls; for example, you can run
+<code class="docutils literal notranslate"><span class="pre">[&quot;cp&quot;,</span> <span class="pre">&quot;-f&quot;,</span> <span class="pre">source_file,</span> <span class="pre">dest_file]</span></code> without worrying about
+whether <code class="docutils literal notranslate"><span class="pre">source_file</span></code> or <code class="docutils literal notranslate"><span class="pre">dest_file</span></code> contains spaces.</p>
+<p>If you only run subprocesses without <code class="docutils literal notranslate"><span class="pre">shell=True</span></code> and on UNIX,
+that's all you need to know about specifying the command. If you use
+<code class="docutils literal notranslate"><span class="pre">shell=True</span></code> or run on Windows, you probably should read the
+rest of this section to be aware of potential pitfalls.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">shell=True</span></code> on UNIX, you must specify the command as a single
+string, which will be passed to the shell as if you'd entered it at an
+interactive prompt. The advantage of this option is that it lets you
+use shell features like pipes and redirection without writing code to
+handle them. For example, you can write <code class="docutils literal notranslate"><span class="pre">Process(&quot;ls</span> <span class="pre">|</span> <span class="pre">grep</span>
+<span class="pre">some_string&quot;,</span> <span class="pre">shell=True)</span></code>.  The disadvantage is that you must
+account for the shell's quoting rules, generally by wrapping in
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/shlex.html#shlex.quote" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">shlex.quote()</span></code></a> any argument that might contain spaces, quotes, or
+other shell metacharacters.  If you don't do that, your safe-looking
+<code class="docutils literal notranslate"><span class="pre">f&quot;ls</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">{some_string}&quot;</span></code> might end in disaster when invoked with
+<code class="docutils literal notranslate"><span class="pre">some_string</span> <span class="pre">=</span> <span class="pre">&quot;foo;</span> <span class="pre">rm</span> <span class="pre">-rf</span> <span class="pre">/&quot;</span></code>.</p>
+<p>On Windows, the fundamental API for process spawning (the
+<code class="docutils literal notranslate"><span class="pre">CreateProcess()</span></code> system call) takes a string, not a list, and it's
+actually up to the child process to decide how it wants to split that
+string into individual arguments. Since the C language specifies that
+<code class="docutils literal notranslate"><span class="pre">main()</span></code> should take a list of arguments, <em>most</em> programs you
+encounter will follow the rules used by the Microsoft C/C++ runtime.
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#subprocess.Popen" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">subprocess.Popen</span></code></a>, and thus also Trio, uses these rules
+when it converts an argument sequence to a string, and they
+are <a class="reference external" href="https://docs.python.org/3/library/subprocess.html#converting-argument-sequence">documented</a>
+alongside the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#module-subprocess" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code></a> module. There is no documented
+Python standard library function that can directly perform that
+conversion, so even on Windows, you almost always want to pass an
+argument sequence rather than a string. But if the program you're
+spawning doesn't split its command line back into individual arguments
+in the standard way, you might need to pass a string to work around this.
+(Or you might just be out of luck: as far as I can tell, there's simply
+no way to pass an argument containing a double-quote to a Windows
+batch file.)</p>
+<p>On Windows with <code class="docutils literal notranslate"><span class="pre">shell=True</span></code>, things get even more chaotic. Now
+there are two separate sets of quoting rules applied, one by the
+Windows command shell <code class="docutils literal notranslate"><span class="pre">CMD.EXE</span></code> and one by the process being
+spawned, and they're <em>different</em>. (And there's no <a class="reference external" href="https://docs.python.org/zh-cn/3/library/shlex.html#shlex.quote" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">shlex.quote()</span></code></a>
+to save you: it uses UNIX-style quoting rules, even on Windows.)  Most
+special characters interpreted by the shell <code class="docutils literal notranslate"><span class="pre">&amp;&lt;&gt;()^|</span></code> are not
+treated as special if the shell thinks they're inside double quotes,
+but <code class="docutils literal notranslate"><span class="pre">%FOO%</span></code> environment variable substitutions still are, and the
+shell doesn't provide any way to write a double quote inside a
+double-quoted string. Outside double quotes, any character (including
+a double quote) can be escaped using a leading <code class="docutils literal notranslate"><span class="pre">^</span></code>.  But since a
+pipeline is processed by running each command in the pipeline in a
+subshell, multiple layers of escaping can be needed:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span>^^^<span class="p">&amp;</span>x<span class="w"> </span><span class="p">|</span><span class="w"> </span>find<span class="w"> </span><span class="s2">&quot;x&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>find<span class="w"> </span><span class="s2">&quot;x&quot;</span><span class="w">          </span><span class="c1"># prints: &amp;x</span>
+</pre></div>
+</div>
+<p>And if you combine pipelines with () grouping, you can need even more
+levels of escaping:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="o">(</span><span class="nb">echo</span><span class="w"> </span>^^^^^^^<span class="p">&amp;</span>x<span class="w"> </span><span class="p">|</span><span class="w"> </span>find<span class="w"> </span><span class="s2">&quot;x&quot;</span><span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>find<span class="w"> </span><span class="s2">&quot;x&quot;</span><span class="w">    </span><span class="c1"># prints: &amp;x</span>
+</pre></div>
+</div>
+<p>Since process creation takes a single arguments string, <code class="docutils literal notranslate"><span class="pre">CMD.EXE</span></code>'s
+quoting does not influence word splitting, and double quotes are not
+removed during CMD.EXE's expansion pass. Double quotes are troublesome
+because CMD.EXE handles them differently from the MSVC runtime rules; in:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>prog.exe<span class="w"> </span><span class="s2">&quot;foo \&quot;bar\&quot; baz&quot;</span>
+</pre></div>
+</div>
+<p>the program will see one argument <code class="docutils literal notranslate"><span class="pre">foo</span> <span class="pre">&quot;bar&quot;</span> <span class="pre">baz</span></code> but CMD.EXE thinks
+<code class="docutils literal notranslate"><span class="pre">bar\</span></code> is not quoted while <code class="docutils literal notranslate"><span class="pre">foo</span> <span class="pre">\</span></code> and <code class="docutils literal notranslate"><span class="pre">baz</span></code> are. All of this
+makes it a formidable task to reliably interpolate anything into a
+<code class="docutils literal notranslate"><span class="pre">shell=True</span></code> command line on Windows, and Trio falls back on the
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/subprocess.html#module-subprocess" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">subprocess</span></code></a> behavior: If you pass a sequence with
+<code class="docutils literal notranslate"><span class="pre">shell=True</span></code>, it's quoted in the same way as a sequence with
+<code class="docutils literal notranslate"><span class="pre">shell=False</span></code>, and had better not contain any shell metacharacters
+you weren't planning on.</p>
+<p>Further reading:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://stackoverflow.com/questions/30620876/how-to-properly-escape-filenames-in-windows-cmd-exe">https://stackoverflow.com/questions/30620876/how-to-properly-escape-filenames-in-windows-cmd-exe</a></p></li>
+<li><p><a class="reference external" href="https://stackoverflow.com/questions/4094699/how-does-the-windows-command-interpreter-cmd-exe-parse-scripts">https://stackoverflow.com/questions/4094699/how-does-the-windows-command-interpreter-cmd-exe-parse-scripts</a></p></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="signals.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">信号</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="async_file_io.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">异步文件系统 I/O</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2017, Nathaniel J. Smith
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/hellowac/trio-zh-cn" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">生成子进程</a><ul>
+<li><a class="reference internal" href="#trio.run_process"><code class="docutils literal notranslate"><span class="pre">run_process()</span></code></a></li>
+<li><a class="reference internal" href="#trio._subprocess.HasFileno"><code class="docutils literal notranslate"><span class="pre">HasFileno</span></code></a><ul>
+<li><a class="reference internal" href="#trio._subprocess.HasFileno.fileno"><code class="docutils literal notranslate"><span class="pre">HasFileno.fileno()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#trio._subprocess.StrOrBytesPath"><code class="docutils literal notranslate"><span class="pre">StrOrBytesPath</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process"><code class="docutils literal notranslate"><span class="pre">Process</span></code></a><ul>
+<li><a class="reference internal" href="#trio.Process.args"><code class="docutils literal notranslate"><span class="pre">Process.args</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.pid"><code class="docutils literal notranslate"><span class="pre">Process.pid</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.stdin"><code class="docutils literal notranslate"><span class="pre">Process.stdin</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.stdout"><code class="docutils literal notranslate"><span class="pre">Process.stdout</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.stderr"><code class="docutils literal notranslate"><span class="pre">Process.stderr</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.stdio"><code class="docutils literal notranslate"><span class="pre">Process.stdio</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.returncode"><code class="docutils literal notranslate"><span class="pre">Process.returncode</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.wait"><code class="docutils literal notranslate"><span class="pre">Process.wait()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.poll"><code class="docutils literal notranslate"><span class="pre">Process.poll()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.kill"><code class="docutils literal notranslate"><span class="pre">Process.kill()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.terminate"><code class="docutils literal notranslate"><span class="pre">Process.terminate()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Process.send_signal"><code class="docutils literal notranslate"><span class="pre">Process.send_signal()</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Process.kill()</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Process.poll()</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Process.returncode</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Process.send_signal()</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">Process.terminate()</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">Process.wait()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#subprocess-options">启动子进程的选项</a></li>
+<li><a class="reference internal" href="#subprocess-quoting">引用：比您想知道的更多</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=d2451d57"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/tabs.js?v=3ee01567"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=beaddf03"></script>
+    </body>
+</html>

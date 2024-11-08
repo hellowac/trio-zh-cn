@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+
+<html class="no-js" data-content_root="./" lang="zh-CN">
+<head><meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/><meta content="width=device-width, initial-scale=1" name="viewport">
+<link href="genindex.html" rel="index" title="索引"/><link href="search.html" rel="search" title="搜索"/><link href="history.html" rel="next" title="发布历史"/><link href="reference-lowlevel.html" rel="prev" title="自省和扩展 Trio"/>
+<link href="_static/favicon-32.png" rel="shortcut icon"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+<title>设计和内部结构 - Trio 0.27.0+dev 文档</title>
+<link href="_static/pygments.css?v=fa44fd50" rel="stylesheet" type="text/css"/>
+<link href="_static/styles/furo.css?v=354aac6f" rel="stylesheet" type="text/css"/>
+<link href="_static/sphinx-codeautolink.css?v=125d5c1c" rel="stylesheet" type="text/css"/>
+<link href="_static/tabs.css?v=4c969af8" rel="stylesheet" type="text/css"/>
+<link href="_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="_static/hackrtd.css?v=2d9fc201" rel="stylesheet" type="text/css"/>
+<link href="_static/styles/furo-extensions.css?v=302659d7" rel="stylesheet" type="text/css"/>
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></meta></head>
+<body>
+<script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+<symbol id="svg-toc" viewbox="0 0 24 24">
+<title>Contents</title>
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 1024 1024">
+<path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"></path>
+</svg>
+</symbol>
+<symbol id="svg-menu" viewbox="0 0 24 24">
+<title>Menu</title>
+<svg class="feather-menu" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<line x1="3" x2="21" y1="12" y2="12"></line>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<line x1="3" x2="21" y1="18" y2="18"></line>
+</svg>
+</symbol>
+<symbol id="svg-arrow-right" viewbox="0 0 24 24">
+<title>Expand</title>
+<svg class="feather-chevron-right" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</symbol>
+<symbol id="svg-sun" viewbox="0 0 24 24">
+<title>Light mode</title>
+<svg class="feather-sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="5"></circle>
+<line x1="12" x2="12" y1="1" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="23"></line>
+<line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line>
+<line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+<line x1="1" x2="3" y1="12" y2="12"></line>
+<line x1="21" x2="23" y1="12" y2="12"></line>
+<line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line>
+<line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+</svg>
+</symbol>
+<symbol id="svg-moon" viewbox="0 0 24 24">
+<title>Dark mode</title>
+<svg class="icon-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+</svg>
+</symbol>
+<symbol id="svg-sun-with-moon" viewbox="0 0 24 24">
+<title>Auto light/dark, in light mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z" style="opacity: 50%"></path>
+<line x1="14.5" x2="14.5" y1="3.25" y2="1.25"></line>
+<line x1="14.5" x2="14.5" y1="15.85" y2="17.85"></line>
+<line x1="10.044" x2="8.63" y1="5.094" y2="3.68"></line>
+<line x1="19" x2="20.414" y1="14.05" y2="15.464"></line>
+<line x1="8.2" x2="6.2" y1="9.55" y2="9.55"></line>
+<line x1="20.8" x2="22.8" y1="9.55" y2="9.55"></line>
+<line x1="10.044" x2="8.63" y1="14.006" y2="15.42"></line>
+<line x1="19" x2="20.414" y1="5.05" y2="3.636"></line>
+<circle cx="14.5" cy="9.55" r="3.6"></circle>
+</svg>
+</symbol>
+<symbol id="svg-moon-with-sun" viewbox="0 0 24 24">
+<title>Auto light/dark, in dark mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"></path>
+<line style="opacity: 50%" x1="18" x2="18" y1="3.705" y2="2.5"></line>
+<line style="opacity: 50%" x1="18" x2="18" y1="11.295" y2="12.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="4.816" y2="3.964"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="10.212" y2="11.063"></line>
+<line style="opacity: 50%" x1="14.205" x2="13.001" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="21.795" x2="23" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="10.184" y2="11.036"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="4.789" y2="3.937"></line>
+<circle cx="18" cy="7.5" r="2.169" style="opacity: 50%"></circle>
+</svg>
+</symbol>
+<symbol id="svg-pencil" viewbox="0 0 24 24">
+<svg class="icon-tabler-pencil-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path>
+<path d="M13.5 6.5l4 4"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+<symbol id="svg-eye" viewbox="0 0 24 24">
+<svg class="icon-tabler-eye-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+<path d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+</svg>
+<input class="sidebar-toggle" id="__navigation" name="__navigation" type="checkbox"/>
+<input class="sidebar-toggle" id="__toc" name="__toc" type="checkbox"/>
+<label class="overlay sidebar-overlay" for="__navigation">
+<div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+<div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+<div class="page">
+<header class="mobile-header">
+<div class="header-left">
+<label class="nav-overlay-icon" for="__navigation">
+<div class="visually-hidden">Toggle site navigation sidebar</div>
+<i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+</label>
+</div>
+<div class="header-center">
+<a href="index.html"><div class="brand">Trio 0.27.0+dev 文档</div></a>
+</div>
+<div class="header-right">
+<div class="theme-toggle-container theme-toggle-header">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-header-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+</header>
+<aside class="sidebar-drawer">
+<div class="sidebar-container">
+<div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+<div class="sidebar-logo-container">
+<img alt="Logo" class="sidebar-logo" src="_static/wordmark-transparent.svg"/>
+</div>
+<span class="sidebar-brand-text">Trio 0.27.0+dev 文档</span>
+</a><form action="search.html" class="sidebar-search-container" method="get" role="search">
+<input aria-label="搜索" class="sidebar-search" name="q" placeholder="搜索"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+<p class="caption" role="heading"><span class="caption-text">Trio 友好且全面的手册：</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="awesome-trio-libraries.html">超棒的 Trio 库</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="ref-core/index.html">Trio 的核心功能</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Trio 的核心功能</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/run.html">运行 Trio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/general_principles.html">一般原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/time_clock.html">时间和时钟</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/cancel_timeout.html">取消和超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/tasks.html">任务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/task_local_storeage.html">任务存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/task_sync.html">任务同步和通信</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/note_async_generator.html">异步生成器注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/threads.html">线程（如果必须）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/debugging.html">交互式调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-core/exc_warn.html">异常和警告</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="ref-io/index.html">Trio 中的 I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Trio 中的 I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="ref-io/abs_api.html">抽象流 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-io/low_level.html">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-io/async_file_io.html">异步文件系统 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-io/subprocess.html">生成子进程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ref-io/signals.html">信号</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-testing.html">Trio 中的测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference-lowlevel.html">自省和扩展 Trio</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">设计和内部结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">发布历史</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">为 Trio 及相关项目做出贡献</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">准备发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code-of-conduct.html">行为守则</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<div class="main">
+<div class="content">
+<div class="article-container">
+<a class="back-to-top muted-link" href="#">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+</svg>
+<span>Back to top</span>
+</a>
+<div class="content-icon-container">
+<div class="view-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/blob/sync-docs/cn_docs/source/design.rst?plain=true" title="View this page">
+<svg><use href="#svg-eye"></use></svg>
+<span class="visually-hidden">View this page</span>
+</a>
+</div><div class="edit-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/edit/sync-docs/cn_docs/source/design.rst" title="Edit this page">
+<svg><use href="#svg-pencil"></use></svg>
+<span class="visually-hidden">Edit this page</span>
+</a>
+</div><div class="theme-toggle-container theme-toggle-content">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-content-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+<article id="furo-main-content" role="main">
+<section id="id1">
+<h1>设计和内部结构<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<p><strong>Design and internals</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>在这里，我们将讨论 Trio 的整体设计和架构：它是如何结合在一起的，以及我们做出这些决策的原因。如果你只是想使用 Trio，那么你不需要阅读这一部分——尽管你可能会觉得它很有趣。本节的主要目标读者是：(a) 想要阅读代码并可能贡献代码的人，(b) 希望了解我们正在做什么的类似库开发者，(c) 对 I/O 库设计感兴趣的任何人。</p>
+<p>编写异步 I/O 库有许多有效的方式。这是我们的方式。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>Here we'll discuss Trio's overall design and architecture: how it fits
+together and why we made the decisions we did. If all you want to do
+is use Trio, then you don't need to read this – though you might find
+it interesting. The main target audience here is (a) folks who want to
+read the code and potentially contribute, (b) anyone working on
+similar libraries who want to understand what we're up to, (c) anyone
+interested in I/O library design generally.</p>
+<p>There are many valid approaches to writing an async I/O library. This
+is ours.</p>
+</div>
+</div>
+<section id="id2">
+<h2>高级设计原则<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p><strong>High-level design principles</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 的两个主要目标是 <strong>可用性</strong> 和 <strong>正确性</strong>：我们希望让你 <em>轻松</em> 地做到 <em>正确</em>。</p>
+<p>当然，还有许多其他重要因素，如速度、可维护性等。我们也希望尽可能地达到这些目标。但有时这些目标之间会发生冲突，而在这种情况下，以上两个目标是我们的优先事项。</p>
+<p>从某种意义上讲，本文件的其余部分都在描述这些目标是如何实现的，但举个简单的例子: Trio 的 <code class="docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code> 处理机制有点复杂且难以测试，因此它在简单性和可维护性方面评分较低。但我们认为，可用性+正确性的提升弥补了这一点。</p>
+<p>这里有一些细微之处。注意到我们特别强调“让事情变得容易正确”。有些情况下（例如编写一次性的脚本），最“易用”的工具可能是那个会无视错误并继续执行的工具，或者不处理资源清理的工具。（参见 PHP 的成功案例。）这是一个完全有效的用例和可用性的定义，但这不是我们使用的定义：我们认为，如果异常传播直到被处理，如果系统在你犯下可能危险的资源处理错误时能够 <a class="reference external" href="https://github.com/python-trio/trio/issues/265">捕获你</a>，那么构建可靠且正确的系统会更容易，因此我们会优化这个目标。</p>
+<p>也值得谈谈速度，因为在 I/O 库的比较中，速度通常是一个重要因素。这是一个相当微妙且复杂的话题。</p>
+<p>通常来说，速度当然很重要——但是人们有时选择使用 Python 而不是 C，实际上已经很好地表明了在实践中，可用性往往比速度更重要。我们希望让 Trio 快，但它没有出现在我们上面列出的主要目标中，这不是巧合：如果需要的话，我们愿意为可用性和可靠性牺牲一些速度。</p>
+<p>更详细地分解：</p>
+<p>首先，存在一些速度直接影响正确性的情况，比如你不小心写了一个 <code class="docutils literal notranslate"><span class="pre">O(N**2)</span></code> 的算法，导致程序实际上被锁住。Trio 非常小心地使用具有良好最坏情况表现的算法和数据结构（即使这可能意味着在平均情况下牺牲几个百分点的速度）。</p>
+<p>同样，当发生冲突时，我们更关心的是 99 百分位的延迟，而不是原始吞吐量，因为不足的吞吐量——如果是一致的！——通常可以通过水平扩展来预算和处理，但一旦丧失延迟，它就永远消失了，而且延迟激增很容易变成一个正确性问题（例如，一个 RPC 服务器响应慢到触发超时，它实际上就不能用了）。当然，这并不意味着我们不关心吞吐量——但有时工程需要做出取舍，特别是对于还没有时间为所有用例进行优化的早期项目。</p>
+<p>最后：我们确实非常关心真实世界应用中的速度，但微基准测试中的速度几乎是我们最低的优先级。我们不想参与构建“西部最快的回显服务器”之类的比赛。我的意思是，如果它发生了也不错，微基准测试是理解系统行为的宝贵工具。但如果你为了赢得这个游戏而去做，那就很容易陷入一个严重的不匹配激励的局面，在这种局面中，你必须为了获得一个对真实应用毫无意义的速度提升而开始妥协功能和正确性。在大多数情况下（我们怀疑），是应用代码成为了瓶颈，你通过在 PyPy 下运行整个应用程序，获得的收益可能比对 I/O 层做任何英雄式的优化更大。（这也是为什么 Trio <em>确实</em> 优先考虑 PyPy 兼容性的原因。）</p>
+<p>作为一种策略，我们还注意到，在 Trio 的生命周期的这个阶段，过于关注速度可能是个错误。花大量精力优化一个语义仍在变化的 API 是不明智的。</p>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<p>Trio's two overriding goals are <strong>usability</strong> and <strong>correctness</strong>: we
+want to make it <em>easy</em> to get things <em>right</em>.</p>
+<p>Of course there are lots of other things that matter too, like speed,
+maintainability, etc. We want those too, as much as we can get. But
+sometimes these things come in conflict, and when that happens, these
+are our priorities.</p>
+<p>In some sense the entire rest of this document is a description of how
+these play out, but to give a simple example: Trio's
+<code class="docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code> handling machinery is a bit tricky and hard to
+test, so it scores poorly on simplicity and maintainability. But we
+think the usability+correctness gains outweigh this.</p>
+<p>There are some subtleties here. Notice that it's specifically "easy to
+get things right". There are situations (e.g. writing one-off scripts)
+where the most "usable" tool is the one that will happily ignore
+errors and keep going no matter what, or that doesn't bother with
+resource cleanup. (Cf. the success of PHP.) This is a totally valid
+use case and valid definition of usability, but it's not the one we
+use: we think it's easier to build reliable and correct systems if
+exceptions propagate until handled and if the system <a class="reference external" href="https://github.com/python-trio/trio/issues/265">catches you when
+you make potentially dangerous resource handling errors</a>, so that's what we
+optimize for.</p>
+<p>It's also worth saying something about speed, since it often looms
+large in comparisons between I/O libraries. This is a rather subtle
+and complex topic.</p>
+<p>In general, speed is certainly important – but the fact that people
+sometimes use Python instead of C is a pretty good indicator that
+usability often trumps speed in practice. We want to make Trio fast,
+but it's not an accident that it's left off our list of overriding
+goals at the top: if necessary we are willing to accept some slowdowns
+in the service of usability and reliability.</p>
+<p>To break things down in more detail:</p>
+<p>First of all, there are the cases where speed directly impacts
+correctness, like when you hit an accidental <code class="docutils literal notranslate"><span class="pre">O(N**2)</span></code> algorithm and
+your program effectively locks up. Trio is very careful to use
+algorithms and data structures that have good worst-case behavior
+(even if this might mean sacrificing a few percentage points of speed
+in the average case).</p>
+<p>Similarly, when there's a conflict, we care more about 99th percentile
+latencies than we do about raw throughput, because insufficient
+throughput – if it's consistent! – can often be budgeted for and
+handled with horizontal scaling, but once you lose latency it's gone
+forever, and latency spikes can easily cross over to become a
+correctness issue (e.g., an RPC server that responds slowly enough to
+trigger timeouts is effectively non-functional). Again, of course,
+this doesn't mean we don't care about throughput – but sometimes
+engineering requires making trade-offs, especially for early-stage
+projects that haven't had time to optimize for all use cases yet.</p>
+<p>And finally: we care about speed on real-world applications quite a
+bit, but speed on microbenchmarks is just about our lowest
+priority. We aren't interested in competing to build "the fastest echo
+server in the West". I mean, it's nice if it happens or whatever, and
+microbenchmarks are an invaluable tool for understanding a system's
+behavior. But if you play that game to win then it's very easy to get
+yourself into a situation with seriously misaligned incentives, where
+you have to start compromising on features and correctness in order to
+get a speedup that's totally irrelevant to real-world applications. In
+most cases (we suspect) it's the application code that's the
+bottleneck, and you'll get more of a win out of running the whole app
+under PyPy than out of any heroic optimizations to the I/O
+layer. (And this is why Trio <em>does</em> place a priority on PyPy
+compatibility.)</p>
+<p>As a matter of tactics, we also note that at this stage in Trio's
+lifecycle, it'd probably be a mistake to worry about speed too
+much. It doesn't make sense to spend lots of effort optimizing an API
+whose semantics are still in flux.</p>
+</div>
+</div>
+</section>
+<section id="api">
+<h2>用户级 API 原则<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<p><strong>User-level API principles</strong></p>
+<section id="id3">
+<h3>基本原则<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<p><strong>Basic principles</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 是 <a class="reference external" href="https://vorpus.org/blog/some-thoughts-on-asynchronous-api-design-in-a-post-asyncawait-world/">这篇博客文章</a> 思想的延续，特别是其中提到的 <a class="reference external" href="https://vorpus.org/blog/some-thoughts-on-asynchronous-api-design-in-a-post-asyncawait-world/#review-and-summing-up-what-is-async-await-native-anyway">原理</a>，这些原理使得 Curio 比 asyncio 更容易正确使用。因此，Trio 也采纳了这些规则，特别是：</p>
+<ul class="simple">
+<li><p>唯一的并发形式是任务（task）。</p></li>
+<li><p>任务保证会执行到完成。</p></li>
+<li><p>任务的创建总是显式的。没有回调、没有隐式并发、没有 futures/deferreds/promises/其他涉及回调的 API。除非用于显式创建任务的 API，否则所有 API 都是 <a class="reference external" href="https://vorpus.org/blog/some-thoughts-on-asynchronous-api-design-in-a-post-asyncawait-world/#review-and-summing-up-what-is-async-await-native-anyway">"因果"</a>。</p></li>
+<li><p>异常用于错误处理； <code class="docutils literal notranslate"><span class="pre">try</span></code> / <code class="docutils literal notranslate"><span class="pre">finally</span></code> 和 <code class="docutils literal notranslate"><span class="pre">with</span></code> 块用于清理处理。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<p>Trio is very much a continuation of the ideas explored in <a class="reference external" href="https://vorpus.org/blog/some-thoughts-on-asynchronous-api-design-in-a-post-asyncawait-world/">this blog post</a>, and in particular the <a class="reference external" href="https://vorpus.org/blog/some-thoughts-on-asynchronous-api-design-in-a-post-asyncawait-world/#review-and-summing-up-what-is-async-await-native-anyway">principles identified there</a> that make curio easier to use correctly than asyncio. So Trio also adopts these rules, in particular:</p>
+<ul class="simple">
+<li><p>The only form of concurrency is the task.</p></li>
+<li><p>Tasks are guaranteed to run to completion.</p></li>
+<li><p>Task spawning is always explicit. No callbacks, no implicit concurrency, no futures/deferreds/promises/other APIs that involve callbacks. All APIs are <a class="reference external" href="https://vorpus.org/blog/some-thoughts-on-asynchronous-api-design-in-a-post-asyncawait-world/#review-and-summing-up-what-is-async-await-native-anyway">"causal"</a> except for those that are explicitly used for task spawning.</p></li>
+<li><p>Exceptions are used for error handling; <code class="docutils literal notranslate"><span class="pre">try</span></code>/<code class="docutils literal notranslate"><span class="pre">finally</span></code> and <code class="docutils literal notranslate"><span class="pre">with</span></code> blocks for handling cleanup.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="id4">
+<h3>取消点和安排点<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<p><strong>Cancel points and schedule points</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 与 Curio 的第一个重大区别在于，它决定让更多的 API 使用同步函数而非异步函数，并提供关于取消点和调度点的强大约定。（此时，Trio 和 Curio 已经有很多不同之处。但这实际上是起点——我意识到，探索这些思想需要一个新的库，而不能在 Curio 内部完成。）完整的推理需要一些解释。</p>
+<p>首先，一些定义：<em>取消点</em> 是代码检查是否已被取消的地方 —— 例如，由于超时过期 —— 并可能引发 <a class="reference internal" href="ref-core/exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常。<em>调度点</em> 是当前任务可能会被挂起并允许其他任务运行的地方。</p>
+<p>在 Curio 中，约定是所有以任何方式与运行循环交互的操作都是语法上异步的，而且无法定义哪些操作是取消/调度点；用户被告知假设其中任何操作 <em>可能</em> 是取消/调度点，但除非它们实际上会阻塞，否则没有保证它们是取消/调度点。（即，某个特定调用是否作为取消/调度点在不同的 Curio 版本中可以有所不同，且还可能根据网络负载等运行时因素而变化。）</p>
+<p>但在使用异步库时，您需要意识到取消点和调度点是有充分理由的。它们为您的代码引入了一组复杂且部分冲突的约束：</p>
+<p>您需要确保每个任务定期通过一个取消点，因为否则超时将变得无效，您的代码将容易受到 DoS 攻击和其他问题的影响。因此，为了正确性，确保有足够的取消点非常重要。</p>
+<p>但是... 每个取消点也会增加程序中出现细微 bug 的机会，因为这是一个需要准备处理 <a class="reference internal" href="ref-core/exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常并正确清理的地方。尽管我们尽力使这一过程尽可能简单，但这些清理路径往往在测试中被遗漏，并隐藏着微妙的 bug。因此，取消点越多，确保代码正确性就越难。</p>
+<p>类似地，您需要确保每个任务定期通过一个调度点，否则该任务可能会占用事件循环，导致其他代码无法运行，从而造成延迟峰值。因此，为了正确性，确保有足够的调度点非常重要。</p>
+<p>但是... 在这里也必须小心，因为每个调度点都是一个可能执行任意其他代码的地方，并可能在不知情的情况下改变程序的状态，导致经典的并发错误。因此，随着调度点的增加，<a class="reference external" href="https://glyph.twistedmatrix.com/2014/02/unyielding.html">推理代码如何交错并确保其正确性变得成倍困难</a>。</p>
+<p>因此，一个异步 I/O 库的一个重要问题是：我们如何帮助用户管理这些权衡？</p>
+<p>Trio 的答案受到了两个进一步观察的启发：</p>
+<p>首先，任何时间任务阻塞（例如，因为它执行了 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">sock.recv()</span></code> 但没有数据可接收），都必须是一个取消点（因为如果 I/O 永远不来，我们需要能够超时），并且它必须是一个调度点（因为异步编程的整个概念就是当一个任务等待时，我们可以切换到另一个任务去完成一些有用的事情）。</p>
+<p>其次，一个有时充当取消/调度点、而有时不充当取消/调度点的函数，是最糟糕的两种情况的结合：你已经付出努力确保代码正确地处理了取消或交替执行，但却无法指望它能帮助满足延迟要求。</p>
+<p>考虑到这一点，Trio 采取了以下方法：</p>
+<p>规则 1：为了减少需要跟踪的概念数量，我们将取消点和调度点合并在一起。每个取消点同时也是一个调度点，反之亦然。这些在理论上和实际实现中是不同的概念，但我们将这一区别隐藏起来，以便用户只需要跟踪一个概念。</p>
+<p>规则 2：取消+调度点是 <em>静态确定</em> 的。Trio 原语要么 <em>始终</em> 是取消+调度点，要么 <em>永远</em> 不是取消+调度点，无论运行时条件如何。这是因为我们希望能够通过查看源代码来确定某些代码是否具有“足够”的取消/调度点。</p>
+<p>实际上，为了简化这一点，我们使得您甚至无需查看函数参数：每个 <em>函数</em> 要么是 <em>每次</em> 调用时的取消+调度点，要么是 <em>从不</em> 调用时的取消+调度点。</p>
+<p>（务实的例外：当一个 Trio 原语抛出异常时，即使它在成功返回的情况下会充当取消+调度点，仍不要求它作为取消+调度点。更多细节请参见 <a class="reference external" href="https://github.com/python-trio/trio/issues/474">issue 474</a>；基本上，要求所有异常路径都设置检查点增加了大量的实现复杂性，而对用户的好处微乎其微。）</p>
+<p>观察：由于阻塞总是取消+调度点，规则 2 意味着任何 <em>有时</em> 会阻塞的函数 <em>总是</em> 取消+调度点。</p>
+<p>这样我们就得到了许多取消+调度点：所有可能会阻塞的函数。还有其他的吗？Trio 的答案是：没有。显式添加新的点很容易（比如抛一个 <code class="docutils literal notranslate"><span class="pre">sleep(0)</span></code> 或类似的），但当你不希望它们时，很难去除它们。（这是一个实际问题 —— “潜在的取消点太多” 绝对是我在尝试构建类似任务监控器的东西时遇到的紧张点，<a class="reference external" href="https://github.com/dabeaz/curio/issues/149#issuecomment-269745283">见此</a>。）我们预计，大多数 Trio 程序将“足够频繁”地执行潜在阻塞操作，以产生合理的行为。所以，规则 3：<em>唯一</em> 的取消+调度点就是那些可能阻塞的操作。</p>
+<p>既然我们已经知道了取消+调度点的位置，接下来就是如何有效地将这一信息传达给用户。我们希望有一种方式标出可能阻塞或触发任务切换的函数类别，这样它们就可以明显地区别于不会这样做的函数。如果有某种 Python 特性，能够自然地将函数分为两类，并且可能在能够做一些奇怪事情（比如阻塞和任务切换）的函数上加上一些特殊的语法标记，那岂不是很好？多么巧合，这正是异步函数的工作方式！规则 4：在 Trio 中，只有潜在阻塞的函数才是异步的。所以例如 <a class="reference internal" href="ref-core/task_sync.html#trio.Event.wait" title="trio.Event.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Event.wait()</span></code></a> 是异步的，但 <a class="reference internal" href="ref-core/task_sync.html#trio.Event.set" title="trio.Event.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Event.set()</span></code></a> 是同步的。</p>
+<p>总结：在实际设计空间中，虽然可能有很多选择，我们通过规定法宣布，Trio 原语中的所有这些类别是相同的：</p>
+<ul class="simple">
+<li><p>异步函数</p></li>
+<li><p>在至少某些情况下可能会阻塞的函数</p></li>
+<li><p>调用者需要准备好处理潜在的 <a class="reference internal" href="ref-core/exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常的函数</p></li>
+<li><p>保证能够察觉任何挂起取消的函数</p></li>
+<li><p>需要为潜在的任务切换做好准备的函数</p></li>
+<li><p>保证在适当时进行任务切换的函数</p></li>
+</ul>
+<p>这需要内部做一些不小的工作 —— 使得这四个取消/调度类别对齐实际上需要相当多的精心设计，并且还需要一些技巧，以让同步和异步 API 在与运行循环交互时处于同等地位。但这一切对用户是不可见的，我们认为这在可用性和正确性方面是值得的。</p>
+<p>这些规则有一个例外，适用于异步上下文管理器。上下文管理器由两个操作组成 —— 进入和退出 —— 有时只有其中一个操作是潜在的阻塞操作。（示例：“<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">lock:</span></code>” 在进入时可能阻塞，但退出时永远不会；“<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">open_nursery()</span> <span class="pre">as</span> <span class="pre">...:</span></code>” 在退出时可能阻塞，但进入时永远不会。）但是，Python 并没有“半异步”上下文管理器：要么两个操作都是异步风格的，要么都不是。在 Trio 中，我们采取务实的做法：对于这种异步上下文管理器，我们只在潜在阻塞的操作上强制执行上述规则，而允许另一个操作在语法上是 <code class="docutils literal notranslate"><span class="pre">async</span></code>，但语义上是同步的。异步上下文管理器应始终记录其操作中哪些是取消+调度点。</p>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">英文</label><div class="tab-content docutils container">
+<p>The first major place that Trio departs from curio is in its decision
+to make a much larger fraction of the API use sync functions rather
+than async functions, and to provide strong conventions about cancel
+points and schedule points. (At this point, there are a lot of ways
+that Trio and curio have diverged. But this was really the origin –
+the tipping point where I realized that exploring these ideas would
+require a new library, and couldn't be done inside curio.) The full
+reasoning here takes some unpacking.</p>
+<p>First, some definitions: a <em>cancel point</em> is a point where your code
+checks if it has been cancelled – e.g., due to a timeout having
+expired – and potentially raises a <a class="reference internal" href="ref-core/exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> error. A <em>schedule
+point</em> is a point where the current task can potentially be suspended,
+and another task allowed to run.</p>
+<p>In curio, the convention is that all operations that interact with the
+run loop in any way are syntactically async, and it's undefined which
+of these operations are cancel/schedule points; users are instructed
+to assume that any of them <em>might</em> be cancel/schedule points, but with
+a few exceptions there's no guarantee that any of them are unless they
+actually block. (I.e., whether a given call acts as a cancel/schedule
+point is allowed to vary across curio versions and also depending on
+runtime factors like network load.)</p>
+<p>But when using an async library, there are good reasons why you need
+to be aware of cancel and schedule points. They introduce a set of
+complex and partially conflicting constraints on your code:</p>
+<p>You need to make sure that every task passes through a cancel
+point regularly, because otherwise timeouts become ineffective
+and your code becomes subject to DoS attacks and other
+problems. So for correctness, it's important to make sure you
+have enough cancel points.</p>
+<p>But... every cancel point also increases the chance of subtle
+bugs in your program, because it's a place where you have to be
+prepared to handle a <a class="reference internal" href="ref-core/exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception and clean up
+properly. And while we try to make this as easy as possible,
+these kinds of clean-up paths are notorious for getting missed
+in testing and harboring subtle bugs. So the more cancel points
+you have, the harder it is to make sure your code is correct.</p>
+<p>Similarly, you need to make sure that every task passes through
+a schedule point regularly, because otherwise this task could
+end up hogging the event loop and preventing other code from
+running, causing a latency spike. So for correctness, it's
+important to make sure you have enough schedule points.</p>
+<p>But... you have to be careful here too, because every schedule
+point is a point where arbitrary other code could run, and
+alter your program's state out from under you, introducing
+classic concurrency bugs. So as you add more schedule points,
+it <a class="reference external" href="https://glyph.twistedmatrix.com/2014/02/unyielding.html">becomes exponentially harder to reason about how your code
+is interleaved and be sure that it's correct</a>.</p>
+<p>So an important question for an async I/O library is: how do we help
+the user manage these trade-offs?</p>
+<p>Trio's answer is informed by two further observations:</p>
+<p>First, any time a task blocks (e.g., because it does an <code class="docutils literal notranslate"><span class="pre">await</span>
+<span class="pre">sock.recv()</span></code> but there's no data available to receive), that
+has to be a cancel point (because if the I/O never arrives, we
+need to be able to time out), and it has to be a schedule point
+(because the whole idea of asynchronous programming is that
+when one task is waiting we can switch to another task to get
+something useful done).</p>
+<p>And second, a function which sometimes counts as a cancel/schedule
+point, and sometimes doesn't, is the worst of both worlds: you have
+put in the effort to make sure your code handles cancellation or
+interleaving correctly, but you can't count on it to help meet latency
+requirements.</p>
+<p>With all that in mind, Trio takes the following approach:</p>
+<p>Rule 1: to reduce the number of concepts to keep track of, we collapse
+cancel points and schedule points together. Every point that is a
+cancel point is also a schedule point and vice versa. These are
+distinct concepts both theoretically and in the actual implementation,
+but we hide that distinction from the user so that there's only one
+concept they need to keep track of.</p>
+<p>Rule 2: Cancel+schedule points are determined <em>statically</em>. A Trio
+primitive is either <em>always</em> a cancel+schedule point, or <em>never</em> a
+cancel+schedule point, regardless of runtime conditions. This is
+because we want it to be possible to determine whether some code has
+"enough" cancel/schedule points by reading the source code.</p>
+<p>In fact, to make this even simpler, we make it so you don't even have
+to look at the function arguments: each <em>function</em> is either a
+cancel+schedule point on <em>every</em> call or on <em>no</em> calls.</p>
+<p>(Pragmatic exception: a Trio primitive is not required to act as a
+cancel+schedule point when it raises an exception, even if it would
+act as one in the case of a successful return. See <a class="reference external" href="https://github.com/python-trio/trio/issues/474">issue 474</a> for more details;
+basically, requiring checkpoints on all exception paths added a lot of
+implementation complexity with negligible user-facing benefit.)</p>
+<p>Observation: since blocking is always a cancel+schedule point, rule 2
+implies that any function that <em>sometimes</em> blocks is <em>always</em> a
+cancel+schedule point.</p>
+<p>So that gives us a number of cancel+schedule points: all the functions
+that can block. Are there any others? Trio's answer is: no. It's easy
+to add new points explicitly (throw in a <code class="docutils literal notranslate"><span class="pre">sleep(0)</span></code> or whatever) but
+hard to get rid of them when you don't want them. (And this is a real
+issue – "too many potential cancel points" is definitely a tension
+<a class="reference external" href="https://github.com/dabeaz/curio/issues/149#issuecomment-269745283">I've felt</a>
+while trying to build things like task supervisors in curio.) And we
+expect that most Trio programs will execute potentially-blocking
+operations "often enough" to produce reasonable behavior. So, rule 3:
+the <em>only</em> cancel+schedule points are the potentially-blocking
+operations.</p>
+<p>And now that we know where our cancel+schedule points are, there's the
+question of how to effectively communicate this information to the
+user. We want some way to mark out a category of functions that might
+block or trigger a task switch, so that they're clearly distinguished
+from functions that don't do this. Wouldn't it be nice if there were
+some Python feature, that naturally divided functions into two
+categories, and maybe put some sort of special syntactic marking on
+with the functions that can do weird things like block and task
+switch...? What a coincidence, that's exactly how async functions
+work! Rule 4: in Trio, only the potentially blocking functions are
+async. So e.g. <a class="reference internal" href="ref-core/task_sync.html#trio.Event.wait" title="trio.Event.wait"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Event.wait()</span></code></a> is async, but <a class="reference internal" href="ref-core/task_sync.html#trio.Event.set" title="trio.Event.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Event.set()</span></code></a> is
+sync.</p>
+<p>Summing up: out of what's actually a pretty vast space of design
+possibilities, we declare by fiat that when it comes to Trio
+primitives, all of these categories are identical:</p>
+<ul class="simple">
+<li><p>async functions</p></li>
+<li><p>functions that can, under at least some circumstances, block</p></li>
+<li><p>functions where the caller needs to be prepared to handle potential <a class="reference internal" href="ref-core/exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exceptions</p></li>
+<li><p>functions that are guaranteed to notice any pending cancellation</p></li>
+<li><p>functions where you need to be prepared for a potential task switch</p></li>
+<li><p>functions that are guaranteed to take care of switching tasks if appropriate</p></li>
+</ul>
+<p>This requires some non-trivial work internally – it actually takes a
+fair amount of care to make those 4 cancel/schedule categories line
+up, and there are some shenanigans required to let sync and async APIs
+both interact with the run loop on an equal footing. But this is all
+invisible to the user, we feel that it pays off in terms of usability
+and correctness.</p>
+<p>There is one exception to these rules, for async context
+managers. Context managers are composed of two operations – enter and
+exit – and sometimes only one of these is potentially
+blocking. (Examples: <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">lock:</span></code> can block when entering but
+never when exiting; <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">open_nursery()</span> <span class="pre">as</span> <span class="pre">...:</span></code> can block
+when exiting but never when entering.) But, Python doesn't have
+"half-asynchronous" context managers: either both operations are
+async-flavored, or neither is. In Trio we take a pragmatic approach:
+for this kind of async context manager, we enforce the above rules
+only on the potentially blocking operation, and the other operation is
+allowed to be syntactically <code class="docutils literal notranslate"><span class="pre">async</span></code> but semantically
+synchronous. And async context managers should always document which
+of their operations are schedule+cancel points.</p>
+</div>
+</div>
+</section>
+<section id="id5">
+<h3>异常始终传播<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<p><strong>Exceptions always propagate</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 遵循的另一个规则是 <em>异常必须始终传播</em>。这就像 <a class="reference external" href="https://www.python.org/dev/peps/pep-0020/">Zen</a> 中关于“错误不应默默无闻”的那行话，不同之处在于，在 Python 的其他所有并发库（线程、asyncio、curio 等）中，遇到无法传递的异常通常会打印到 stderr，然后被丢弃。虽然我们理解这些库采用这种方法的务实约束，但我们认为有太多情况下没有人会查看 stderr 并注意到问题，因此我们坚持认为 Trio 的 API 必须找到一种方法，将异常“向上传播”——无论这意味着什么。</p>
+<p>遵循这个规则通常是一个挑战 —— 例如， <cite>call soon</cite> 代码必须做一些弯路才能实现 —— 但它最具戏剧性的影响可以在 Trio 的任务生成接口中看到，这种设计激发了“托儿所”（nurseries）的使用：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">parent</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+        <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>（详见 <a class="reference internal" href="ref-core/tasks.html#tasks"><span class="std std-ref">任务</span></a>。）</p>
+<p>如果你眯着眼看，你可以看到 Erlang 的“任务链接”和“任务树”概念的影响，尽管细节有所不同。</p>
+<p>这个设计还导致了一个显著、意外的不变性。</p>
+<p>在 <a class="reference external" href="https://vorpus.org/blog/some-thoughts-on-asynchronous-api-design-in-a-post-asyncawait-world/#c-c-c-c-causality-breaker">这篇博客文章</a> 中，我提到过 curio 的任务生成 API 中的一个优点，即由于生成是打破因果关系的唯一方式，而在 curio 中，<code class="docutils literal notranslate"><span class="pre">spawn</span></code> 是异步的，这意味着在 curio 中同步函数被保证是有因果关系的。然而，这个不变性实际上并不太具有预测性：在 curio 中有很多异步函数可能会生成子任务并破坏因果关系，但大多数不会，且没有明确的标记来区分哪些会破坏因果关系。</p>
+<p>我们的 API 并不完全提供这种保证，但实际上提供了一个更好的保证。在 Trio 中：</p>
+<ul class="simple">
+<li><p>同步函数不能创建托儿所，因为托儿所需要 <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code>。</p></li>
+<li><p>任何异步函数都可以创建托儿所并启动新任务……但创建托儿所 <em>允许任务启动但不允许打破因果关系</em>，因为子任务必须在函数返回之前退出。因此，我们可以在不放弃并发性的情况下保留因果关系！</p></li>
+<li><p>唯一能够打破因果关系的方式（这是一项重要功能，只是需要小心处理）是显式地在一个任务中创建托儿所对象，然后将其传递到另一个任务中。这提供了一个非常清晰、精确的信号，表明有奇怪的事情发生 —— 只要注意托儿所对象的传递。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--2">英文</label><div class="tab-content docutils container">
+<p>Another rule that Trio follows is that <em>exceptions must always
+propagate</em>. This is like the <a class="reference external" href="https://www.python.org/dev/peps/pep-0020/">zen</a> line about "Errors
+should never pass silently", except that in every other concurrency
+library for Python (threads, asyncio, curio, ...), it's fairly common
+to end up with an undeliverable exception, which just gets printed to
+stderr and then discarded. While we understand the pragmatic
+constraints that motivated these libraries to adopt this approach, we
+feel that there are far too many situations where no human will ever
+look at stderr and notice the problem, and insist that Trio APIs find
+a way to propagate exceptions "up the stack" – whatever that might
+mean.</p>
+<p>This is often a challenging rule to follow – for example, the call
+soon code has to jump through some hoops to make it happen – but its
+most dramatic influence can seen in Trio's task-spawning interface,
+where it motivates the use of "nurseries":</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">parent</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+        <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(See <a class="reference internal" href="ref-core/tasks.html#tasks"><span class="std std-ref">任务</span></a> for full details.)</p>
+<p>If you squint you can see the conceptual influence of Erlang's "task
+linking" and "task tree" ideas here, though the details are different.</p>
+<p>This design also turns out to enforce a remarkable, unexpected
+invariant.</p>
+<p>In <a class="reference external" href="https://vorpus.org/blog/some-thoughts-on-asynchronous-api-design-in-a-post-asyncawait-world/#c-c-c-c-causality-breaker">the blog post</a>
+I called out a nice feature of curio's spawning API, which is that
+since spawning is the only way to break causality, and in curio
+<code class="docutils literal notranslate"><span class="pre">spawn</span></code> is async, which means that in curio sync functions are
+guaranteed to be causal. One limitation though is that this invariant
+is actually not very predictive: in curio there are lots of async
+functions that could spawn off children and violate causality, but
+most of them don't, but there's no clear marker for the ones that do.</p>
+<p>Our API doesn't quite give that guarantee, but actually a better
+one. In Trio:</p>
+<ul class="simple">
+<li><p>Sync functions can't create nurseries, because nurseries require an <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code></p></li>
+<li><p>Any async function can create a nursery and start new tasks... but creating a nursery <em>allows task starting but does not permit causality breaking</em>, because the children have to exit before the function is allowed to return. So we can preserve causality without having to give up concurrency!</p></li>
+<li><p>The only way to violate causality (which is an important feature, just one that needs to be handled carefully) is to explicitly create a nursery object in one task and then pass it into another task. And this provides a very clear and precise signal about where the funny stuff is happening – just watch for the nursery object getting passed around.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="id6">
+<h3>自省、调试、测试<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<p><strong>Introspection, debugging, testing</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--1">中文</label><div class="tab-content docutils container">
+<p>反射和调试工具对实现实际的可用性和正确性至关重要，因此它们应该是 Trio 中的头等考虑因素。</p>
+<p>类似地，强大的测试工具的可用性对可用性和正确性有巨大影响；我们认为测试助手是 Trio 项目中非常重要的一部分。</p>
+</div>
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--2">英文</label><div class="tab-content docutils container">
+<p>Tools for introspection and debugging are critical to achieving
+usability and correctness in practice, so they should be first-class
+considerations in Trio.</p>
+<p>Similarly, the availability of powerful testing tools has a huge
+impact on usability and correctness; we consider testing helpers to be
+very much in scope for the Trio project.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="id7">
+<h2>特定样式指南<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
+<p><strong>Specific style guidelines</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--6-input--1" name="tab-set--6" type="radio"/><label class="tab-label" for="tab-set--6-input--1">中文</label><div class="tab-content docutils container">
+<ul>
+<li><p>如上所述，非阻塞函数应标记为同步（sync）颜色，而可能阻塞的函数应标记为异步（async）颜色，并无条件地充当取消+调度点。</p></li>
+<li><p>任何接受可调用对象（callable）作为参数的函数，其签名应类似于：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call_the_thing</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">kwonly1</span><span class="p">,</span> <span class="n">kwonly2</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">fn(*args)</span></code> 是要调用的函数， <code class="docutils literal notranslate"><span class="pre">kwonly1</span></code> 和 <code class="docutils literal notranslate"><span class="pre">kwonly2</span></code> 是属于 <code class="docutils literal notranslate"><span class="pre">call_the_thing</span></code> 的关键字参数。即使 <code class="docutils literal notranslate"><span class="pre">call_the_thing</span></code> 没有自己的参数，此规则依然适用，即在这种情况下，它的签名看起来像：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call_the_thing</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>这样，用户在大多数情况下可以跳过使用 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functools.html#functools.partial" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">functools.partial()</span></code></a>，同时仍然提供一种明确且可扩展的方式来传递参数给调用者。
+（向 asyncio 致敬，我们从中借用了这一约定。）</p>
+</li>
+<li><p>每当合适时，Trio 类应具有一个名为 <code class="docutils literal notranslate"><span class="pre">statistics()</span></code> 的方法，该方法返回一个不可变对象，包含有关对象的内部统计信息，这些信息对调试或反射很有用（ <a class="reference internal" href="ref-core/task_sync.html#synchronization"><span class="std std-ref">examples</span></a>）。</p></li>
+<li><p>用于等待条件变为真的函数或方法应命名为 <code class="docutils literal notranslate"><span class="pre">wait_&lt;condition&gt;</span></code>。这样可以避免诸如“<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">readable()</span></code> 是*检查*可读性（返回布尔值），还是*等待*可读性？”的歧义。</p>
+<p>有时这会导致看起来稍微有点怪异的 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">wait_...</span></code>。抱歉。就我所知，所有其他选项都不如这个约定清晰，而且你会很快习惯这种约定。</p>
+</li>
+<li><p>如果需要提供阻塞版本和非阻塞版本的函数，它们应看起来像：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">OPERATION</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">OPERATION_nowait</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>并且 <code class="docutils literal notranslate"><span class="pre">nowait</span></code> 版本如果会阻塞，则会引发 <a class="reference internal" href="ref-core/exc_warn.html#trio.WouldBlock" title="trio.WouldBlock"><code class="xref py py-exc docutils literal notranslate"><span class="pre">trio.WouldBlock</span></code></a>。</p>
+</li>
+<li><p>...我们应该有，但目前没有，明确的约定来区分接受异步可调用对象和同步可调用对象的函数。详见 <a class="reference external" href="https://github.com/python-trio/trio/issues/68">issue #68</a>。</p></li>
+</ul>
+</div>
+<input class="tab-input" id="tab-set--6-input--2" name="tab-set--6" type="radio"/><label class="tab-label" for="tab-set--6-input--2">英文</label><div class="tab-content docutils container">
+<ul>
+<li><p>As noted above, functions that don't block should be sync-colored, and functions that might block should be async-colored and unconditionally act as cancel+schedule points.</p></li>
+<li><p>Any function that takes a callable to run should have a signature like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call_the_thing</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">kwonly1</span><span class="p">,</span> <span class="n">kwonly2</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">fn(*args)</span></code> is the thing to be called, and <code class="docutils literal notranslate"><span class="pre">kwonly1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">kwonly2</span></code>, are keyword-only arguments that belong to
+<code class="docutils literal notranslate"><span class="pre">call_the_thing</span></code>. This applies even if <code class="docutils literal notranslate"><span class="pre">call_the_thing</span></code> doesn't
+take any arguments of its own, i.e. in this case its signature looks
+like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call_the_thing</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>This allows users to skip faffing about with
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functools.html#functools.partial" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">functools.partial()</span></code></a> in most cases, while still providing an
+unambiguous and extensible way to pass arguments to the caller.
+(Hat-tip to asyncio, who we stole this convention from.)</p>
+</li>
+<li><p>Whenever it makes sense, Trio classes should have a method called
+<code class="docutils literal notranslate"><span class="pre">statistics()</span></code> which returns an immutable object with named fields
+containing internal statistics about the object that are useful for
+debugging or introspection (<a class="reference internal" href="ref-core/task_sync.html#synchronization"><span class="std std-ref">examples</span></a>).</p></li>
+<li><p>Functions or methods whose purpose is to wait for a condition to
+become true should be called <code class="docutils literal notranslate"><span class="pre">wait_&lt;condition&gt;</span></code>. This avoids
+ambiguities like "does <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">readable()</span></code> <em>check</em> readability
+(returning a bool) or <em>wait for</em> readability?".</p>
+<p>Sometimes this leads to the slightly funny looking <code class="docutils literal notranslate"><span class="pre">await</span>
+<span class="pre">wait_...</span></code>. Sorry. As far as I can tell all the alternatives are
+worse, and you get used to the convention pretty quick.</p>
+</li>
+<li><p>If it's desirable to have both blocking and non-blocking versions of
+a function, then they look like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">OPERATION</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">OPERATION_nowait</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>and the <code class="docutils literal notranslate"><span class="pre">nowait</span></code> version raises <a class="reference internal" href="ref-core/exc_warn.html#trio.WouldBlock" title="trio.WouldBlock"><code class="xref py py-exc docutils literal notranslate"><span class="pre">trio.WouldBlock</span></code></a> if it would block.</p>
+</li>
+<li><p>...we should, but currently don't, have a solid convention to
+distinguish between functions that take an async callable and those
+that take a sync callable. See <a class="reference external" href="https://github.com/python-trio/trio/issues/68">issue #68</a>.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="trio">
+<h2>Trio 内部结构简介<a class="headerlink" href="#trio" title="Link to this heading">¶</a></h2>
+<p><strong>A brief tour of Trio's internals</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--7-input--1" name="tab-set--7" type="radio"/><label class="tab-label" for="tab-set--7-input--1">中文</label><div class="tab-content docutils container">
+<p>如果你想了解 Trio 内部是如何构建的，那么首先要知道的是，Trio 有一个非常严格的内部分层： <code class="docutils literal notranslate"><span class="pre">trio._core</span></code> 包是调度/取消/IO 处理逻辑的完全自包含实现，其他 <code class="docutils literal notranslate"><span class="pre">trio.*</span></code> 模块则是基于它暴露的 API 来实现的。（如果你想查看这个 API 是什么样的，可以运行 <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">trio;</span> <span class="pre">print(trio._core.__all__)</span></code>）。从 <code class="docutils literal notranslate"><span class="pre">trio._core</span></code> 导出的所有内容*也*作为 <code class="docutils literal notranslate"><span class="pre">trio</span></code>、 <code class="docutils literal notranslate"><span class="pre">trio.lowlevel</span></code> 或 <code class="docutils literal notranslate"><span class="pre">trio.testing</span></code> 命名空间的一部分进行导出。（详情请参阅它们各自的 <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> 文件；有一个测试来强制执行这一点。）</p>
+<p>理由: 目前，Trio 是一个新项目，处于设计空间的一个新领域，因此我们不做任何稳定性保证。但我们的目标是达到一个能够声明 API 稳定的阶段。我们不太可能快速探索设计空间的所有可能角落并覆盖所有可能的 I/O 类型。因此，我们的策略是确保独立包可以在 Trio 的基础上添加新功能。强制执行 <code class="docutils literal notranslate"><span class="pre">trio</span></code> 和 <code class="docutils literal notranslate"><span class="pre">trio._core</span></code> 的拆分是我们 <a class="reference external" href="https://en.wikipedia.org/wiki/Eating_your_own_dog_food">吃自己的狗粮</a>：像 <a class="reference internal" href="ref-core/task_sync.html#trio.Lock" title="trio.Lock"><code class="xref py py-class docutils literal notranslate"><span class="pre">trio.Lock</span></code></a> 和 <a class="reference internal" href="ref-io/low_level.html#module-trio.socket" title="trio.socket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code></a> 这样的基本功能实际上完全通过公开 API 实现。我们的希望是，通过这样做，我们增加了这样的可能性：某些人如果想要提出一种更好的队列方式，或者想添加一些新的功能，比如文件系统变化监视，能够在不修改 Trio 内部的情况下，通过我们的公开 API 实现这些功能。</p>
+</div>
+<input class="tab-input" id="tab-set--7-input--2" name="tab-set--7" type="radio"/><label class="tab-label" for="tab-set--7-input--2">英文</label><div class="tab-content docutils container">
+<p>If you want to understand how Trio is put together internally, then
+the first thing to know is that there's a very strict internal
+layering: the <code class="docutils literal notranslate"><span class="pre">trio._core</span></code> package is a fully self-contained
+implementation of the core scheduling/cancellation/IO handling logic,
+and then the other <code class="docutils literal notranslate"><span class="pre">trio.*</span></code> modules are implemented in terms of the
+API it exposes. (If you want to see what this API looks like, then
+<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">trio;</span> <span class="pre">print(trio._core.__all__)</span></code>). Everything exported from
+<code class="docutils literal notranslate"><span class="pre">trio._core</span></code> is <em>also</em> exported as part of the <code class="docutils literal notranslate"><span class="pre">trio</span></code>,
+<code class="docutils literal notranslate"><span class="pre">trio.lowlevel</span></code>, or <code class="docutils literal notranslate"><span class="pre">trio.testing</span></code> namespaces. (See their
+respective <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> files for details; there's a test to
+enforce this.)</p>
+<p>Rationale: currently, Trio is a new project in a novel part of the
+design space, so we don't make any stability guarantees. But the goal
+is to reach the point where we <em>can</em> declare the API stable. It's
+unlikely that we'll be able to quickly explore all possible corners of
+the design space and cover all possible types of I/O. So instead, our
+strategy is to make sure that it's possible for independent packages
+to add new features on top of Trio. Enforcing the <code class="docutils literal notranslate"><span class="pre">trio</span></code> vs
+<code class="docutils literal notranslate"><span class="pre">trio._core</span></code> split is a way of <a class="reference external" href="https://en.wikipedia.org/wiki/Eating_your_own_dog_food">eating our own dogfood</a>: basic
+functionality like <a class="reference internal" href="ref-core/task_sync.html#trio.Lock" title="trio.Lock"><code class="xref py py-class docutils literal notranslate"><span class="pre">trio.Lock</span></code></a> and <a class="reference internal" href="ref-io/low_level.html#module-trio.socket" title="trio.socket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code></a> is
+actually implemented solely in terms of public APIs. And the hope is
+that by doing this, we increase the chances that someone who comes up
+with a better kind of queue or wants to add some new functionality
+like, say, file system change watching, will be able to do that on top
+of our public APIs without having to modify Trio internals.</p>
+</div>
+</div>
+<section id="trio-core">
+<h3><code class="docutils literal notranslate"><span class="pre">trio._core</span></code> 内部<a class="headerlink" href="#trio-core" title="Link to this heading">¶</a></h3>
+<p><strong>Inside</strong> <code class="docutils literal notranslate"><span class="pre">trio._core</span></code></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--8-input--1" name="tab-set--8" type="radio"/><label class="tab-label" for="tab-set--8-input--1">中文</label><div class="tab-content docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">_ki.py</span></code> 模块实现了安全处理 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyboardInterrupt" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code></a> 的核心基础设施。它在很大程度上独立于 Trio 的其他部分，并且可以（可能应该？）提取到自己的独立包中。</p>
+<p>最重要的子模块是 <code class="docutils literal notranslate"><span class="pre">_run.py</span></code>，这是所有东西集成的地方。（这也是迄今为止最大的子模块；虽然希望在可能的情况下将它的一些部分提取出来，但这很棘手，因为核心功能确实是相当紧密地交织在一起的。）特别是，这是定义取消作用域、托儿所和 <a class="reference internal" href="reference-lowlevel.html#trio.lowlevel.Task" title="trio.lowlevel.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> 的地方；它也是调度器状态和 <a class="reference internal" href="ref-core/run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> 所在的地方。</p>
+<p>唯一不在 <code class="docutils literal notranslate"><span class="pre">_run.py</span></code> 中的是 I/O 处理。这部分委托给了一个 <code class="docutils literal notranslate"><span class="pre">IOManager</span></code> 类，目前有三种实现：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">EpollIOManager</span></code> 在 <code class="docutils literal notranslate"><span class="pre">_io_epoll.py</span></code> 中（用于 Linux、illumos）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">KqueueIOManager</span></code> 在 <code class="docutils literal notranslate"><span class="pre">_io_kqueue.py</span></code> 中（用于 macOS、*BSD）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WindowsIOManager</span></code> 在 <code class="docutils literal notranslate"><span class="pre">_io_windows.py</span></code> 中（用于 Windows）</p></li>
+</ul>
+<p>epoll 和 kqueue 后端利用了标准库 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/select.html#module-select" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">select</span></code></a> 模块中的 epoll 和 kqueue 封装。Windows 后端使用 CFFI 直接访问 Win32 API（见 <code class="docutils literal notranslate"><span class="pre">trio/_core/_windows_cffi.py</span></code>）。通常来说，我们更倾向于直接使用操作系统的原生功能，而不是使用 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a>，原因有几个：</p>
+<ul class="simple">
+<li><p><strong>控制我们的命运</strong>：I/O 处理是 Trio 的核心，而 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> （截至 2017-03-01）有一些 bug（例如 <a class="reference external" href="https://bugs.python.org/issue29256">issue 29256</a> ，<a class="reference external" href="https://bugs.python.org/issue29255">issue 29255</a>）。这本身可能不算什么大问题，但由于 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> 是标准库的一部分，我们无法修复它并发布更新版本；只能使用现有的版本。我们希望能对用户的体验有更多控制权。</p></li>
+<li><p><strong>阻抗不匹配</strong>： <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> API 与我们希望使用它的方式不太匹配。例如，kqueue 本地将对某个 fd 可读性的兴趣与对该 fd 可写性的兴趣分开处理，这正好与 Trio 的模型匹配。 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#selectors.KqueueSelector" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">selectors.KqueueSelector</span></code></a> 会在内部做很多工作，将所有对同一 fd 的兴趣合并到一起，如果要使用它，我们还得跳过更多的障碍来反转这一点。当然，原生的 epoll API 与 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> API 一样以 fd 为中心，因此我们仍然需要写代码来绕过这些障碍，但关键是 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> 的抽象没有提供很多额外的价值。</p></li>
+<li><p><strong>（最重要的）访问原生平台功能</strong>： <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> 在 Windows 上非常不足，甚至在类似 Unix 的系统上，它也隐藏了很多强大的功能（例如 kqueue 可以做的不只是检查 fd 的可读性/可写性！）。</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">IOManager</span></code> 层提供了对每个系统功能的较为原始的暴露，具有根据不同后端变化的公共 API 函数。（这在某种程度上受到 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/os.html#module-os" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">os</span></code></a> 工作方式的启发。）这些公共 API 然后作为 <a class="reference internal" href="reference-lowlevel.html#module-trio.lowlevel" title="trio.lowlevel"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.lowlevel</span></code></a> 的一部分进行导出，而像 <a class="reference internal" href="ref-io/low_level.html#module-trio.socket" title="trio.socket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code></a> 这样的高级 API 则抽象了这些系统特定的 API，以提供统一的体验。</p>
+<p>目前，后端的选择是在导入时静态决定的，并且没有提供“可插拔”的后端。这种直觉是，我们更愿意将精力集中在制作一套稳定的官方后端上，这些后端在所有支持的系统上都能提供开箱即用的高质量体验。</p>
+</div>
+<input class="tab-input" id="tab-set--8-input--2" name="tab-set--8" type="radio"/><label class="tab-label" for="tab-set--8-input--2">英文</label><div class="tab-content docutils container">
+<p>The <code class="docutils literal notranslate"><span class="pre">_ki.py</span></code> module implements the core infrastructure for safe handling
+of <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyboardInterrupt" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code></a>.  It's largely independent of the rest of Trio,
+and could (possibly should?) be extracted into its own independent package.</p>
+<p>The most important submodule, where everything is integrated, is
+<code class="docutils literal notranslate"><span class="pre">_run.py</span></code>. (This is also by far the largest submodule; it'd be nice
+to factor bits of it out where possible, but it's tricky because the
+core functionality genuinely is pretty intertwined.) Notably, this is
+where cancel scopes, nurseries, and <a class="reference internal" href="reference-lowlevel.html#trio.lowlevel.Task" title="trio.lowlevel.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> are
+defined; it's also where the scheduler state and <a class="reference internal" href="ref-core/run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a>
+live.</p>
+<p>The one thing that <em>isn't</em> in <code class="docutils literal notranslate"><span class="pre">_run.py</span></code> is I/O handling. This is
+delegated to an <code class="docutils literal notranslate"><span class="pre">IOManager</span></code> class, of which there are currently
+three implementations:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">EpollIOManager</span></code> in <code class="docutils literal notranslate"><span class="pre">_io_epoll.py</span></code> (used on Linux, illumos)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">KqueueIOManager</span></code> in <code class="docutils literal notranslate"><span class="pre">_io_kqueue.py</span></code> (used on macOS, *BSD)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WindowsIOManager</span></code> in <code class="docutils literal notranslate"><span class="pre">_io_windows.py</span></code> (used on Windows)</p></li>
+</ul>
+<p>The epoll and kqueue backends take advantage of the epoll and kqueue
+wrappers in the stdlib <a class="reference external" href="https://docs.python.org/zh-cn/3/library/select.html#module-select" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">select</span></code></a> module. The windows backend uses
+CFFI to access to the Win32 API directly (see
+<code class="docutils literal notranslate"><span class="pre">trio/_core/_windows_cffi.py</span></code>). In general, we prefer to go directly
+to the raw OS functionality rather than use <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a>, for
+several reasons:</p>
+<ul class="simple">
+<li><p>Controlling our own fate: I/O handling is pretty core to what Trio
+is about, and <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> is (as of 2017-03-01) somewhat buggy
+(e.g. <a class="reference external" href="https://bugs.python.org/issue29256">issue 29256</a>, <a class="reference external" href="https://bugs.python.org/issue29255">issue
+29255</a>). Which isn't a big
+deal on its own, but since <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> is part of the standard
+library we can't fix it and ship an updated version; we're stuck
+with whatever we get. We want more control over our users'
+experience than that.</p></li>
+<li><p>Impedance mismatch: the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> API isn't particularly
+well-fitted to how we want to use it. For example, kqueue natively
+treats an interest in readability of some fd as a separate thing
+from an interest in that same fd's writability, which neatly matches
+Trio's model. <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#selectors.KqueueSelector" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">selectors.KqueueSelector</span></code></a> goes to some effort
+internally to lump together all interests in a single fd, and to use
+it we'd then we'd have to jump through more hoops to reverse
+this. Of course, the native epoll API is fd-centric in the same way
+as the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> API so we do still have to write code to
+jump through these hoops, but the point is that the <a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a>
+abstractions aren't providing a lot of extra value.</p></li>
+<li><p>(Most important) Access to raw platform capabilities:
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/selectors.html#module-selectors" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selectors</span></code></a> is highly inadequate on Windows, and even on
+Unix-like systems it hides a lot of power (e.g. kqueue can do a lot
+more than just check fd readability/writability!).</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">IOManager</span></code> layer provides a fairly raw exposure of the capabilities
+of each system, with public API functions that vary between different
+backends. (This is somewhat inspired by how <a class="reference external" href="https://docs.python.org/zh-cn/3/library/os.html#module-os" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">os</span></code></a> works.) These
+public APIs are then exported as part of <a class="reference internal" href="reference-lowlevel.html#module-trio.lowlevel" title="trio.lowlevel"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.lowlevel</span></code></a>, and
+higher-level APIs like <a class="reference internal" href="ref-io/low_level.html#module-trio.socket" title="trio.socket"><code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code></a> abstract over these
+system-specific APIs to provide a uniform experience.</p>
+<p>Currently the choice of backend is made statically at import time, and
+there is no provision for "pluggable" backends. The intuition here is
+that we'd rather focus our energy on making one set of solid, official
+backends that provide a high-quality experience out-of-the-box on all
+supported systems.</p>
+</div>
+</div>
+</section>
+</section>
+</section>
+</article>
+</div>
+<footer>
+<div class="related-pages">
+<a class="next-page" href="history.html">
+<div class="page-info">
+<div class="context">
+<span>Next</span>
+</div>
+<div class="title">发布历史</div>
+</div>
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+</a>
+<a class="prev-page" href="reference-lowlevel.html">
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+<div class="page-info">
+<div class="context">
+<span>Previous</span>
+</div>
+<div class="title">自省和扩展 Trio</div>
+</div>
+</a>
+</div>
+<div class="bottom-of-page">
+<div class="left-details">
+<div class="copyright">
+                Copyright © 2017, Nathaniel J. Smith
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+</div>
+<div class="right-details">
+<div class="icons">
+<a aria-label="GitHub" class="muted-link" href="https://github.com/hellowac/trio-zh-cn">
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 16 16">
+<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<aside class="toc-drawer">
+<div class="toc-sticky toc-scroll">
+<div class="toc-title-container">
+<span class="toc-title">
+            On this page
+          </span>
+</div>
+<div class="toc-tree-container">
+<div class="toc-tree">
+<ul>
+<li><a class="reference internal" href="#">设计和内部结构</a><ul>
+<li><a class="reference internal" href="#id2">高级设计原则</a></li>
+<li><a class="reference internal" href="#api">用户级 API 原则</a><ul>
+<li><a class="reference internal" href="#id3">基本原则</a></li>
+<li><a class="reference internal" href="#id4">取消点和安排点</a></li>
+<li><a class="reference internal" href="#id5">异常始终传播</a></li>
+<li><a class="reference internal" href="#id6">自省、调试、测试</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id7">特定样式指南</a></li>
+<li><a class="reference internal" href="#trio">Trio 内部结构简介</a><ul>
+<li><a class="reference internal" href="#trio-core"><code class="docutils literal notranslate"><span class="pre">trio._core</span></code> 内部</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div><script src="_static/documentation_options.js?v=d2451d57"></script>
+<script src="_static/doctools.js?v=9bcbadda"></script>
+<script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="_static/scripts/furo.js?v=5fa4622c"></script>
+<script src="_static/tabs.js?v=3ee01567"></script>
+<script src="_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="_static/copybutton.js?v=f281be69"></script>
+<script src="_static/translations.js?v=beaddf03"></script>
+</body>
+</html>

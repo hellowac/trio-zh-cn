@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+
+<html class="no-js" data-content_root="../" lang="zh-CN">
+<head><meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/><meta content="width=device-width, initial-scale=1" name="viewport">
+<link href="../genindex.html" rel="index" title="索引"/><link href="../search.html" rel="search" title="搜索"/><link href="tasks.html" rel="next" title="任务"/><link href="time_clock.html" rel="prev" title="时间和时钟"/>
+<link href="../_static/favicon-32.png" rel="shortcut icon"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+<title>取消和超时 - Trio 0.27.0+dev 文档</title>
+<link href="../_static/pygments.css?v=fa44fd50" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo.css?v=354aac6f" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=125d5c1c" rel="stylesheet" type="text/css"/>
+<link href="../_static/tabs.css?v=4c969af8" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/hackrtd.css?v=2d9fc201" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo-extensions.css?v=302659d7" rel="stylesheet" type="text/css"/>
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></meta></head>
+<body>
+<script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+<symbol id="svg-toc" viewbox="0 0 24 24">
+<title>Contents</title>
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 1024 1024">
+<path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"></path>
+</svg>
+</symbol>
+<symbol id="svg-menu" viewbox="0 0 24 24">
+<title>Menu</title>
+<svg class="feather-menu" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<line x1="3" x2="21" y1="12" y2="12"></line>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<line x1="3" x2="21" y1="18" y2="18"></line>
+</svg>
+</symbol>
+<symbol id="svg-arrow-right" viewbox="0 0 24 24">
+<title>Expand</title>
+<svg class="feather-chevron-right" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</symbol>
+<symbol id="svg-sun" viewbox="0 0 24 24">
+<title>Light mode</title>
+<svg class="feather-sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="5"></circle>
+<line x1="12" x2="12" y1="1" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="23"></line>
+<line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line>
+<line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+<line x1="1" x2="3" y1="12" y2="12"></line>
+<line x1="21" x2="23" y1="12" y2="12"></line>
+<line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line>
+<line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+</svg>
+</symbol>
+<symbol id="svg-moon" viewbox="0 0 24 24">
+<title>Dark mode</title>
+<svg class="icon-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+</svg>
+</symbol>
+<symbol id="svg-sun-with-moon" viewbox="0 0 24 24">
+<title>Auto light/dark, in light mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z" style="opacity: 50%"></path>
+<line x1="14.5" x2="14.5" y1="3.25" y2="1.25"></line>
+<line x1="14.5" x2="14.5" y1="15.85" y2="17.85"></line>
+<line x1="10.044" x2="8.63" y1="5.094" y2="3.68"></line>
+<line x1="19" x2="20.414" y1="14.05" y2="15.464"></line>
+<line x1="8.2" x2="6.2" y1="9.55" y2="9.55"></line>
+<line x1="20.8" x2="22.8" y1="9.55" y2="9.55"></line>
+<line x1="10.044" x2="8.63" y1="14.006" y2="15.42"></line>
+<line x1="19" x2="20.414" y1="5.05" y2="3.636"></line>
+<circle cx="14.5" cy="9.55" r="3.6"></circle>
+</svg>
+</symbol>
+<symbol id="svg-moon-with-sun" viewbox="0 0 24 24">
+<title>Auto light/dark, in dark mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"></path>
+<line style="opacity: 50%" x1="18" x2="18" y1="3.705" y2="2.5"></line>
+<line style="opacity: 50%" x1="18" x2="18" y1="11.295" y2="12.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="4.816" y2="3.964"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="10.212" y2="11.063"></line>
+<line style="opacity: 50%" x1="14.205" x2="13.001" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="21.795" x2="23" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="10.184" y2="11.036"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="4.789" y2="3.937"></line>
+<circle cx="18" cy="7.5" r="2.169" style="opacity: 50%"></circle>
+</svg>
+</symbol>
+<symbol id="svg-pencil" viewbox="0 0 24 24">
+<svg class="icon-tabler-pencil-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path>
+<path d="M13.5 6.5l4 4"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+<symbol id="svg-eye" viewbox="0 0 24 24">
+<svg class="icon-tabler-eye-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+<path d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+</svg>
+<input class="sidebar-toggle" id="__navigation" name="__navigation" type="checkbox"/>
+<input class="sidebar-toggle" id="__toc" name="__toc" type="checkbox"/>
+<label class="overlay sidebar-overlay" for="__navigation">
+<div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+<div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+<div class="page">
+<header class="mobile-header">
+<div class="header-left">
+<label class="nav-overlay-icon" for="__navigation">
+<div class="visually-hidden">Toggle site navigation sidebar</div>
+<i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+</label>
+</div>
+<div class="header-center">
+<a href="../index.html"><div class="brand">Trio 0.27.0+dev 文档</div></a>
+</div>
+<div class="header-right">
+<div class="theme-toggle-container theme-toggle-header">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-header-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+</header>
+<aside class="sidebar-drawer">
+<div class="sidebar-container">
+<div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+<div class="sidebar-logo-container">
+<img alt="Logo" class="sidebar-logo" src="../_static/wordmark-transparent.svg"/>
+</div>
+<span class="sidebar-brand-text">Trio 0.27.0+dev 文档</span>
+</a><form action="../search.html" class="sidebar-search-container" method="get" role="search">
+<input aria-label="搜索" class="sidebar-search" name="q" placeholder="搜索"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+<p class="caption" role="heading"><span class="caption-text">Trio 友好且全面的手册：</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../awesome-trio-libraries.html">超棒的 Trio 库</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Trio 的核心功能</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Trio 的核心功能</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="run.html">运行 Trio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general_principles.html">一般原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_clock.html">时间和时钟</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">取消和超时</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html">任务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_local_storeage.html">任务存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_sync.html">任务同步和通信</a></li>
+<li class="toctree-l2"><a class="reference internal" href="note_async_generator.html">异步生成器注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threads.html">线程（如果必须）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging.html">交互式调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exc_warn.html">异常和警告</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ref-io/index.html">Trio 中的 I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Trio 中的 I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/abs_api.html">抽象流 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/low_level.html">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/async_file_io.html">异步文件系统 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/subprocess.html">生成子进程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/signals.html">信号</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-testing.html">Trio 中的测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-lowlevel.html">自省和扩展 Trio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">设计和内部结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">发布历史</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">为 Trio 及相关项目做出贡献</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasing.html">准备发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">行为守则</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<div class="main">
+<div class="content">
+<div class="article-container">
+<a class="back-to-top muted-link" href="#">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+</svg>
+<span>Back to top</span>
+</a>
+<div class="content-icon-container">
+<div class="view-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/blob/sync-docs/cn_docs/source/ref-core/cancel_timeout.rst?plain=true" title="View this page">
+<svg><use href="#svg-eye"></use></svg>
+<span class="visually-hidden">View this page</span>
+</a>
+</div><div class="edit-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/edit/sync-docs/cn_docs/source/ref-core/cancel_timeout.rst" title="Edit this page">
+<svg><use href="#svg-pencil"></use></svg>
+<span class="visually-hidden">Edit this page</span>
+</a>
+</div><div class="theme-toggle-container theme-toggle-content">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-content-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+<article id="furo-main-content" role="main">
+<section id="cancellation">
+<span id="module-trio"></span><span id="id1"></span><h1>取消和超时<a class="headerlink" href="#cancellation" title="Link to this heading">¶</a></h1>
+<p><strong>Cancellation and timeouts</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 具有丰富的可组合系统，用于明确取消工作或在超时到期时取消工作。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>Trio has a rich, composable system for cancelling work, either explicitly or when a timeout expires.</p>
+</div>
+</div>
+<section id="id2">
+<h2>一个简单的超时示例<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p><strong>A simple timeout example</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<p>在最简单的情况下，您可以对一段代码块应用超时：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+   <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">do_http_get</span><span class="p">(</span><span class="s2">"https://..."</span><span class="p">)</span>
+   <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"result is"</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"with block finished"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>我们将 <a class="reference internal" href="#trio.move_on_after" title="trio.move_on_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code></a> 称为创建一个“取消作用域”，它包含所有在 <code class="docutils literal notranslate"><span class="pre">with</span></code> 语句块内运行的代码。如果 HTTP 请求花费超过 30 秒，那么它将被取消：我们将中止请求，并且我们 <em>不会</em> 在控制台看到 <code class="docutils literal notranslate"><span class="pre">result</span> <span class="pre">is</span> <span class="pre">...</span></code> 被打印；相反，我们将直接打印 <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">block</span> <span class="pre">finished</span></code> 消息。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>请注意，这个超时是整个 <code class="docutils literal notranslate"><span class="pre">with</span></code> 语句体的一个 30 秒超时。这与您在其他 Python 库中可能看到的不同，在那些库中超时通常指的是 <a class="reference external" href="https://requests.kennethreitz.org/en/master/user/quickstart/#timeouts">更复杂的机制</a>。我们认为这种方式更容易推理。</p>
+</div>
+<p>这是如何工作的？这里没有魔法: Trio 是基于普通的 Python 功能构建的，因此我们不能仅仅放弃 <code class="docutils literal notranslate"><span class="pre">with</span></code> 语句块内的代码。相反，我们利用 Python 标准的方式来中止一大段复杂的代码：我们抛出一个异常。</p>
+<p>这里的想法是：每当您调用一个可取消的函数，比如 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">trio.sleep(...)</span></code> 或 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">sock.recv(...)</span></code> – 参见 <a class="reference internal" href="general_principles.html#checkpoints"><span class="std std-ref">检查点</span></a> – 那么该函数首先会检查是否存在一个超时已过期或已被取消的包围作用域。如果有，那么该函数就会立即失败并抛出一个 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常。在这个例子中，这很可能发生在 <code class="docutils literal notranslate"><span class="pre">do_http_get</span></code> 的内部深处。然后，异常像正常异常一样传播出去（如果需要，您甚至可以捕获它，但通常这是不推荐的），直到它到达 <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">move_on_after(...):</span></code> 处。此时， <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常已经完成了它的工作——它成功地撤销了整个取消的作用域——所以 <a class="reference internal" href="#trio.move_on_after" title="trio.move_on_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code></a> 捕获了它，并且在 <code class="docutils literal notranslate"><span class="pre">with</span></code> 块之后，执行将照常继续。即使您有嵌套的取消作用域，这一切也会正确工作，因为每个 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 对象都携带一个隐形标记，确保触发它的取消作用域是唯一会捕获它的作用域。</p>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<p>In the simplest case, you can apply a timeout to a block of code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+   <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">do_http_get</span><span class="p">(</span><span class="s2">"https://..."</span><span class="p">)</span>
+   <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"result is"</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"with block finished"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We refer to <a class="reference internal" href="#trio.move_on_after" title="trio.move_on_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code></a> as creating a "cancel scope", which
+contains all the code that runs inside the <code class="docutils literal notranslate"><span class="pre">with</span></code> block. If the HTTP
+request takes more than 30 seconds to run, then it will be cancelled:
+we'll abort the request and we <em>won't</em> see <code class="docutils literal notranslate"><span class="pre">result</span> <span class="pre">is</span> <span class="pre">...</span></code> printed
+on the console; instead we'll go straight to printing the <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">block</span>
+<span class="pre">finished</span></code> message.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Note that this is a single 30 second timeout for the entire body of
+the <code class="docutils literal notranslate"><span class="pre">with</span></code> statement. This is different from what you might have
+seen with other Python libraries, where timeouts often refer to
+something <a class="reference external" href="https://requests.kennethreitz.org/en/master/user/quickstart/#timeouts">more complicated</a>. We
+think this way is easier to reason about.</p>
+</div>
+<p>How does this work? There's no magic here: Trio is built using
+ordinary Python functionality, so we can't just abandon the code
+inside the <code class="docutils literal notranslate"><span class="pre">with</span></code> block. Instead, we take advantage of Python's
+standard way of aborting a large and complex piece of code: we raise
+an exception.</p>
+<p>Here's the idea: whenever you call a cancellable function like <code class="docutils literal notranslate"><span class="pre">await</span>
+<span class="pre">trio.sleep(...)</span></code> or <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">sock.recv(...)</span></code> – see <a class="reference internal" href="general_principles.html#checkpoints"><span class="std std-ref">检查点</span></a>
+– then the first thing that function does is to check if there's a
+surrounding cancel scope whose timeout has expired, or otherwise been
+cancelled. If so, then instead of performing the requested operation,
+the function fails immediately with a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception. In
+this example, this probably happens somewhere deep inside the bowels
+of <code class="docutils literal notranslate"><span class="pre">do_http_get</span></code>. The exception then propagates out like any normal
+exception (you could even catch it if you wanted, but that's generally
+a bad idea), until it reaches the <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">move_on_after(...):</span></code>. And at
+this point, the <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception has done its job – it's
+successfully unwound the whole cancelled scope – so
+<a class="reference internal" href="#trio.move_on_after" title="trio.move_on_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code></a> catches it, and execution continues as normal
+after the <code class="docutils literal notranslate"><span class="pre">with</span></code> block. And this all works correctly even if you
+have nested cancel scopes, because every <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> object
+carries an invisible marker that makes sure that the cancel scope that
+triggered it is the only one that will catch it.</p>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2>处理取消<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<p><strong>Handling cancellation</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<p>几乎所有使用 Trio 编写的代码都需要有一些策略来处理 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常——即使您没有设置超时，您的调用者也可能会设置（并且很可能会）。</p>
+<p>您可以捕获 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常，但不应该捕获！更确切地说，如果您捕获了它，您应该进行一些清理工作，然后重新抛出它，或者让它继续传播（除非您遇到错误，在这种情况下，允许错误传播是可以的）。为了提醒您这一点， <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 继承自 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#BaseException" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">BaseException</span></code></a>，就像 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyboardInterrupt" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code></a> 和 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#SystemExit" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">SystemExit</span></code></a> 一样，因此它不会被通用的 <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code> 块捕获。</p>
+<p>在任何长时间运行的代码中，确保定期检查取消是非常重要的，因为否则超时将无法工作！每次调用可取消操作时，这都会隐式发生；有关详细信息，请参见 <a class="reference internal" href="#cancellable-primitives"><span class="std std-ref">below</span></a>。如果您有一个必须在没有任何 I/O 的情况下进行大量工作的任务，那么您可以使用 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">sleep(0)</span></code> 来插入一个显式的取消+调度点。</p>
+<p>这里有一个设计良好的 Trio 风格（“trionic”？）API 的经验法则：如果您正在编写一个可重用的函数，那么不应该接受 <code class="docutils literal notranslate"><span class="pre">timeout=</span></code> 参数，而是让您的调用者来处理它。这有几个优点。首先，它让调用者有更多选择来决定他们如何处理超时——例如，他们可能会觉得使用绝对截止时间比使用相对超时更容易。如果他们是调用取消机制的人，那么由他们来决定，您就不需要担心这个问题。其次，且更为重要的是，这使得其他人更容易重用您的代码。如果您编写了一个 <code class="docutils literal notranslate"><span class="pre">http_get</span></code> 函数，然后我稍后编写了一个 <code class="docutils literal notranslate"><span class="pre">log_in_to_twitter</span></code> 函数，需要在内部进行多个 <code class="docutils literal notranslate"><span class="pre">http_get</span></code> 调用，我不想还得去弄清楚如何为每个调用配置单独的超时——而使用 Trio 的超时系统，这完全不需要。</p>
+<p>当然，这条规则不适用于需要强制执行内部超时的 API。例如，如果您编写了一个 <code class="docutils literal notranslate"><span class="pre">start_http_server</span></code> 函数，那么您可能应该给调用者提供一种配置单个请求超时的方式。</p>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<p>Pretty much any code you write using Trio needs to have some strategy
+to handle <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exceptions – even if you didn't set a
+timeout, then your caller might (and probably will).</p>
+<p>You can catch <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>, but you shouldn't! Or more precisely,
+if you do catch it, then you should do some cleanup and then re-raise
+it or otherwise let it continue propagating (unless you encounter an
+error, in which case it's OK to let that propagate instead). To help
+remind you of this fact, <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> inherits from
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#BaseException" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">BaseException</span></code></a>, like <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyboardInterrupt" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code></a> and
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#SystemExit" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">SystemExit</span></code></a> do, so that it won't be caught by catch-all <code class="docutils literal notranslate"><span class="pre">except</span>
+<span class="pre">Exception:</span></code> blocks.</p>
+<p>It's also important in any long-running code to make sure that you
+regularly check for cancellation, because otherwise timeouts won't
+work! This happens implicitly every time you call a cancellable
+operation; see <a class="reference internal" href="#cancellable-primitives"><span class="std std-ref">below</span></a> for details. If
+you have a task that has to do a lot of work without any I/O, then you
+can use <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">sleep(0)</span></code> to insert an explicit cancel+schedule
+point.</p>
+<p>Here's a rule of thumb for designing good Trio-style ("trionic"?)
+APIs: if you're writing a reusable function, then you shouldn't take a
+<code class="docutils literal notranslate"><span class="pre">timeout=</span></code> parameter, and instead let your caller worry about
+it. This has several advantages. First, it leaves the caller's options
+open for deciding how they prefer to handle timeouts – for example,
+they might find it easier to work with absolute deadlines instead of
+relative timeouts. If they're the ones calling into the cancellation
+machinery, then they get to pick, and you don't have to worry about
+it. Second, and more importantly, this makes it easier for others to
+reuse your code. If you write a <code class="docutils literal notranslate"><span class="pre">http_get</span></code> function, and then I come
+along later and write a <code class="docutils literal notranslate"><span class="pre">log_in_to_twitter</span></code> function that needs to
+internally make several <code class="docutils literal notranslate"><span class="pre">http_get</span></code> calls, I don't want to have to
+figure out how to configure the individual timeouts on each of those
+calls – and with Trio's timeout system, it's totally unnecessary.</p>
+<p>Of course, this rule doesn't apply to APIs that need to impose
+internal timeouts. For example, if you write a <code class="docutils literal notranslate"><span class="pre">start_http_server</span></code>
+function, then you probably should give your caller some way to
+configure timeouts on individual requests.</p>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2>取消语义<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<p><strong>Cancellation semantics</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">中文</label><div class="tab-content docutils container">
+<p>您可以自由嵌套取消块，每个 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常“知道”它属于哪个块。只要您不停止它，异常将继续传播，直到它到达引发它的块，在那时它会自动停止。</p>
+<p>这是一个例子：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"starting..."</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+   <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+      <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"sleep finished without error"</span><span class="p">)</span>
+   <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"move_on_after(10) finished without error"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"move_on_after(5) finished without error"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>在这段代码中，外部作用域将在 5 秒后过期，导致 <a class="reference internal" href="time_clock.html#trio.sleep" title="trio.sleep"><code class="xref py py-func docutils literal notranslate"><span class="pre">sleep()</span></code></a> 调用提前返回并引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常。然后，这个异常将通过 <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">move_on_after(10)</span></code> 行传播，直到它被 <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">move_on_after(5)</span></code> 上下文管理器捕获。所以这段代码将打印：</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>starting...
+move_on_after(5) finished without error
+</pre></div>
+</div>
+<p>最终结果是 Trio 成功地取消了正在取消作用域内的工作。</p>
+<p>看到这一点，您可能会想知道如何判断内部块是否超时——也许您想做一些不同的事情，例如尝试备用程序或向调用者报告失败。为了简化这一过程， <a class="reference internal" href="#trio.move_on_after" title="trio.move_on_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code></a> 的 <code class="docutils literal notranslate"><span class="pre">__enter__</span></code> 函数返回一个表示此取消作用域的对象，我们可以用它来检查该作用域是否捕获了 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="k">as</span> <span class="n">cancel_scope</span><span class="p">:</span>
+   <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="n">cancel_scope</span><span class="o">.</span><span class="n">cancelled_caught</span><span class="p">)</span>  <span class="c1"># prints "True"</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">cancel_scope</span></code> 对象还允许您检查或调整该作用域的截止时间，显式触发取消而不等待截止时间，检查该作用域是否已被取消，等等——有关详细信息，请参见 <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> 下文。</p>
+<p>Trio 中的取消是“级别触发的”，这意味着一旦一个块被取消，<em>所有</em> 可取消的操作都将继续引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常。这有助于避免一些与资源清理相关的问题。例如，假设我们有一个函数，它连接到远程服务器并发送一些消息，然后在退出时进行清理：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>
+   <span class="n">conn</span> <span class="o">=</span> <span class="n">make_connection</span><span class="p">()</span>
+   <span class="k">try</span><span class="p">:</span>
+      <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">send_hello_msg</span><span class="p">()</span>
+   <span class="k">finally</span><span class="p">:</span>
+      <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">send_goodbye_msg</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>现在假设远程服务器停止响应，因此我们对 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">conn.send_hello_msg()</span></code> 的调用永远挂起。幸运的是，我们足够聪明，在这段代码周围加了一个超时，因此最终超时会过期，<code class="docutils literal notranslate"><span class="pre">send_hello_msg</span></code> 会引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常。但是在 <code class="docutils literal notranslate"><span class="pre">finally</span></code> 块中，我们又进行了一次阻塞操作，这也会永远挂起！此时，如果我们使用的是 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/asyncio.html#module-asyncio" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a> 或其他具有“边缘触发”取消的库，我们会遇到问题：由于我们的超时已经触发，它不会再触发，应用程序会永远锁死。但在 Trio 中，这不会发生：<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">conn.send_goodbye_msg()</span></code> 调用仍然在已取消的块内，因此它也会引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>。</p>
+<p>当然，如果您确实想在清理处理程序中进行另一个阻塞调用，Trio 允许您这么做；它是想防止您不小心自讨苦吃。故意自讨苦吃没问题（或者至少——这不是 Trio 的问题）。为了做到这一点，创建一个新的作用域，并将其 <a class="reference internal" href="#id9" title="trio.CancelScope.shield"><code class="xref py py-attr docutils literal notranslate"><span class="pre">shield</span></code></a> 属性设置为 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#True" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>
+   <span class="n">conn</span> <span class="o">=</span> <span class="n">make_connection</span><span class="p">()</span>
+   <span class="k">try</span><span class="p">:</span>
+      <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">send_hello_msg</span><span class="p">()</span>
+   <span class="k">finally</span><span class="p">:</span>
+      <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">CLEANUP_TIMEOUT</span><span class="p">,</span> <span class="n">shield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">cleanup_scope</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">send_goodbye_msg</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>只要您在一个 <code class="docutils literal notranslate"><span class="pre">shield</span> <span class="pre">=</span> <span class="pre">True</span></code> 设置的作用域内，您就会受到外部取消的保护。但请注意，这*仅*适用于*外部*取消：如果 <code class="docutils literal notranslate"><span class="pre">CLEANUP_TIMEOUT</span></code> 过期，那么 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">conn.send_goodbye_msg()</span></code> 仍然会被取消，并且如果 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">conn.send_goodbye_msg()</span></code> 调用内部使用了任何超时，它们也将继续正常工作。这是一个相当高级的功能，大多数人可能不会使用，但在您需要时它已经准备好了。</p>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">英文</label><div class="tab-content docutils container">
+<p>You can freely nest cancellation blocks, and each <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>
+exception "knows" which block it belongs to. So long as you don't stop
+it, the exception will keep propagating until it reaches the block
+that raised it, at which point it will stop automatically.</p>
+<p>Here's an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"starting..."</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+   <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+      <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+      <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"sleep finished without error"</span><span class="p">)</span>
+   <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"move_on_after(10) finished without error"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"move_on_after(5) finished without error"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this code, the outer scope will expire after 5 seconds, causing the
+<a class="reference internal" href="time_clock.html#trio.sleep" title="trio.sleep"><code class="xref py py-func docutils literal notranslate"><span class="pre">sleep()</span></code></a> call to return early with a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>
+exception. Then this exception will propagate through the <code class="docutils literal notranslate"><span class="pre">with</span>
+<span class="pre">move_on_after(10)</span></code> line until it's caught by the <code class="docutils literal notranslate"><span class="pre">with</span>
+<span class="pre">move_on_after(5)</span></code> context manager. So this code will print:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>starting...
+move_on_after(5) finished without error
+</pre></div>
+</div>
+<p>The end result is that Trio has successfully cancelled exactly the
+work that was happening within the scope that was cancelled.</p>
+<p>Looking at this, you might wonder how you can tell whether the inner
+block timed out – perhaps you want to do something different, like try
+a fallback procedure or report a failure to our caller. To make this
+easier, <a class="reference internal" href="#trio.move_on_after" title="trio.move_on_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code></a>´s <code class="docutils literal notranslate"><span class="pre">__enter__</span></code> function returns an
+object representing this cancel scope, which we can use to check
+whether this scope caught a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="k">as</span> <span class="n">cancel_scope</span><span class="p">:</span>
+   <span class="k">await</span> <span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="n">cancel_scope</span><span class="o">.</span><span class="n">cancelled_caught</span><span class="p">)</span>  <span class="c1"># prints "True"</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">cancel_scope</span></code> object also allows you to check or adjust this
+scope's deadline, explicitly trigger a cancellation without waiting
+for the deadline, check if the scope has already been cancelled, and
+so forth – see <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> below for the full details.</p>
+<p>Cancellations in Trio are "level triggered", meaning that once a block
+has been cancelled, <em>all</em> cancellable operations in that block will
+keep raising <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>. This helps avoid some pitfalls around
+resource clean-up. For example, imagine that we have a function that
+connects to a remote server and sends some messages, and then cleans
+up on the way out:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>
+   <span class="n">conn</span> <span class="o">=</span> <span class="n">make_connection</span><span class="p">()</span>
+   <span class="k">try</span><span class="p">:</span>
+      <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">send_hello_msg</span><span class="p">()</span>
+   <span class="k">finally</span><span class="p">:</span>
+      <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">send_goodbye_msg</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now suppose that the remote server stops responding, so our call to
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">conn.send_hello_msg()</span></code> hangs forever. Fortunately, we were
+clever enough to put a timeout around this code, so eventually the
+timeout will expire and <code class="docutils literal notranslate"><span class="pre">send_hello_msg</span></code> will raise
+<a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>. But then, in the <code class="docutils literal notranslate"><span class="pre">finally</span></code> block, we make another
+blocking operation, which will also hang forever! At this point, if we
+were using <a class="reference external" href="https://docs.python.org/zh-cn/3/library/asyncio.html#module-asyncio" title="（在 Python v3.13）"><code class="xref py py-mod docutils literal notranslate"><span class="pre">asyncio</span></code></a> or another library with "edge-triggered"
+cancellation, we'd be in trouble: since our timeout already fired, it
+wouldn't fire again, and at this point our application would lock up
+forever. But in Trio, this <em>doesn't</em> happen: the <code class="docutils literal notranslate"><span class="pre">await</span>
+<span class="pre">conn.send_goodbye_msg()</span></code> call is still inside the cancelled block, so
+it will also raise <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>.</p>
+<p>Of course, if you really want to make another blocking call in your
+cleanup handler, Trio will let you; it's trying to prevent you from
+accidentally shooting yourself in the foot. Intentional foot-shooting
+is no problem (or at least – it's not Trio's problem). To do this,
+create a new scope, and set its <a class="reference internal" href="#id9" title="trio.CancelScope.shield"><code class="xref py py-attr docutils literal notranslate"><span class="pre">shield</span></code></a>
+attribute to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#True" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>
+   <span class="n">conn</span> <span class="o">=</span> <span class="n">make_connection</span><span class="p">()</span>
+   <span class="k">try</span><span class="p">:</span>
+      <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">send_hello_msg</span><span class="p">()</span>
+   <span class="k">finally</span><span class="p">:</span>
+      <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">CLEANUP_TIMEOUT</span><span class="p">,</span> <span class="n">shield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">cleanup_scope</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">send_goodbye_msg</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>So long as you're inside a scope with <code class="docutils literal notranslate"><span class="pre">shield</span> <span class="pre">=</span> <span class="pre">True</span></code> set, then
+you'll be protected from outside cancellations. Note though that this
+<em>only</em> applies to <em>outside</em> cancellations: if <code class="docutils literal notranslate"><span class="pre">CLEANUP_TIMEOUT</span></code>
+expires then <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">conn.send_goodbye_msg()</span></code> will still be
+cancelled, and if <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">conn.send_goodbye_msg()</span></code> call uses any
+timeouts internally, then those will continue to work normally as
+well. This is a pretty advanced feature that most people probably
+won't use, but it's there for the rare cases where you need it.</p>
+</div>
+</div>
+</section>
+<section id="cancellable-primitives">
+<span id="id5"></span><h2>取消和原始操作<a class="headerlink" href="#cancellable-primitives" title="Link to this heading">¶</a></h2>
+<p><strong>Cancellation and primitive operations</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--1">中文</label><div class="tab-content docutils container">
+<p>我们已经讨论了操作被取消时会发生什么，以及在调用可取消操作时需要做好准备……但我们还没有深入讨论哪些操作是可取消的，以及它们在被取消时的具体行为。</p>
+<p>规则是这样的：如果它位于 <code class="docutils literal notranslate"><span class="pre">trio</span></code> 命名空间中，并且你使用 <code class="docutils literal notranslate"><span class="pre">await</span></code> 来调用它，那么它是可取消的（请参见上面的 <a class="reference internal" href="general_principles.html#checkpoints"><span class="std std-ref">检查点</span></a>）。可取消的意思是：</p>
+<ul class="simple">
+<li><p>如果你在取消的作用域内尝试调用它，它将引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>。</p></li>
+<li><p>如果它阻塞，并且在阻塞时，周围的某个作用域变为取消状态，它将提前返回并引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>。</p></li>
+<li><p>引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 意味着操作*没有发生*。例如，如果 Trio 套接字的 <code class="docutils literal notranslate"><span class="pre">send</span></code> 方法引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>，则没有数据被发送。如果 Trio 套接字的 <code class="docutils literal notranslate"><span class="pre">recv</span></code> 方法引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>，则没有数据丢失——它仍然保留在套接字接收缓冲区中，等待你再次调用 <code class="docutils literal notranslate"><span class="pre">recv</span></code>。等等。</p></li>
+</ul>
+<p>有一些特殊情况，由于外部约束，无法完全实现这些语义。这些情况总是会被记录下来。还有一个系统性的例外：</p>
+<ul class="simple">
+<li><p>异步清理操作——如 <code class="docutils literal notranslate"><span class="pre">__aexit__</span></code> 方法或异步关闭方法——和其他操作一样是可取消的， <em>但</em> 如果它们被取消，它们仍然会在引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 之前执行最低级别的清理。</p></li>
+</ul>
+<p>例如，关闭 TLS 包装的套接字通常涉及向远程对等方发送通知，以便它们可以通过加密方式确保你确实打算关闭套接字，而不是中间人攻击者破坏了你的连接。但要健壮地处理这一过程有点棘手。还记得我们上面提到的 <a class="reference internal" href="#blocking-cleanup-example"><span class="std std-ref">示例</span></a> 吗？其中阻塞的 <code class="docutils literal notranslate"><span class="pre">send_goodbye_msg</span></code> 引发了问题？这正是关闭 TLS 套接字的工作方式：如果远程对等方消失了，那么我们的代码可能永远无法实际发送关闭通知，而如果它一直尝试发送，那就会永远阻塞。因此，关闭 TLS 包装的套接字的方法会*尝试*发送该通知——如果它被取消，那么它会放弃发送消息，但*仍然*会在引发 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 之前关闭底层套接字，这样至少不会泄漏资源。</p>
+</div>
+<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--2">英文</label><div class="tab-content docutils container">
+<p>We've talked a lot about what happens when an operation is cancelled,
+and how you need to be prepared for this whenever calling a
+cancellable operation... but we haven't gone into the details about
+which operations are cancellable, and how exactly they behave when
+they're cancelled.</p>
+<p>Here's the rule: if it's in the <code class="docutils literal notranslate"><span class="pre">trio</span></code> namespace, and you use <code class="docutils literal notranslate"><span class="pre">await</span></code>
+to call it, then it's cancellable (see <a class="reference internal" href="general_principles.html#checkpoints"><span class="std std-ref">检查点</span></a>
+above). Cancellable means:</p>
+<ul class="simple">
+<li><p>If you try to call it when inside a cancelled scope, then it will raise <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>.</p></li>
+<li><p>If it blocks, and while it's blocked then one of the scopes around it becomes cancelled, it will return early and raise <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>.</p></li>
+<li><p>Raising <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> means that the operation <em>did not
+happen</em>. If a Trio socket's <code class="docutils literal notranslate"><span class="pre">send</span></code> method raises <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>,
+then no data was sent. If a Trio socket's <code class="docutils literal notranslate"><span class="pre">recv</span></code> method raises
+<a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> then no data was lost – it's still sitting in the
+socket receive buffer waiting for you to call <code class="docutils literal notranslate"><span class="pre">recv</span></code> again. And so
+forth.</p></li>
+</ul>
+<p>There are a few idiosyncratic cases where external constraints make it
+impossible to fully implement these semantics. These are always
+documented. There is also one systematic exception:</p>
+<ul class="simple">
+<li><p>Async cleanup operations – like <code class="docutils literal notranslate"><span class="pre">__aexit__</span></code> methods or async close
+methods – are cancellable just like anything else <em>except</em> that if
+they are cancelled, they still perform a minimum level of cleanup
+before raising <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>.</p></li>
+</ul>
+<p>For example, closing a TLS-wrapped socket normally involves sending a
+notification to the remote peer, so that they can be cryptographically
+assured that you really meant to close the socket, and your connection
+wasn't just broken by a man-in-the-middle attacker. But handling this
+robustly is a bit tricky. Remember our <a class="reference internal" href="#blocking-cleanup-example"><span class="std std-ref">example</span></a> above where the blocking
+<code class="docutils literal notranslate"><span class="pre">send_goodbye_msg</span></code> caused problems? That's exactly how closing a TLS
+socket works: if the remote peer has disappeared, then our code may
+never be able to actually send our shutdown notification, and it would
+be nice if it didn't block forever trying. Therefore, the method for
+closing a TLS-wrapped socket will <em>try</em> to send that notification –
+and if it gets cancelled, then it will give up on sending the message,
+but <em>will</em> still close the underlying socket before raising
+<a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>, so at least you don't leak that resource.</p>
+</div>
+</div>
+</section>
+<section id="api">
+<h2>取消 API 详细信息<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
+<p><strong>Cancellation API details</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--1">中文</label><div class="tab-content docutils container">
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code> 以及 Trio 提供的所有其他取消机制，最终是通过 <code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code> 对象来实现的。</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="trio.CancelScope">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">CancelScope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_deadline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shield</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.CancelScope" title="Link to this definition">¶</a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#object" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A <em>cancellation scope</em>: the link between a unit of cancellable
+work and Trio's cancellation system.</p>
+<p>A <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> becomes associated with some cancellable work
+when it is used as a context manager surrounding that work:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">cancel_scope</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">CancelScope</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="k">with</span> <span class="n">cancel_scope</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">long_running_operation</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Inside the <code class="docutils literal notranslate"><span class="pre">with</span></code> block, a cancellation of <code class="docutils literal notranslate"><span class="pre">cancel_scope</span></code> (via
+a call to its <a class="reference internal" href="#id0" title="trio.CancelScope.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> method or via the expiry of its
+<a class="reference internal" href="#id7" title="trio.CancelScope.deadline"><code class="xref py py-attr docutils literal notranslate"><span class="pre">deadline</span></code></a>) will immediately interrupt the
+<code class="docutils literal notranslate"><span class="pre">long_running_operation()</span></code> by raising <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> at its
+next <a class="reference internal" href="general_principles.html#checkpoints"><span class="std std-ref">checkpoint</span></a>.</p>
+<p>The context manager <code class="docutils literal notranslate"><span class="pre">__enter__</span></code> returns the <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a>
+object itself, so you can also write <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">trio.CancelScope()</span> <span class="pre">as</span>
+<span class="pre">cancel_scope:</span></code>.</p>
+<p>If a cancel scope becomes cancelled before entering its <code class="docutils literal notranslate"><span class="pre">with</span></code> block,
+the <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception will be raised at the first
+checkpoint inside the <code class="docutils literal notranslate"><span class="pre">with</span></code> block. This allows a
+<a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> to be created in one <a class="reference internal" href="tasks.html#tasks"><span class="std std-ref">task</span></a> and
+passed to another, so that the first task can later cancel some work
+inside the second.</p>
+<p>Cancel scopes are not reusable or reentrant; that is, each cancel
+scope can be used for at most one <code class="docutils literal notranslate"><span class="pre">with</span></code> block.  (You'll get a
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RuntimeError</span></code></a> if you violate this rule.)</p>
+<p>The <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> constructor takes initial values for the
+cancel scope's <a class="reference internal" href="#id7" title="trio.CancelScope.deadline"><code class="xref py py-attr docutils literal notranslate"><span class="pre">deadline</span></code></a> and <a class="reference internal" href="#id9" title="trio.CancelScope.shield"><code class="xref py py-attr docutils literal notranslate"><span class="pre">shield</span></code></a> attributes; these
+may be freely modified after construction, whether or not the scope
+has been entered yet, and changes take immediate effect.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.CancelScope.deadline">
+<span class="sig-name descname"><span class="pre">deadline</span></span><a class="headerlink" href="#trio.CancelScope.deadline" title="Link to this definition">¶</a></dt>
+<dd><p>Read-write, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>. An absolute time on the current
+run's clock at which this scope will automatically become
+cancelled. You can adjust the deadline by modifying this
+attribute, e.g.:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># I need a little more time!</span>
+<span class="n">cancel_scope</span><span class="o">.</span><span class="n">deadline</span> <span class="o">+=</span> <span class="mi">30</span>
+</pre></div>
+</div>
+<p>Note that for efficiency, the core run loop only checks for
+expired deadlines every once in a while. This means that in
+certain cases there may be a short delay between when the clock
+says the deadline should have expired, and when checkpoints
+start raising <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>. This is a very obscure
+corner case that you're unlikely to notice, but we document it
+for completeness. (If this <em>does</em> cause problems for you, of
+course, then <a class="reference external" href="https://github.com/python-trio/trio/issues">we want to know!</a>)</p>
+<p>Defaults to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/math.html#math.inf" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">math.inf</span></code></a>, which means "no deadline", though
+this can be overridden by the <code class="docutils literal notranslate"><span class="pre">deadline=</span></code> argument to
+the <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> constructor.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.CancelScope.relative_deadline">
+<span class="sig-name descname"><span class="pre">relative_deadline</span></span><a class="headerlink" href="#trio.CancelScope.relative_deadline" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.CancelScope.shield">
+<span class="sig-name descname"><span class="pre">shield</span></span><a class="headerlink" href="#trio.CancelScope.shield" title="Link to this definition">¶</a></dt>
+<dd><p>Read-write, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, default <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#False" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>. So long as
+this is set to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#True" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, then the code inside this scope
+will not receive <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exceptions from scopes
+that are outside this scope. They can still receive
+<a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exceptions from (1) this scope, or (2)
+scopes inside this scope. You can modify this attribute:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">CancelScope</span><span class="p">()</span> <span class="k">as</span> <span class="n">cancel_scope</span><span class="p">:</span>
+    <span class="n">cancel_scope</span><span class="o">.</span><span class="n">shield</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># This cannot be interrupted by any means short of</span>
+    <span class="c1"># killing the process:</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">cancel_scope</span><span class="o">.</span><span class="n">shield</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># Now this can be cancelled normally:</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Defaults to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#False" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, though this can be overridden by the
+<code class="docutils literal notranslate"><span class="pre">shield=</span></code> argument to the <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> constructor.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.CancelScope.is_relative">
+<span class="sig-name descname"><span class="pre">is_relative</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.CancelScope.is_relative" title="Link to this definition">¶</a></dt>
+<dd><p>Returns None after entering. Returns False if both deadline and
+relative_deadline are inf.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.CancelScope.cancel">
+<span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.CancelScope.cancel" title="Link to this definition">¶</a></dt>
+<dd><p>Cancels this scope immediately.</p>
+<p>This method is idempotent, i.e., if the scope was already
+cancelled then this method silently does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.CancelScope.cancelled_caught">
+<span class="sig-name descname"><span class="pre">cancelled_caught</span></span><a class="headerlink" href="#trio.CancelScope.cancelled_caught" title="Link to this definition">¶</a></dt>
+<dd><p>只读 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>。记录此作用域是否捕获了 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常。需要满足两个条件：（1） <code class="docutils literal notranslate"><span class="pre">with</span></code> 块以 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常退出，且（2）此作用域是触发该 <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> 异常的责任作用域。</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.CancelScope.cancel_called">
+<span class="sig-name descname"><span class="pre">cancel_called</span></span><a class="headerlink" href="#trio.CancelScope.cancel_called" title="Link to this definition">¶</a></dt>
+<dd><p>Readonly <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>. Records whether cancellation has been
+requested for this scope, either by an explicit call to
+<a class="reference internal" href="#id0" title="trio.CancelScope.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> or by the deadline expiring.</p>
+<p>This attribute being True does <em>not</em> necessarily mean that the
+code within the scope has been, or will be, affected by the
+cancellation. For example, if <a class="reference internal" href="#id0" title="trio.CancelScope.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> was called after
+the last checkpoint in the <code class="docutils literal notranslate"><span class="pre">with</span></code> block, when it's too late to
+deliver a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception, then this attribute
+will still be True.</p>
+<p>This attribute is mostly useful for debugging and introspection.
+If you want to know whether or not a chunk of code was actually
+cancelled, then <a class="reference internal" href="#trio.CancelScope.cancelled_caught" title="trio.CancelScope.cancelled_caught"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cancelled_caught</span></code></a> is usually more
+appropriate.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd><p>Cancels this scope immediately.</p>
+<p>This method is idempotent, i.e., if the scope was already
+cancelled then this method silently does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="id6">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cancel_called</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><span class="pre">bool</span></a></em><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
+<dd><p>Readonly <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>. Records whether cancellation has been
+requested for this scope, either by an explicit call to
+<a class="reference internal" href="#id0" title="trio.CancelScope.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> or by the deadline expiring.</p>
+<p>This attribute being True does <em>not</em> necessarily mean that the
+code within the scope has been, or will be, affected by the
+cancellation. For example, if <a class="reference internal" href="#id0" title="trio.CancelScope.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> was called after
+the last checkpoint in the <code class="docutils literal notranslate"><span class="pre">with</span></code> block, when it's too late to
+deliver a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception, then this attribute
+will still be True.</p>
+<p>This attribute is mostly useful for debugging and introspection.
+If you want to know whether or not a chunk of code was actually
+cancelled, then <a class="reference internal" href="#trio.CancelScope.cancelled_caught" title="trio.CancelScope.cancelled_caught"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cancelled_caught</span></code></a> is usually more
+appropriate.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="id7">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deadline</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><span class="pre">float</span></a></em><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
+<dd><p>Read-write, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>. An absolute time on the current
+run's clock at which this scope will automatically become
+cancelled. You can adjust the deadline by modifying this
+attribute, e.g.:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># I need a little more time!</span>
+<span class="n">cancel_scope</span><span class="o">.</span><span class="n">deadline</span> <span class="o">+=</span> <span class="mi">30</span>
+</pre></div>
+</div>
+<p>Note that for efficiency, the core run loop only checks for
+expired deadlines every once in a while. This means that in
+certain cases there may be a short delay between when the clock
+says the deadline should have expired, and when checkpoints
+start raising <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>. This is a very obscure
+corner case that you're unlikely to notice, but we document it
+for completeness. (If this <em>does</em> cause problems for you, of
+course, then <a class="reference external" href="https://github.com/python-trio/trio/issues">we want to know!</a>)</p>
+<p>Defaults to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/math.html#math.inf" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">math.inf</span></code></a>, which means "no deadline", though
+this can be overridden by the <code class="docutils literal notranslate"><span class="pre">deadline=</span></code> argument to
+the <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> constructor.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="id8">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_relative</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><span class="pre">None</span></a></em><a class="headerlink" href="#id8" title="Link to this definition">¶</a></dt>
+<dd><p>Returns None after entering. Returns False if both deadline and
+relative_deadline are inf.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="id9">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shield</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><span class="pre">bool</span></a></em><a class="headerlink" href="#id9" title="Link to this definition">¶</a></dt>
+<dd><p>Read-write, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, default <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#False" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>. So long as
+this is set to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#True" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, then the code inside this scope
+will not receive <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exceptions from scopes
+that are outside this scope. They can still receive
+<a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exceptions from (1) this scope, or (2)
+scopes inside this scope. You can modify this attribute:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">CancelScope</span><span class="p">()</span> <span class="k">as</span> <span class="n">cancel_scope</span><span class="p">:</span>
+    <span class="n">cancel_scope</span><span class="o">.</span><span class="n">shield</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># This cannot be interrupted by any means short of</span>
+    <span class="c1"># killing the process:</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">cancel_scope</span><span class="o">.</span><span class="n">shield</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># Now this can be cancelled normally:</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Defaults to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#False" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, though this can be overridden by the
+<code class="docutils literal notranslate"><span class="pre">shield=</span></code> argument to the <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> constructor.</p>
+</dd></dl>
+</dd></dl>
+<p>通常不需要创建 <code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code> 对象。Trio 已经在与任务相关的 <code class="xref py py-class docutils literal notranslate"><span class="pre">Nursery</span></code> 对象中包含了 <a class="reference internal" href="tasks.html#trio.Nursery.cancel_scope" title="trio.Nursery.cancel_scope"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cancel_scope</span></code></a> 属性。我们将在后续手册中讨论育儿任务（nurseries）。</p>
+<p>Trio 还提供了几个便利函数，用于常见的仅对某段代码施加超时的场景：</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.move_on_after">
+<em class="property"><span class="pre">with</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">move_on_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shield</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><em class="property"><span class="pre"> as</span> <span class="pre">cancel_scope</span></em><a class="headerlink" href="#trio.move_on_after" title="Link to this definition">¶</a></dt>
+<dd><p>Use as a context manager to create a cancel scope whose deadline is
+set to now + <em>seconds</em>.</p>
+<p>The deadline of the cancel scope is calculated upon entering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seconds</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) -- The timeout.</p></li>
+<li><p><strong>shield</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- Initial value for the <cite>~trio.CancelScope.shield</cite> attribute
+of the newly created cancel scope.</p></li>
+</ul>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> -- if <code class="docutils literal notranslate"><span class="pre">seconds</span></code> is less than zero or NaN.</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.move_on_at">
+<em class="property"><span class="pre">with</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">move_on_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadline</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shield</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><em class="property"><span class="pre"> as</span> <span class="pre">cancel_scope</span></em><a class="headerlink" href="#trio.move_on_at" title="Link to this definition">¶</a></dt>
+<dd><p>Use as a context manager to create a cancel scope with the given
+absolute deadline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deadline</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) -- The deadline.</p></li>
+<li><p><strong>shield</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- Initial value for the <cite>~trio.CancelScope.shield</cite> attribute
+of the newly created cancel scope.</p></li>
+</ul>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> -- if deadline is NaN.</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.fail_after">
+<em class="property"><span class="pre">with</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">fail_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shield</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><em class="property"><span class="pre"> as</span> <span class="pre">cancel_scope</span></em><a class="headerlink" href="#trio.fail_after" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a cancel scope with the given timeout, and raises an error if
+it is actually cancelled.</p>
+<p>This function and <a class="reference internal" href="#trio.move_on_after" title="trio.move_on_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code></a> are similar in that both create a
+cancel scope with a given timeout, and if the timeout expires then both
+will cause <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> to be raised within the scope. The difference
+is that when the <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception reaches <a class="reference internal" href="#trio.move_on_after" title="trio.move_on_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code></a>,
+it's caught and discarded. When it reaches <a class="reference internal" href="#trio.fail_after" title="trio.fail_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">fail_after()</span></code></a>, then it's
+caught and <a class="reference internal" href="exc_warn.html#trio.TooSlowError" title="trio.TooSlowError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TooSlowError</span></code></a> is raised in its place.</p>
+<p>The deadline of the cancel scope is calculated upon entering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seconds</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) -- The timeout.</p></li>
+<li><p><strong>shield</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- Initial value for the <cite>~trio.CancelScope.shield</cite> attribute
+of the newly created cancel scope.</p></li>
+</ul>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exc_warn.html#trio.TooSlowError" title="trio.TooSlowError"><strong>TooSlowError</strong></a> -- if a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception is raised in this scope
+    and caught by the context manager.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> -- if <em>seconds</em> is less than zero or NaN.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/collections.abc.html#collections.abc.Generator" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.fail_at">
+<em class="property"><span class="pre">with</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">fail_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadline</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shield</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><em class="property"><span class="pre"> as</span> <span class="pre">cancel_scope</span></em><a class="headerlink" href="#trio.fail_at" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a cancel scope with the given deadline, and raises an error if it
+is actually cancelled.</p>
+<p>This function and <a class="reference internal" href="#trio.move_on_at" title="trio.move_on_at"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_at()</span></code></a> are similar in that both create a
+cancel scope with a given absolute deadline, and if the deadline expires
+then both will cause <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> to be raised within the scope. The
+difference is that when the <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception reaches
+<a class="reference internal" href="#trio.move_on_at" title="trio.move_on_at"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_at()</span></code></a>, it's caught and discarded. When it reaches
+<a class="reference internal" href="#trio.fail_at" title="trio.fail_at"><code class="xref py py-func docutils literal notranslate"><span class="pre">fail_at()</span></code></a>, then it's caught and <a class="reference internal" href="exc_warn.html#trio.TooSlowError" title="trio.TooSlowError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TooSlowError</span></code></a> is raised in its
+place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deadline</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) -- The deadline.</p></li>
+<li><p><strong>shield</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- Initial value for the <cite>~trio.CancelScope.shield</cite> attribute
+of the newly created cancel scope.</p></li>
+</ul>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exc_warn.html#trio.TooSlowError" title="trio.TooSlowError"><strong>TooSlowError</strong></a> -- if a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception is raised in this scope
+    and caught by the context manager.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> -- if deadline is NaN.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/collections.abc.html#collections.abc.Generator" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+</div>
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--2">英文</label><div class="tab-content docutils container">
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code> and all the other cancellation facilities provided
+by Trio are ultimately implemented in terms of <code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code>
+objects.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">CancelScope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative_deadline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deadline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shield</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#object" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A <em>cancellation scope</em>: the link between a unit of cancellable
+work and Trio's cancellation system.</p>
+<p>A <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> becomes associated with some cancellable work
+when it is used as a context manager surrounding that work:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">cancel_scope</span> <span class="o">=</span> <span class="n">trio</span><span class="o">.</span><span class="n">CancelScope</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="k">with</span> <span class="n">cancel_scope</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">long_running_operation</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Inside the <code class="docutils literal notranslate"><span class="pre">with</span></code> block, a cancellation of <code class="docutils literal notranslate"><span class="pre">cancel_scope</span></code> (via
+a call to its <a class="reference internal" href="#id0" title="trio.CancelScope.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> method or via the expiry of its
+<a class="reference internal" href="#id7" title="trio.CancelScope.deadline"><code class="xref py py-attr docutils literal notranslate"><span class="pre">deadline</span></code></a>) will immediately interrupt the
+<code class="docutils literal notranslate"><span class="pre">long_running_operation()</span></code> by raising <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> at its
+next <a class="reference internal" href="general_principles.html#checkpoints"><span class="std std-ref">checkpoint</span></a>.</p>
+<p>The context manager <code class="docutils literal notranslate"><span class="pre">__enter__</span></code> returns the <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a>
+object itself, so you can also write <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">trio.CancelScope()</span> <span class="pre">as</span>
+<span class="pre">cancel_scope:</span></code>.</p>
+<p>If a cancel scope becomes cancelled before entering its <code class="docutils literal notranslate"><span class="pre">with</span></code> block,
+the <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception will be raised at the first
+checkpoint inside the <code class="docutils literal notranslate"><span class="pre">with</span></code> block. This allows a
+<a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> to be created in one <a class="reference internal" href="tasks.html#tasks"><span class="std std-ref">task</span></a> and
+passed to another, so that the first task can later cancel some work
+inside the second.</p>
+<p>Cancel scopes are not reusable or reentrant; that is, each cancel
+scope can be used for at most one <code class="docutils literal notranslate"><span class="pre">with</span></code> block.  (You'll get a
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RuntimeError</span></code></a> if you violate this rule.)</p>
+<p>The <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> constructor takes initial values for the
+cancel scope's <a class="reference internal" href="#id7" title="trio.CancelScope.deadline"><code class="xref py py-attr docutils literal notranslate"><span class="pre">deadline</span></code></a> and <a class="reference internal" href="#id9" title="trio.CancelScope.shield"><code class="xref py py-attr docutils literal notranslate"><span class="pre">shield</span></code></a> attributes; these
+may be freely modified after construction, whether or not the scope
+has been entered yet, and changes take immediate effect.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">deadline</span></span></dt>
+<dd><p>Read-write, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>. An absolute time on the current
+run's clock at which this scope will automatically become
+cancelled. You can adjust the deadline by modifying this
+attribute, e.g.:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># I need a little more time!</span>
+<span class="n">cancel_scope</span><span class="o">.</span><span class="n">deadline</span> <span class="o">+=</span> <span class="mi">30</span>
+</pre></div>
+</div>
+<p>Note that for efficiency, the core run loop only checks for
+expired deadlines every once in a while. This means that in
+certain cases there may be a short delay between when the clock
+says the deadline should have expired, and when checkpoints
+start raising <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>. This is a very obscure
+corner case that you're unlikely to notice, but we document it
+for completeness. (If this <em>does</em> cause problems for you, of
+course, then <a class="reference external" href="https://github.com/python-trio/trio/issues">we want to know!</a>)</p>
+<p>Defaults to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/math.html#math.inf" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">math.inf</span></code></a>, which means "no deadline", though
+this can be overridden by the <code class="docutils literal notranslate"><span class="pre">deadline=</span></code> argument to
+the <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> constructor.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">relative_deadline</span></span></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">shield</span></span></dt>
+<dd><p>Read-write, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, default <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#False" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>. So long as
+this is set to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#True" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, then the code inside this scope
+will not receive <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exceptions from scopes
+that are outside this scope. They can still receive
+<a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exceptions from (1) this scope, or (2)
+scopes inside this scope. You can modify this attribute:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">CancelScope</span><span class="p">()</span> <span class="k">as</span> <span class="n">cancel_scope</span><span class="p">:</span>
+    <span class="n">cancel_scope</span><span class="o">.</span><span class="n">shield</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># This cannot be interrupted by any means short of</span>
+    <span class="c1"># killing the process:</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">cancel_scope</span><span class="o">.</span><span class="n">shield</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># Now this can be cancelled normally:</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Defaults to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#False" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, though this can be overridden by the
+<code class="docutils literal notranslate"><span class="pre">shield=</span></code> argument to the <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> constructor.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">is_relative</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Returns None after entering. Returns False if both deadline and
+relative_deadline are inf.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Cancels this scope immediately.</p>
+<p>This method is idempotent, i.e., if the scope was already
+cancelled then this method silently does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cancelled_caught</span></span></dt>
+<dd><p>Readonly <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>. Records whether this scope caught a
+<a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception. This requires two things: (1)
+the <code class="docutils literal notranslate"><span class="pre">with</span></code> block exited with a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>
+exception, and (2) this scope is the one that was responsible
+for triggering this <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cancel_called</span></span></dt>
+<dd><p>Readonly <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>. Records whether cancellation has been
+requested for this scope, either by an explicit call to
+<a class="reference internal" href="#id0" title="trio.CancelScope.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> or by the deadline expiring.</p>
+<p>This attribute being True does <em>not</em> necessarily mean that the
+code within the scope has been, or will be, affected by the
+cancellation. For example, if <a class="reference internal" href="#id0" title="trio.CancelScope.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> was called after
+the last checkpoint in the <code class="docutils literal notranslate"><span class="pre">with</span></code> block, when it's too late to
+deliver a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception, then this attribute
+will still be True.</p>
+<p>This attribute is mostly useful for debugging and introspection.
+If you want to know whether or not a chunk of code was actually
+cancelled, then <a class="reference internal" href="#trio.CancelScope.cancelled_caught" title="trio.CancelScope.cancelled_caught"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cancelled_caught</span></code></a> is usually more
+appropriate.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Cancels this scope immediately.</p>
+<p>This method is idempotent, i.e., if the scope was already
+cancelled then this method silently does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cancel_called</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><span class="pre">bool</span></a></em></dt>
+<dd><p>Readonly <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>. Records whether cancellation has been
+requested for this scope, either by an explicit call to
+<a class="reference internal" href="#id0" title="trio.CancelScope.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> or by the deadline expiring.</p>
+<p>This attribute being True does <em>not</em> necessarily mean that the
+code within the scope has been, or will be, affected by the
+cancellation. For example, if <a class="reference internal" href="#id0" title="trio.CancelScope.cancel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cancel()</span></code></a> was called after
+the last checkpoint in the <code class="docutils literal notranslate"><span class="pre">with</span></code> block, when it's too late to
+deliver a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception, then this attribute
+will still be True.</p>
+<p>This attribute is mostly useful for debugging and introspection.
+If you want to know whether or not a chunk of code was actually
+cancelled, then <a class="reference internal" href="#trio.CancelScope.cancelled_caught" title="trio.CancelScope.cancelled_caught"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cancelled_caught</span></code></a> is usually more
+appropriate.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deadline</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><span class="pre">float</span></a></em></dt>
+<dd><p>Read-write, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>. An absolute time on the current
+run's clock at which this scope will automatically become
+cancelled. You can adjust the deadline by modifying this
+attribute, e.g.:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># I need a little more time!</span>
+<span class="n">cancel_scope</span><span class="o">.</span><span class="n">deadline</span> <span class="o">+=</span> <span class="mi">30</span>
+</pre></div>
+</div>
+<p>Note that for efficiency, the core run loop only checks for
+expired deadlines every once in a while. This means that in
+certain cases there may be a short delay between when the clock
+says the deadline should have expired, and when checkpoints
+start raising <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>. This is a very obscure
+corner case that you're unlikely to notice, but we document it
+for completeness. (If this <em>does</em> cause problems for you, of
+course, then <a class="reference external" href="https://github.com/python-trio/trio/issues">we want to know!</a>)</p>
+<p>Defaults to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/math.html#math.inf" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">math.inf</span></code></a>, which means "no deadline", though
+this can be overridden by the <code class="docutils literal notranslate"><span class="pre">deadline=</span></code> argument to
+the <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> constructor.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_relative</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><span class="pre">None</span></a></em></dt>
+<dd><p>Returns None after entering. Returns False if both deadline and
+relative_deadline are inf.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shield</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><span class="pre">bool</span></a></em></dt>
+<dd><p>Read-write, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>, default <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#False" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>. So long as
+this is set to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#True" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">True</span></code></a>, then the code inside this scope
+will not receive <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exceptions from scopes
+that are outside this scope. They can still receive
+<a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exceptions from (1) this scope, or (2)
+scopes inside this scope. You can modify this attribute:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">CancelScope</span><span class="p">()</span> <span class="k">as</span> <span class="n">cancel_scope</span><span class="p">:</span>
+    <span class="n">cancel_scope</span><span class="o">.</span><span class="n">shield</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># This cannot be interrupted by any means short of</span>
+    <span class="c1"># killing the process:</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">cancel_scope</span><span class="o">.</span><span class="n">shield</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># Now this can be cancelled normally:</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Defaults to <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#False" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">False</span></code></a>, though this can be overridden by the
+<code class="docutils literal notranslate"><span class="pre">shield=</span></code> argument to the <a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a> constructor.</p>
+</dd></dl>
+</dd></dl>
+<p>Often there is no need to create <code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code> object. Trio
+already includes <a class="reference internal" href="tasks.html#trio.Nursery.cancel_scope" title="trio.Nursery.cancel_scope"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cancel_scope</span></code></a> attribute in a
+task-related <code class="xref py py-class docutils literal notranslate"><span class="pre">Nursery</span></code> object. We will cover nurseries later in
+the manual.</p>
+<p>Trio also provides several convenience functions for the common
+situation of just wanting to impose a timeout on some code:</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">with</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">move_on_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shield</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><em class="property"><span class="pre"> as</span> <span class="pre">cancel_scope</span></em></dt>
+<dd><p>Use as a context manager to create a cancel scope whose deadline is
+set to now + <em>seconds</em>.</p>
+<p>The deadline of the cancel scope is calculated upon entering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seconds</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) -- The timeout.</p></li>
+<li><p><strong>shield</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- Initial value for the <cite>~trio.CancelScope.shield</cite> attribute
+of the newly created cancel scope.</p></li>
+</ul>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> -- if <code class="docutils literal notranslate"><span class="pre">seconds</span></code> is less than zero or NaN.</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">with</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">move_on_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadline</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shield</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><em class="property"><span class="pre"> as</span> <span class="pre">cancel_scope</span></em></dt>
+<dd><p>Use as a context manager to create a cancel scope with the given
+absolute deadline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deadline</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) -- The deadline.</p></li>
+<li><p><strong>shield</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- Initial value for the <cite>~trio.CancelScope.shield</cite> attribute
+of the newly created cancel scope.</p></li>
+</ul>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> -- if deadline is NaN.</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">with</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">fail_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shield</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><em class="property"><span class="pre"> as</span> <span class="pre">cancel_scope</span></em></dt>
+<dd><p>Creates a cancel scope with the given timeout, and raises an error if
+it is actually cancelled.</p>
+<p>This function and <a class="reference internal" href="#trio.move_on_after" title="trio.move_on_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code></a> are similar in that both create a
+cancel scope with a given timeout, and if the timeout expires then both
+will cause <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> to be raised within the scope. The difference
+is that when the <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception reaches <a class="reference internal" href="#trio.move_on_after" title="trio.move_on_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_after()</span></code></a>,
+it's caught and discarded. When it reaches <a class="reference internal" href="#trio.fail_after" title="trio.fail_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">fail_after()</span></code></a>, then it's
+caught and <a class="reference internal" href="exc_warn.html#trio.TooSlowError" title="trio.TooSlowError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TooSlowError</span></code></a> is raised in its place.</p>
+<p>The deadline of the cancel scope is calculated upon entering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seconds</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) -- The timeout.</p></li>
+<li><p><strong>shield</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- Initial value for the <cite>~trio.CancelScope.shield</cite> attribute
+of the newly created cancel scope.</p></li>
+</ul>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exc_warn.html#trio.TooSlowError" title="trio.TooSlowError"><strong>TooSlowError</strong></a> -- if a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception is raised in this scope
+    and caught by the context manager.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> -- if <em>seconds</em> is less than zero or NaN.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/collections.abc.html#collections.abc.Generator" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">with</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">fail_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deadline</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shield</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><em class="property"><span class="pre"> as</span> <span class="pre">cancel_scope</span></em></dt>
+<dd><p>Creates a cancel scope with the given deadline, and raises an error if it
+is actually cancelled.</p>
+<p>This function and <a class="reference internal" href="#trio.move_on_at" title="trio.move_on_at"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_at()</span></code></a> are similar in that both create a
+cancel scope with a given absolute deadline, and if the deadline expires
+then both will cause <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> to be raised within the scope. The
+difference is that when the <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception reaches
+<a class="reference internal" href="#trio.move_on_at" title="trio.move_on_at"><code class="xref py py-func docutils literal notranslate"><span class="pre">move_on_at()</span></code></a>, it's caught and discarded. When it reaches
+<a class="reference internal" href="#trio.fail_at" title="trio.fail_at"><code class="xref py py-func docutils literal notranslate"><span class="pre">fail_at()</span></code></a>, then it's caught and <a class="reference internal" href="exc_warn.html#trio.TooSlowError" title="trio.TooSlowError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TooSlowError</span></code></a> is raised in its
+place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deadline</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）"><em>float</em></a>) -- The deadline.</p></li>
+<li><p><strong>shield</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- Initial value for the <cite>~trio.CancelScope.shield</cite> attribute
+of the newly created cancel scope.</p></li>
+</ul>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exc_warn.html#trio.TooSlowError" title="trio.TooSlowError"><strong>TooSlowError</strong></a> -- if a <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a> exception is raised in this scope
+    and caught by the context manager.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="（在 Python v3.13）"><strong>ValueError</strong></a> -- if deadline is NaN.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/collections.abc.html#collections.abc.Generator" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<a class="reference internal" href="#trio.CancelScope" title="trio.CancelScope"><code class="xref py py-class docutils literal notranslate"><span class="pre">CancelScope</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+</div>
+</div>
+<section id="id10">
+<h3>备忘单<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<p><strong>Cheat sheet</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--6-input--1" name="tab-set--6" type="radio"/><label class="tab-label" for="tab-set--6-input--1">中文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p>如果你想对一个函数施加超时，但不关心是否超时：</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>
+      <span class="k">await</span> <span class="n">do_whatever</span><span class="p">()</span>
+<span class="c1"># 继续执行！</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>如果你想对一个函数施加超时，并在超时后进行一些恢复操作：</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">)</span> <span class="k">as</span> <span class="n">cancel_scope</span><span class="p">:</span>
+      <span class="k">await</span> <span class="n">do_whatever</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">cancel_scope</span><span class="o">.</span><span class="n">cancelled_caught</span><span class="p">:</span>
+      <span class="c1"># 操作超时，尝试其他方法</span>
+      <span class="n">try_to_recover</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>如果你想对一个函数施加超时，并且如果超时，则直接放弃并抛出错误，由调用者处理：</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">fail_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>
+      <span class="k">await</span> <span class="n">do_whatever</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>也可以检查当前的有效截止时间，这有时非常有用：</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.current_effective_deadline">
+<span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">current_effective_deadline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trio.current_effective_deadline" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the current effective deadline for the current task.</p>
+<p>This function examines all the cancellation scopes that are currently in
+effect (taking into account shielding), and returns the deadline that will
+expire first.</p>
+<p>One example of where this might be is useful is if your code is trying to
+decide whether to begin an expensive operation like an RPC call, but wants
+to skip it if it knows that it can't possibly complete in the available
+time. Another example would be if you're using a protocol like gRPC that
+<a class="reference external" href="http://www.grpc.io/docs/guides/concepts.html#deadlines">propagates timeout information to the remote peer</a>; this function
+gives a way to fetch that information so you can send it along.</p>
+<p>If this is called in a context where a cancellation is currently active
+(i.e., a blocking call will immediately raise <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>), then
+returned deadline is <code class="docutils literal notranslate"><span class="pre">-inf</span></code>. If it is called in a context where no
+scopes have a deadline set, it returns <code class="docutils literal notranslate"><span class="pre">inf</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the effective deadline, as an absolute time.</p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+</div>
+<input class="tab-input" id="tab-set--6-input--2" name="tab-set--6" type="radio"/><label class="tab-label" for="tab-set--6-input--2">英文</label><div class="tab-content docutils container">
+<ul class="simple">
+<li><p>If you want to impose a timeout on a function, but you don't care
+whether it timed out or not:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>
+      <span class="k">await</span> <span class="n">do_whatever</span><span class="p">()</span>
+<span class="c1"># carry on!</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>If you want to impose a timeout on a function, and then do some
+recovery if it timed out:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">)</span> <span class="k">as</span> <span class="n">cancel_scope</span><span class="p">:</span>
+      <span class="k">await</span> <span class="n">do_whatever</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">cancel_scope</span><span class="o">.</span><span class="n">cancelled_caught</span><span class="p">:</span>
+      <span class="c1"># The operation timed out, try something else</span>
+      <span class="n">try_to_recover</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>If you want to impose a timeout on a function, and then if it times
+out then just give up and raise an error for your caller to deal
+with:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">fail_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>
+      <span class="k">await</span> <span class="n">do_whatever</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>It's also possible to check what the current effective deadline is,
+which is sometimes useful:</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">current_effective_deadline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Returns the current effective deadline for the current task.</p>
+<p>This function examines all the cancellation scopes that are currently in
+effect (taking into account shielding), and returns the deadline that will
+expire first.</p>
+<p>One example of where this might be is useful is if your code is trying to
+decide whether to begin an expensive operation like an RPC call, but wants
+to skip it if it knows that it can't possibly complete in the available
+time. Another example would be if you're using a protocol like gRPC that
+<a class="reference external" href="http://www.grpc.io/docs/guides/concepts.html#deadlines">propagates timeout information to the remote peer</a>; this function
+gives a way to fetch that information so you can send it along.</p>
+<p>If this is called in a context where a cancellation is currently active
+(i.e., a blocking call will immediately raise <a class="reference internal" href="exc_warn.html#trio.Cancelled" title="trio.Cancelled"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Cancelled</span></code></a>), then
+returned deadline is <code class="docutils literal notranslate"><span class="pre">-inf</span></code>. If it is called in a context where no
+scopes have a deadline set, it returns <code class="docutils literal notranslate"><span class="pre">inf</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the effective deadline, as an absolute time.</p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#float" title="（在 Python v3.13）">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+</div>
+</div>
+</section>
+</section>
+</section>
+</article>
+</div>
+<footer>
+<div class="related-pages">
+<a class="next-page" href="tasks.html">
+<div class="page-info">
+<div class="context">
+<span>Next</span>
+</div>
+<div class="title">任务</div>
+</div>
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+</a>
+<a class="prev-page" href="time_clock.html">
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+<div class="page-info">
+<div class="context">
+<span>Previous</span>
+</div>
+<div class="title">时间和时钟</div>
+</div>
+</a>
+</div>
+<div class="bottom-of-page">
+<div class="left-details">
+<div class="copyright">
+                Copyright © 2017, Nathaniel J. Smith
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+</div>
+<div class="right-details">
+<div class="icons">
+<a aria-label="GitHub" class="muted-link" href="https://github.com/hellowac/trio-zh-cn">
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 16 16">
+<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<aside class="toc-drawer">
+<div class="toc-sticky toc-scroll">
+<div class="toc-title-container">
+<span class="toc-title">
+            On this page
+          </span>
+</div>
+<div class="toc-tree-container">
+<div class="toc-tree">
+<ul>
+<li><a class="reference internal" href="#">取消和超时</a><ul>
+<li><a class="reference internal" href="#id2">一个简单的超时示例</a></li>
+<li><a class="reference internal" href="#id3">处理取消</a></li>
+<li><a class="reference internal" href="#id4">取消语义</a></li>
+<li><a class="reference internal" href="#cancellable-primitives">取消和原始操作</a></li>
+<li><a class="reference internal" href="#api">取消 API 详细信息</a><ul>
+<li><a class="reference internal" href="#trio.CancelScope"><code class="docutils literal notranslate"><span class="pre">CancelScope</span></code></a><ul>
+<li><a class="reference internal" href="#trio.CancelScope.deadline"><code class="docutils literal notranslate"><span class="pre">CancelScope.deadline</span></code></a></li>
+<li><a class="reference internal" href="#trio.CancelScope.relative_deadline"><code class="docutils literal notranslate"><span class="pre">CancelScope.relative_deadline</span></code></a></li>
+<li><a class="reference internal" href="#trio.CancelScope.shield"><code class="docutils literal notranslate"><span class="pre">CancelScope.shield</span></code></a></li>
+<li><a class="reference internal" href="#trio.CancelScope.is_relative"><code class="docutils literal notranslate"><span class="pre">CancelScope.is_relative()</span></code></a></li>
+<li><a class="reference internal" href="#trio.CancelScope.cancel"><code class="docutils literal notranslate"><span class="pre">CancelScope.cancel()</span></code></a></li>
+<li><a class="reference internal" href="#trio.CancelScope.cancelled_caught"><code class="docutils literal notranslate"><span class="pre">CancelScope.cancelled_caught</span></code></a></li>
+<li><a class="reference internal" href="#trio.CancelScope.cancel_called"><code class="docutils literal notranslate"><span class="pre">CancelScope.cancel_called</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">CancelScope.cancel()</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">CancelScope.cancel_called</span></code></a></li>
+<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">CancelScope.deadline</span></code></a></li>
+<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">CancelScope.is_relative</span></code></a></li>
+<li><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">CancelScope.shield</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#trio.move_on_after"><code class="docutils literal notranslate"><span class="pre">move_on_after()</span></code></a></li>
+<li><a class="reference internal" href="#trio.move_on_at"><code class="docutils literal notranslate"><span class="pre">move_on_at()</span></code></a></li>
+<li><a class="reference internal" href="#trio.fail_after"><code class="docutils literal notranslate"><span class="pre">fail_after()</span></code></a></li>
+<li><a class="reference internal" href="#trio.fail_at"><code class="docutils literal notranslate"><span class="pre">fail_at()</span></code></a></li>
+<li><a class="reference internal" href="#id10">备忘单</a><ul>
+<li><a class="reference internal" href="#trio.current_effective_deadline"><code class="docutils literal notranslate"><span class="pre">current_effective_deadline()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div><script src="../_static/documentation_options.js?v=d2451d57"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+<script src="../_static/tabs.js?v=3ee01567"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/translations.js?v=beaddf03"></script>
+</body>
+</html>

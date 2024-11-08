@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+
+<html class="no-js" data-content_root="../" lang="zh-CN">
+<head><meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/><meta content="width=device-width, initial-scale=1" name="viewport">
+<link href="../genindex.html" rel="index" title="索引"/><link href="../search.html" rel="search" title="搜索"/><link href="task_local_storeage.html" rel="next" title="任务存储"/><link href="cancel_timeout.html" rel="prev" title="取消和超时"/>
+<link href="../_static/favicon-32.png" rel="shortcut icon"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+<title>任务 - Trio 0.27.0+dev 文档</title>
+<link href="../_static/pygments.css?v=fa44fd50" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo.css?v=354aac6f" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=125d5c1c" rel="stylesheet" type="text/css"/>
+<link href="../_static/tabs.css?v=4c969af8" rel="stylesheet" type="text/css"/>
+<link href="../_static/copybutton.css?v=76b2166b" rel="stylesheet" type="text/css"/>
+<link href="../_static/hackrtd.css?v=2d9fc201" rel="stylesheet" type="text/css"/>
+<link href="../_static/styles/furo-extensions.css?v=302659d7" rel="stylesheet" type="text/css"/>
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></meta></head>
+<body>
+<script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+<symbol id="svg-toc" viewbox="0 0 24 24">
+<title>Contents</title>
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 1024 1024">
+<path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"></path>
+</svg>
+</symbol>
+<symbol id="svg-menu" viewbox="0 0 24 24">
+<title>Menu</title>
+<svg class="feather-menu" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<line x1="3" x2="21" y1="12" y2="12"></line>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<line x1="3" x2="21" y1="18" y2="18"></line>
+</svg>
+</symbol>
+<symbol id="svg-arrow-right" viewbox="0 0 24 24">
+<title>Expand</title>
+<svg class="feather-chevron-right" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</symbol>
+<symbol id="svg-sun" viewbox="0 0 24 24">
+<title>Light mode</title>
+<svg class="feather-sun" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="5"></circle>
+<line x1="12" x2="12" y1="1" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="23"></line>
+<line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line>
+<line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+<line x1="1" x2="3" y1="12" y2="12"></line>
+<line x1="21" x2="23" y1="12" y2="12"></line>
+<line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line>
+<line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+</svg>
+</symbol>
+<symbol id="svg-moon" viewbox="0 0 24 24">
+<title>Dark mode</title>
+<svg class="icon-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+</svg>
+</symbol>
+<symbol id="svg-sun-with-moon" viewbox="0 0 24 24">
+<title>Auto light/dark, in light mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z" style="opacity: 50%"></path>
+<line x1="14.5" x2="14.5" y1="3.25" y2="1.25"></line>
+<line x1="14.5" x2="14.5" y1="15.85" y2="17.85"></line>
+<line x1="10.044" x2="8.63" y1="5.094" y2="3.68"></line>
+<line x1="19" x2="20.414" y1="14.05" y2="15.464"></line>
+<line x1="8.2" x2="6.2" y1="9.55" y2="9.55"></line>
+<line x1="20.8" x2="22.8" y1="9.55" y2="9.55"></line>
+<line x1="10.044" x2="8.63" y1="14.006" y2="15.42"></line>
+<line x1="19" x2="20.414" y1="5.05" y2="3.636"></line>
+<circle cx="14.5" cy="9.55" r="3.6"></circle>
+</svg>
+</symbol>
+<symbol id="svg-moon-with-sun" viewbox="0 0 24 24">
+<title>Auto light/dark, in dark mode</title>
+<svg class="icon-custom-derived-from-feather-sun-and-tabler-moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"></path>
+<line style="opacity: 50%" x1="18" x2="18" y1="3.705" y2="2.5"></line>
+<line style="opacity: 50%" x1="18" x2="18" y1="11.295" y2="12.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="4.816" y2="3.964"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="10.212" y2="11.063"></line>
+<line style="opacity: 50%" x1="14.205" x2="13.001" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="21.795" x2="23" y1="7.5" y2="7.5"></line>
+<line style="opacity: 50%" x1="15.316" x2="14.464" y1="10.184" y2="11.036"></line>
+<line style="opacity: 50%" x1="20.711" x2="21.563" y1="4.789" y2="3.937"></line>
+<circle cx="18" cy="7.5" r="2.169" style="opacity: 50%"></circle>
+</svg>
+</symbol>
+<symbol id="svg-pencil" viewbox="0 0 24 24">
+<svg class="icon-tabler-pencil-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"></path>
+<path d="M13.5 6.5l4 4"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+<symbol id="svg-eye" viewbox="0 0 24 24">
+<svg class="icon-tabler-eye-code" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0h24v24H0z" fill="none" stroke="none"></path>
+<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+<path d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008"></path>
+<path d="M20 21l2 -2l-2 -2"></path>
+<path d="M17 17l-2 2l2 2"></path>
+</svg>
+</symbol>
+</svg>
+<input class="sidebar-toggle" id="__navigation" name="__navigation" type="checkbox"/>
+<input class="sidebar-toggle" id="__toc" name="__toc" type="checkbox"/>
+<label class="overlay sidebar-overlay" for="__navigation">
+<div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+<div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+<div class="page">
+<header class="mobile-header">
+<div class="header-left">
+<label class="nav-overlay-icon" for="__navigation">
+<div class="visually-hidden">Toggle site navigation sidebar</div>
+<i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+</label>
+</div>
+<div class="header-center">
+<a href="../index.html"><div class="brand">Trio 0.27.0+dev 文档</div></a>
+</div>
+<div class="header-right">
+<div class="theme-toggle-container theme-toggle-header">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-header-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+</header>
+<aside class="sidebar-drawer">
+<div class="sidebar-container">
+<div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+<div class="sidebar-logo-container">
+<img alt="Logo" class="sidebar-logo" src="../_static/wordmark-transparent.svg"/>
+</div>
+<span class="sidebar-brand-text">Trio 0.27.0+dev 文档</span>
+</a><form action="../search.html" class="sidebar-search-container" method="get" role="search">
+<input aria-label="搜索" class="sidebar-search" name="q" placeholder="搜索"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+<p class="caption" role="heading"><span class="caption-text">Trio 友好且全面的手册：</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">教程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../awesome-trio-libraries.html">超棒的 Trio 库</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Trio 的核心功能</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Trio 的核心功能</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="run.html">运行 Trio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general_principles.html">一般原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_clock.html">时间和时钟</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cancel_timeout.html">取消和超时</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">任务</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_local_storeage.html">任务存储</a></li>
+<li class="toctree-l2"><a class="reference internal" href="task_sync.html">任务同步和通信</a></li>
+<li class="toctree-l2"><a class="reference internal" href="note_async_generator.html">异步生成器注意事项</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threads.html">线程（如果必须）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging.html">交互式调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exc_warn.html">异常和警告</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ref-io/index.html">Trio 中的 I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Trio 中的 I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/abs_api.html">抽象流 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/low_level.html">使用 <code class="xref py py-mod docutils literal notranslate"><span class="pre">trio.socket</span></code> 进行低级网络编程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/async_file_io.html">异步文件系统 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/subprocess.html">生成子进程</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref-io/signals.html">信号</a></li>
+</ul>
+</input></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-testing.html">Trio 中的测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference-lowlevel.html">自省和扩展 Trio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design.html">设计和内部结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">发布历史</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">为 Trio 及相关项目做出贡献</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasing.html">准备发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code-of-conduct.html">行为守则</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<div class="main">
+<div class="content">
+<div class="article-container">
+<a class="back-to-top muted-link" href="#">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+</svg>
+<span>Back to top</span>
+</a>
+<div class="content-icon-container">
+<div class="view-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/blob/sync-docs/cn_docs/source/ref-core/tasks.rst?plain=true" title="View this page">
+<svg><use href="#svg-eye"></use></svg>
+<span class="visually-hidden">View this page</span>
+</a>
+</div><div class="edit-this-page">
+<a class="muted-link" href="https://github.com/hellowac/trio-zh-cn/edit/sync-docs/cn_docs/source/ref-core/tasks.rst" title="Edit this page">
+<svg><use href="#svg-pencil"></use></svg>
+<span class="visually-hidden">Edit this page</span>
+</a>
+</div><div class="theme-toggle-container theme-toggle-content">
+<button class="theme-toggle">
+<div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+<svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+<svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+<svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+<svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+</button>
+</div>
+<label class="toc-overlay-icon toc-content-icon" for="__toc">
+<div class="visually-hidden">Toggle table of contents sidebar</div>
+<i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+</label>
+</div>
+<article id="furo-main-content" role="main">
+<section id="tasks">
+<span id="module-trio"></span><span id="id1"></span><h1>任务<a class="headerlink" href="#tasks" title="Link to this heading">¶</a></h1>
+<section id="id2">
+<h2>任务让您可以同时执行多项操作<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p><strong>Tasks let you do multiple things at once</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">中文</label><div class="tab-content docutils container">
+<p>Trio 的核心设计原则之一是：<em>没有隐式并发</em>。每个函数按顺序执行，从上到下，完成每个操作后再进行下一个操作—— <em>正如 Guido 所期望的那样</em>。</p>
+<p>但是，当然，异步库的主要目的是让你能够同时做多件事。在 Trio 中，实现这一点的唯一方式是通过任务生成接口。因此，如果你希望你的程序既能走路又能嚼口香糖，那么这一节就是为你准备的。</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">英文</label><div class="tab-content docutils container">
+<p>One of Trio's core design principles is: <em>no implicit
+concurrency</em>. Every function executes in a straightforward,
+top-to-bottom manner, finishing each operation before moving on to the
+next – <em>like Guido intended</em>.</p>
+<p>But, of course, the entire point of an async library is to let you do
+multiple things at once. The one and only way to do that in Trio is
+through the task spawning interface. So if you want your program to
+walk <em>and</em> chew gum, this is the section for you.</p>
+</div>
+</div>
+<section id="id3">
+<h3>托儿所和生成<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<p><strong>Nurseries and spawning</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">中文</label><div class="tab-content docutils container">
+<p>大多数并发编程库允许你在任何时候、任何地方随意启动新的子任务（或线程，或其他什么）。但 Trio 稍有不同：除非你准备好成为一个负责任的父母，否则你不能启动子任务。你通过创建一个托儿所来展示你的责任：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>一旦你有了托儿所对象的引用，你就可以在该托儿所中启动子任务：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">child</span><span class="p">():</span>
+   <span class="o">...</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">parent</span><span class="p">():</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+      <span class="c1"># 同时调用两个 child() 任务</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>这意味着任务形成了一棵树：当你调用 <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a> 时，它会创建一个初始任务，所有其他任务将是初始任务的子任务、孙任务等。</p>
+<p>本质上，<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> 块的主体就像是在托儿所中运行的初始任务，然后每次调用 <code class="docutils literal notranslate"><span class="pre">nursery.start_soon</span></code> 都会添加一个并行运行的任务。需要记住的两件关键事情：</p>
+<ul class="simple">
+<li><p>如果托儿所中的任何任务以未处理的异常结束，则托儿所会立即取消所有托儿所中的任务。</p></li>
+<li><p>由于所有任务都在 <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> 块内并发运行，因此该块不会退出，直到 <em>所有</em> 任务都完成。如果你使用过其他并发框架，可以将其理解为，<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> 末尾的去缩进操作自动“等待”（join）托儿所中的所有任务。</p></li>
+<li><p>一旦所有任务完成：</p></li>
+<li><p>托儿所被标记为“关闭”，意味着不能再在其中启动新任务。</p></li>
+<li><p>任何未处理的异常将被重新引发，并作为一个单一的 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#BaseExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">BaseExceptionGroup</span></code></a> 或 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a> 异常返回给父任务。</p></li>
+</ul>
+<p>由于所有任务都是初始任务的后代，因此一个后果是 <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a> 在所有任务完成之前不能结束。</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>如果托儿所中仍有任务正在运行，返回语句不会取消托儿所：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+      <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+         <span class="k">return</span>
+
+<span class="n">trio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>这段代码将等待 5 秒钟（直到子任务完成），然后返回。</p>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">英文</label><div class="tab-content docutils container">
+<p>Most libraries for concurrent programming let you start new child
+tasks (or threads, or whatever) willy-nilly, whenever and where-ever
+you feel like it. Trio is a bit different: you can't start a child
+task unless you're prepared to be a responsible parent. The way you
+demonstrate your responsibility is by creating a nursery:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>And once you have a reference to a nursery object, you can start
+children in that nursery:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">child</span><span class="p">():</span>
+   <span class="o">...</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">parent</span><span class="p">():</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+      <span class="c1"># Make two concurrent calls to child()</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This means that tasks form a tree: when you call <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a>, then
+this creates an initial task, and all your other tasks will be
+children, grandchildren, etc. of the initial task.</p>
+<p>Essentially, the body of the <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> block acts like an initial
+task that's running inside the nursery, and then each call to
+<code class="docutils literal notranslate"><span class="pre">nursery.start_soon</span></code> adds another task that runs in parallel. Two
+crucial things to keep in mind:</p>
+<ul class="simple">
+<li><p>If any task inside the nursery finishes with an unhandled exception,</p></li>
+</ul>
+<p>then the nursery immediately cancels all the tasks inside the
+nursery.</p>
+<ul class="simple">
+<li><p>Since all of the tasks are running concurrently inside the <a href="#id4"><span class="problematic" id="id5">``</span></a>async</p></li>
+</ul>
+<p>with`` block, the block does not exit until <em>all</em> tasks have
+completed. If you've used other concurrency frameworks, then you can
+think of it as, the de-indentation at the end of the <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code>
+automatically "joins" (waits for) all of the tasks in the nursery.</p>
+<ul class="simple">
+<li><p>Once all the tasks have finished, then:</p></li>
+<li><dl class="simple">
+<dt>The nursery is marked as "closed", meaning that no new tasks can</dt><dd><p>be started inside it.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Any unhandled exceptions are re-raised inside the parent task, grouped into a</dt><dd><p>single <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#BaseExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">BaseExceptionGroup</span></code></a> or <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a> exception.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Since all tasks are descendents of the initial task, one consequence
+of this is that <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a> can't finish until all tasks have
+finished.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>A return statement will not cancel the nursery if it still has tasks running:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+      <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">trio</span><span class="o">.</span><span class="n">sleep</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+         <span class="k">return</span>
+
+<span class="n">trio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This code will wait 5 seconds (for the child task to finish), and then return.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="id6">
+<h3>子任务和取消<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<p><strong>Child tasks and cancellation</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">中文</label><div class="tab-content docutils container">
+<p>在 Trio 中，子任务继承父托儿所的取消作用域。所以在这个示例中，当超时到期时，两个子任务都会被取消：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child1</span><span class="p">)</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>请注意，这里重要的是在调用 <a class="reference internal" href="#trio.open_nursery" title="trio.open_nursery"><code class="xref py py-func docutils literal notranslate"><span class="pre">open_nursery()</span></code></a> 时处于活动状态的作用域，而不是在调用 <code class="docutils literal notranslate"><span class="pre">start_soon</span></code> 时处于活动状态的作用域。因此，下面的超时块实际上什么都不做：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+   <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>  <span class="c1"># 不要这样做！</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>为什么会这样呢？原因在于，<code class="docutils literal notranslate"><span class="pre">start_soon()</span></code> 会在调度新任务开始执行后立即返回。然后，父任务的执行流继续，退出 <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">trio.move_on_after(TIMEOUT):</span></code> 块，此时 Trio 完全忘记了超时。为了让超时应用于子任务，Trio 必须能够确认其关联的取消作用域会持续有效，至少与子任务执行的时间一样长。而 Trio 只有在取消作用域块位于托儿所块之外时，才能确定这一点。</p>
+<p>你可能会想，为什么 Trio 不能仅仅记住“这个任务应该在 <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code> 秒内取消”，即使 <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">trio.move_on_after(TIMEOUT):</span></code> 块已经结束？原因与 <a class="reference internal" href="cancel_timeout.html#cancellation"><span class="std std-ref">如何实现取消</span></a> 相关。回想一下，取消是通过 <cite>Cancelled</cite> 异常表示的，这个异常最终需要由引发它的取消作用域捕获。（否则，这个异常会导致你的整个程序崩溃！）为了能够取消子任务，取消作用域必须能够“看到”它们引发的 <cite>Cancelled</cite> 异常——而这些异常是从 <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">open_nursery()</span></code> 块中抛出的，而不是从对 <code class="docutils literal notranslate"><span class="pre">start_soon()</span></code> 的调用中抛出的。</p>
+<p>如果你希望超时只对某个任务生效而不是其他任务，那么你需要将取消作用域放在该任务的函数内部——例如在这个示例中的 <code class="docutils literal notranslate"><span class="pre">child()</span></code> 函数内。</p>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">英文</label><div class="tab-content docutils container">
+<p>In Trio, child tasks inherit the parent nursery's cancel scopes. So in
+this example, both the child tasks will be cancelled when the timeout
+expires:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child1</span><span class="p">)</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that what matters here is the scopes that were active when
+<a class="reference internal" href="#trio.open_nursery" title="trio.open_nursery"><code class="xref py py-func docutils literal notranslate"><span class="pre">open_nursery()</span></code></a> was called, <em>not</em> the scopes active when
+<code class="docutils literal notranslate"><span class="pre">start_soon</span></code> is called. So for example, the timeout block below does
+nothing at all:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+   <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>  <span class="c1"># don't do this!</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Why is this so? Well, <code class="docutils literal notranslate"><span class="pre">start_soon()</span></code> returns as soon as it has scheduled the new task to start running. The flow of execution in the parent then continues on to exit the <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">trio.move_on_after(TIMEOUT):</span></code> block, at which point Trio forgets about the timeout entirely. In order for the timeout to apply to the child task, Trio must be able to tell that its associated cancel scope will stay open for at least as long as the child task is executing. And Trio can only know that for sure if the cancel scope block is outside the nursery block.</p>
+<p>You might wonder why Trio can't just remember "this task should be cancelled in <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code> seconds", even after the <code class="docutils literal notranslate"><span class="pre">with</span> <span class="pre">trio.move_on_after(TIMEOUT):</span></code> block is gone. The reason has to do with <a class="reference internal" href="cancel_timeout.html#cancellation"><span class="std std-ref">how cancellation is implemented</span></a>. Recall that cancellation is represented by a <cite>Cancelled</cite> exception, which eventually needs to be caught by the cancel scope that caused it. (Otherwise, the exception would take down your whole program!) In order to be able to cancel the child tasks, the cancel scope has to be able to "see" the <cite>Cancelled</cite> exceptions that they raise -- and those exceptions come out of the <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">open_nursery()</span></code> block, not out of the call to <code class="docutils literal notranslate"><span class="pre">start_soon()</span></code>.</p>
+<p>If you want a timeout to apply to one task but not another, then you need to put the cancel scope in that individual task's function -- <code class="docutils literal notranslate"><span class="pre">child()</span></code>, in this example.</p>
+</div>
+</div>
+</section>
+<section id="exceptiongroups">
+<span id="id7"></span><h3>多个子任务中的错误<a class="headerlink" href="#exceptiongroups" title="Link to this heading">¶</a></h3>
+<p><strong>Errors in multiple child tasks</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">中文</label><div class="tab-content docutils container">
+<p>在 Python 中，通常一次只有一件事情发生，这意味着一次只能出错一件事。Trio 没有这种限制。考虑以下代码：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">broken1</span><span class="p">():</span>
+   <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+   <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="s2">"missing"</span><span class="p">]</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">broken2</span><span class="p">():</span>
+   <span class="n">seq</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#range" title="range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+   <span class="k">return</span> <span class="n">seq</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">parent</span><span class="p">():</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken1</span><span class="p">)</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">broken1</span></code> 会引发 <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>，<code class="docutils literal notranslate"><span class="pre">broken2</span></code> 会引发 <code class="docutils literal notranslate"><span class="pre">IndexError</span></code>。显然，<code class="docutils literal notranslate"><span class="pre">parent</span></code> 应该引发某种错误，但是什么错误呢？答案是，这两个异常被分组在一个 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a> 中。 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a> 及其父类 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#BaseExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">BaseExceptionGroup</span></code></a> 用于封装同时抛出的多个异常。</p>
+<p>为了捕获被异常组封装的单个异常，Python 3.11 引入了 <code class="docutils literal notranslate"><span class="pre">except*</span></code> 语句（见 <span class="target" id="index-0"></span><a class="pep reference external" href="https://peps.python.org/pep-0654/"><strong>PEP 654</strong></a>）。它的工作方式如下：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken1</span><span class="p">)</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken2</span><span class="p">)</span>
+<span class="k">except</span><span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyError" title="KeyError"><span class="ne">KeyError</span></a> <span class="k">as</span> <span class="n">excgroup</span><span class="p">:</span>
+   <span class="k">for</span> <span class="n">exc</span> <span class="ow">in</span> <span class="n">excgroup</span><span class="o">.</span><span class="n">exceptions</span><span class="p">:</span>
+         <span class="o">...</span>  <span class="c1"># 处理每个 KeyError</span>
+<span class="k">except</span><span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#IndexError" title="IndexError"><span class="ne">IndexError</span></a> <span class="k">as</span> <span class="n">excgroup</span><span class="p">:</span>
+   <span class="k">for</span> <span class="n">exc</span> <span class="ow">in</span> <span class="n">excgroup</span><span class="o">.</span><span class="n">exceptions</span><span class="p">:</span>
+         <span class="o">...</span>  <span class="c1"># 处理每个 IndexError</span>
+</pre></div>
+</div>
+<p>如果你想重新抛出异常，或者抛出新的异常，也是可以的，但请注意，<code class="docutils literal notranslate"><span class="pre">except*</span></code> 语句中的异常会作为一个新的异常组一起抛出。</p>
+<p>但是如果你还不能使用 Python 3.11，因此还不能使用 <code class="docutils literal notranslate"><span class="pre">except*</span></code> 呢？同样，<cite>ExceptionGroup</cite> 的回溯库 <a class="reference external" href="https://pypi.org/project/exceptiongroup/">exceptiongroup</a> 也允许你通过异常处理回调函数来近似这种行为：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">exceptiongroup</span> <span class="kn">import</span> <span class="n">catch</span>
+
+<span class="k">def</span> <span class="nf">handle_keyerrors</span><span class="p">(</span><span class="n">excgroup</span><span class="p">):</span>
+   <span class="k">for</span> <span class="n">exc</span> <span class="ow">in</span> <span class="n">excgroup</span><span class="o">.</span><span class="n">exceptions</span><span class="p">:</span>
+         <span class="o">...</span>  <span class="c1"># 处理每个 KeyError</span>
+
+<span class="k">def</span> <span class="nf">handle_indexerrors</span><span class="p">(</span><span class="n">excgroup</span><span class="p">):</span>
+   <span class="k">for</span> <span class="n">exc</span> <span class="ow">in</span> <span class="n">excgroup</span><span class="o">.</span><span class="n">exceptions</span><span class="p">:</span>
+         <span class="o">...</span>  <span class="c1"># 处理每个 IndexError</span>
+
+<span class="k">with</span> <span class="n">catch</span><span class="p">({</span>
+   <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyError" title="KeyError"><span class="ne">KeyError</span></a><span class="p">:</span> <span class="n">handle_keyerrors</span><span class="p">,</span>
+   <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#IndexError" title="IndexError"><span class="ne">IndexError</span></a><span class="p">:</span> <span class="n">handle_indexerrors</span>
+<span class="p">}):</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken1</span><span class="p">)</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>这些处理函数的语义与 <code class="docutils literal notranslate"><span class="pre">except*</span></code> 块相同，唯一不同的是设置局部变量。如果你需要在处理函数中设置局部变量，你需要使用 <code class="docutils literal notranslate"><span class="pre">nonlocal</span></code> 关键字在处理函数内声明它们：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_keyerrors</span><span class="p">(</span><span class="n">excgroup</span><span class="p">):</span>
+   <span class="k">nonlocal</span> <span class="n">myflag</span>
+   <span class="n">myflag</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">myflag</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">with</span> <span class="n">catch</span><span class="p">({</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyError" title="KeyError"><span class="ne">KeyError</span></a><span class="p">:</span> <span class="n">handle_keyerrors</span><span class="p">}):</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">英文</label><div class="tab-content docutils container">
+<p>Normally, in Python, only one thing happens at a time, which means
+that only one thing can go wrong at a time. Trio has no such
+limitation. Consider code like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">broken1</span><span class="p">():</span>
+   <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+   <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="s2">"missing"</span><span class="p">]</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">broken2</span><span class="p">():</span>
+   <span class="n">seq</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#range" title="range"><span class="nb">range</span></a><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+   <span class="k">return</span> <span class="n">seq</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">parent</span><span class="p">():</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken1</span><span class="p">)</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">broken1</span></code> raises <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>. <code class="docutils literal notranslate"><span class="pre">broken2</span></code> raises
+<code class="docutils literal notranslate"><span class="pre">IndexError</span></code>. Obviously <code class="docutils literal notranslate"><span class="pre">parent</span></code> should raise some error, but
+what? The answer is that both exceptions are grouped in an <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a>.
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a> and its parent class <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#BaseExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">BaseExceptionGroup</span></code></a> are used to
+encapsulate multiple exceptions being raised at once.</p>
+<p>To catch individual exceptions encapsulated in an exception group, the <code class="docutils literal notranslate"><span class="pre">except*</span></code>
+clause was introduced in Python 3.11 (<span class="target" id="index-1"></span><a class="pep reference external" href="https://peps.python.org/pep-0654/"><strong>PEP 654</strong></a>). Here's how it works:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken1</span><span class="p">)</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken2</span><span class="p">)</span>
+<span class="k">except</span><span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyError" title="KeyError"><span class="ne">KeyError</span></a> <span class="k">as</span> <span class="n">excgroup</span><span class="p">:</span>
+   <span class="k">for</span> <span class="n">exc</span> <span class="ow">in</span> <span class="n">excgroup</span><span class="o">.</span><span class="n">exceptions</span><span class="p">:</span>
+         <span class="o">...</span>  <span class="c1"># handle each KeyError</span>
+<span class="k">except</span><span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#IndexError" title="IndexError"><span class="ne">IndexError</span></a> <span class="k">as</span> <span class="n">excgroup</span><span class="p">:</span>
+   <span class="k">for</span> <span class="n">exc</span> <span class="ow">in</span> <span class="n">excgroup</span><span class="o">.</span><span class="n">exceptions</span><span class="p">:</span>
+         <span class="o">...</span>  <span class="c1"># handle each IndexError</span>
+</pre></div>
+</div>
+<p>If you want to reraise exceptions, or raise new ones, you can do so, but be aware that
+exceptions raised in <code class="docutils literal notranslate"><span class="pre">except*</span></code> sections will be raised together in a new exception
+group.</p>
+<p>But what if you can't use Python 3.11, and therefore <code class="docutils literal notranslate"><span class="pre">except*</span></code>, just yet?
+The same <a class="reference external" href="https://pypi.org/project/exceptiongroup/">exceptiongroup</a> library which backports <cite>ExceptionGroup</cite>  also lets
+you approximate this behavior with exception handler callbacks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">exceptiongroup</span> <span class="kn">import</span> <span class="n">catch</span>
+
+<span class="k">def</span> <span class="nf">handle_keyerrors</span><span class="p">(</span><span class="n">excgroup</span><span class="p">):</span>
+   <span class="k">for</span> <span class="n">exc</span> <span class="ow">in</span> <span class="n">excgroup</span><span class="o">.</span><span class="n">exceptions</span><span class="p">:</span>
+         <span class="o">...</span>  <span class="c1"># handle each KeyError</span>
+
+<span class="k">def</span> <span class="nf">handle_indexerrors</span><span class="p">(</span><span class="n">excgroup</span><span class="p">):</span>
+   <span class="k">for</span> <span class="n">exc</span> <span class="ow">in</span> <span class="n">excgroup</span><span class="o">.</span><span class="n">exceptions</span><span class="p">:</span>
+         <span class="o">...</span>  <span class="c1"># handle each IndexError</span>
+
+<span class="k">with</span> <span class="n">catch</span><span class="p">({</span>
+   <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyError" title="KeyError"><span class="ne">KeyError</span></a><span class="p">:</span> <span class="n">handle_keyerrors</span><span class="p">,</span>
+   <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#IndexError" title="IndexError"><span class="ne">IndexError</span></a><span class="p">:</span> <span class="n">handle_indexerrors</span>
+<span class="p">}):</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken1</span><span class="p">)</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The semantics for the handler functions are equal to <code class="docutils literal notranslate"><span class="pre">except*</span></code> blocks, except for
+setting local variables. If you need to set local variables, you need to declare them
+inside the handler function(s) with the <code class="docutils literal notranslate"><span class="pre">nonlocal</span></code> keyword:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_keyerrors</span><span class="p">(</span><span class="n">excgroup</span><span class="p">):</span>
+   <span class="k">nonlocal</span> <span class="n">myflag</span>
+   <span class="n">myflag</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">myflag</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">with</span> <span class="n">catch</span><span class="p">({</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#KeyError" title="KeyError"><span class="ne">KeyError</span></a><span class="p">:</span> <span class="n">handle_keyerrors</span><span class="p">}):</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+         <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">broken1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="handling-exception-groups">
+<span id="id8"></span><h4>针对多个错误进行设计<a class="headerlink" href="#handling-exception-groups" title="Link to this heading">¶</a></h4>
+<p><strong>Designing for multiple errors</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--1">中文</label><div class="tab-content docutils container">
+<p>结构化并发仍然是一个较新的设计模式，但我们已经识别出几种模式，您（或您的用户）可能希望处理异常组的方式。请注意，最后一种模式，即直接引发 <cite>ExceptionGroup</cite>，是最常见的——而且 nurseries 会自动为您执行此操作。</p>
+<p><strong>首先</strong>，您可能希望“优先处理”某个特定的异常类型，如果该类型的异常出现在异常组中，就只引发该类型的异常。例如：<cite>KeyboardInterrupt</cite> 对于周围的代码具有明确的意义，可以合理地优先于其他类型的错误，无论您有一个还是多个这样的异常，都没有太大区别。</p>
+<p>这种模式通常可以使用装饰器或上下文管理器实现，例如 <a class="reference external" href="https://trio-util.readthedocs.io/en/latest/index.html#trio_util.multi_error_defer_to" title="（在 trio-util v0.8.0-dev）"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio_util.multi_error_defer_to()</span></code></a> 或 <a class="reference external" href="https://trio-util.readthedocs.io/en/latest/index.html#trio_util.defer_to_cancelled" title="（在 trio-util v0.8.0-dev）"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio_util.defer_to_cancelled()</span></code></a>。然而，请注意，重新引发“叶子”异常会丢失附加到 <cite>ExceptionGroup</cite> 本身的 traceback，因此我们不推荐在会向人类展示的错误中使用这种方式。</p>
+<p><strong>第二</strong>，您可能希望将代码中的并发处理视为对用户隐藏的实现细节——例如，将涉及数据发送和接收的协议抽象为一个简单的只接收接口，或实现一个在 <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> 块的生命周期内维护某些后台任务的上下文管理器。</p>
+<p>这里的简单选项是 <code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">MySpecificError</span> <span class="pre">from</span> <span class="pre">group</span></code>，允许用户处理您库中特定的错误。这很简单且可靠，但并不能完全隐藏 nursery。<em>不要</em> 解包单个异常，如果可能会有多个异常，这样做总会导致潜在的 bug 和故障。</p>
+<p>更复杂的选项是确保一次只能发生一个异常。这是 <em>非常难</em> 的，例如，您需要以某种方式处理 <cite>KeyboardInterrupt</cite>，我们强烈建议在出现多个异常的情况时，使用 <code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">PleaseReportBug</span> <span class="pre">from</span> <span class="pre">group</span></code> 作为回退。如果您正在编写一个启动后台任务的上下文管理器，并将控制权交给用户代码，这种方式非常有用，用户代码有效地在 nursery 块的主体内运行。在这种情况下，您可以使用例如 <a class="reference external" href="https://pypi.org/project/outcome/">outcome</a> 库来确保只引发一个异常（来自最终用户代码）；然后，如果后台任务失败，您可以 <code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">SomeInternalError</span></code>，或者如果那是唯一的错误，则解包用户异常。</p>
+<p><strong>第三且最常见的是</strong>，您代码中 nursery 的存在不仅仅是一个实现细节，调用者 <em>应该</em> 准备好处理以 <cite>ExceptionGroup</cite> 形式出现的多个异常，无论是通过 <code class="docutils literal notranslate"><span class="pre">except*</span></code>，手动检查，还是让它传播到 <em>他们的</em> 调用者。因为这种情况非常常见，所以 nurseries 的默认行为就是如此，您无需做任何事情。</p>
+</div>
+<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--2">英文</label><div class="tab-content docutils container">
+<p>Structured concurrency is still a young design pattern, but there are a few patterns
+we've identified for how you (or your users) might want to handle groups of exceptions.
+Note that the final pattern, simply raising an <cite>ExceptionGroup</cite>, is the most common -
+and nurseries automatically do that for you.</p>
+<p><strong>First</strong>, you might want to 'defer to' a particular exception type, raising just that if
+there is any such instance in the group.  For example: <cite>KeyboardInterrupt</cite> has a clear
+meaning for the surrounding code, could reasonably take priority over errors of other
+types, and whether you have one or several of them doesn't really matter.</p>
+<p>This pattern can often be implemented using a decorator or a context manager, such
+as <a class="reference external" href="https://trio-util.readthedocs.io/en/latest/index.html#trio_util.multi_error_defer_to" title="（在 trio-util v0.8.0-dev）"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio_util.multi_error_defer_to()</span></code></a> or <a class="reference external" href="https://trio-util.readthedocs.io/en/latest/index.html#trio_util.defer_to_cancelled" title="（在 trio-util v0.8.0-dev）"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio_util.defer_to_cancelled()</span></code></a>.
+Note however that re-raising a 'leaf' exception will discard whatever part of the
+traceback is attached to the <cite>ExceptionGroup</cite> itself, so we don't recommend this for
+errors that will be presented to humans.</p>
+<p><strong>Second</strong>, you might want to treat the concurrency inside your code as an implementation
+detail which is hidden from your users - for example, abstracting a protocol which
+involves sending and receiving data to a simple receive-only interface, or implementing
+a context manager which maintains some background tasks for the length of the
+<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> block.</p>
+<p>The simple option here is to <code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">MySpecificError</span> <span class="pre">from</span> <span class="pre">group</span></code>, allowing users to
+handle your library-specific error.  This is simple and reliable, but doesn't completely
+hide the nursery.  <em>Do not</em> unwrap single exceptions if there could ever be multiple
+exceptions though; that always ends in latent bugs and then tears.</p>
+<p>The more complex option is to ensure that only one exception can in fact happen at a time.
+This is <em>very hard</em>, for example you'll need to handle <cite>KeyboardInterrupt</cite> somehow, and
+we strongly recommend having a <code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">PleaseReportBug</span> <span class="pre">from</span> <span class="pre">group</span></code> fallback just in case
+you get a group containing more than one exception.
+This is useful when writing a context manager which starts some background tasks, and then
+yields to user code which effectively runs 'inline' in the body of the nursery block.
+In this case, the background tasks can be wrapped with e.g. the <a class="reference external" href="https://pypi.org/project/outcome/">outcome</a> library to ensure that only one exception
+can be raised (from end-user code); and then you can either <code class="docutils literal notranslate"><span class="pre">raise</span> <span class="pre">SomeInternalError</span></code>
+if a background task failed, or unwrap the user exception if that was the only error.</p>
+<p><strong>Third and most often</strong>, the existence of a nursery in your code is not just an
+implementation detail, and callers <em>should</em> be prepared to handle multiple exceptions
+in the form of an <cite>ExceptionGroup</cite>, whether with <code class="docutils literal notranslate"><span class="pre">except*</span></code> or manual inspection
+or by just letting it propagate to <em>their</em> callers.  Because this is so common,
+it's nurseries' default behavior and you don't need to do anything.</p>
+</div>
+</div>
+</section>
+<section id="strict-exception-groups">
+<span id="id9"></span><h4>注意历史: “非严格” ExceptionGroups<a class="headerlink" href="#strict-exception-groups" title="Link to this heading">¶</a></h4>
+<p><strong>Historical Note: "non-strict" ExceptionGroups</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--5-input--1" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--1">中文</label><div class="tab-content docutils container">
+<p>在早期版本的 Trio 中， <code class="docutils literal notranslate"><span class="pre">except*</span></code> 语法还没有被构思出来，我们当时还没有长时间或在大型代码库中使用结构化并发。为了方便起见，一些 API 会引发单个异常，只有在发生两个或更多并发异常时，才会将它们包装成旧的 <code class="docutils literal notranslate"><span class="pre">trio.MultiError</span></code> 类型。</p>
+<p>不幸的是，结果并不好：调用代码通常没有意识到某个函数 <em>可能</em> 会引发 <code class="docutils literal notranslate"><span class="pre">MultiError</span></code>，因此只处理了常见的情况——这导致在测试中一切正常，但在更大的负载下（通常是在生产环境中）崩溃。 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/asyncio-task.html#asyncio.TaskGroup" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.TaskGroup</span></code></a> 从这一经验中吸取了教训， <em>始终</em> 将错误包装成 <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a> ， <code class="docutils literal notranslate"><span class="pre">anyio</span></code> 也如此，从 Trio 0.25 开始，这也是我们的默认行为。</p>
+<p>我们当前支持一个兼容性参数 <code class="docutils literal notranslate"><span class="pre">strict_exception_groups=False</span></code>，用于 <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> 和 <a class="reference internal" href="#trio.open_nursery" title="trio.open_nursery"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.open_nursery()</span></code></a>，它恢复了旧的行为（尽管 <code class="docutils literal notranslate"><span class="pre">MultiError</span></code> 本身已被完全移除）。我们强烈建议新的代码不要使用此选项，并鼓励现有的使用者进行迁移——我们视此选项为废弃，计划在一段时间的文档和运行时警告后移除它。</p>
+</div>
+<input class="tab-input" id="tab-set--5-input--2" name="tab-set--5" type="radio"/><label class="tab-label" for="tab-set--5-input--2">英文</label><div class="tab-content docutils container">
+<p>In early versions of Trio, the <code class="docutils literal notranslate"><span class="pre">except*</span></code> syntax hadn't be dreamt up yet, and we
+hadn't worked with structured concurrency for long or in large codebases.
+As a concession to convenience, some APIs would therefore raise single exceptions,
+and only wrap concurrent exceptions in the old <code class="docutils literal notranslate"><span class="pre">trio.MultiError</span></code> type if there
+were two or more.</p>
+<p>Unfortunately, the results were not good: calling code often didn't realize that
+some function <em>could</em> raise a <code class="docutils literal notranslate"><span class="pre">MultiError</span></code>, and therefore handle only the common
+case - with the result that things would work well in testing, and then crash under
+heavier load (typically in production).  <a class="reference external" href="https://docs.python.org/zh-cn/3/library/asyncio-task.html#asyncio.TaskGroup" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.TaskGroup</span></code></a> learned from this
+experience and <em>always</em> wraps errors into an <a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ExceptionGroup" title="（在 Python v3.13）"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ExceptionGroup</span></code></a>, as does <code class="docutils literal notranslate"><span class="pre">anyio</span></code>,
+and as of Trio 0.25 that's our default behavior too.</p>
+<p>We currently support a compatibility argument <code class="docutils literal notranslate"><span class="pre">strict_exception_groups=False</span></code> to
+<a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.run()</span></code></a> and <a class="reference internal" href="#trio.open_nursery" title="trio.open_nursery"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.open_nursery()</span></code></a>, which restores the old behavior (although
+<code class="docutils literal notranslate"><span class="pre">MultiError</span></code> itself has been fully removed).  We strongly advise against it for
+new code, and encourage existing uses to migrate - we consider the option deprecated
+and plan to remove it after a period of documented and then runtime warnings.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="id10">
+<h3>生成任务而不成为父级<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<p><strong>Spawning tasks without becoming a parent</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--6-input--1" name="tab-set--6" type="radio"/><label class="tab-label" for="tab-set--6-input--1">中文</label><div class="tab-content docutils container">
+<p>有时，对于启动子任务的任务来说，承担监视该任务的责任并不合适。例如，服务器任务可能希望为每个连接启动一个新的任务，但它无法同时监听连接和监督子任务。</p>
+<p>一旦你明白了这一点，解决方案就很简单：并没有要求一个 nursery 对象必须保持在创建它的任务中！我们可以像这样编写代码：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">new_connection_listener</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">nursery</span><span class="p">):</span>
+   <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+      <span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_new_connection</span><span class="p">()</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">server</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">new_connection_listener</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">nursery</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>注意， <code class="docutils literal notranslate"><span class="pre">server</span></code> 打开了一个 nursery，并将其传递给了 <code class="docutils literal notranslate"><span class="pre">new_connection_listener</span></code>，然后 <code class="docutils literal notranslate"><span class="pre">new_connection_listener</span></code> 就能够像“兄弟任务”一样启动新任务。当然，在这个例子中，我们也可以这样写：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">server</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+      <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_new_connection</span><span class="p">()</span>
+            <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>...但有时事情并不那么简单，这个技巧就派上了用场。</p>
+<p>不过有一点需要记住：取消作用域是从 nursery 继承的， <strong>而不是</strong> 从调用 <code class="docutils literal notranslate"><span class="pre">start_soon</span></code> 的任务继承的。所以在这个例子中，超时并不会应用于 <code class="docutils literal notranslate"><span class="pre">child</span></code> （或其他任何任务）：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">do_spawn</span><span class="p">(</span><span class="n">nursery</span><span class="p">):</span>
+   <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>  <span class="c1"># 不要这样做，它没有效果</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+   <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">do_spawn</span><span class="p">,</span> <span class="n">nursery</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--6-input--2" name="tab-set--6" type="radio"/><label class="tab-label" for="tab-set--6-input--2">英文</label><div class="tab-content docutils container">
+<p>Sometimes it doesn't make sense for the task that starts a child to
+take on responsibility for watching it. For example, a server task may
+want to start a new task for each connection, but it can't listen for
+connections and supervise children at the same time.</p>
+<p>The solution here is simple once you see it: there's no requirement
+that a nursery object stay in the task that created it! We can write
+code like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">new_connection_listener</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">nursery</span><span class="p">):</span>
+   <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+      <span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_new_connection</span><span class="p">()</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">server</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">new_connection_listener</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">nursery</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice that <code class="docutils literal notranslate"><span class="pre">server</span></code> opens a nursery and passes it to
+<code class="docutils literal notranslate"><span class="pre">new_connection_listener</span></code>, and then <code class="docutils literal notranslate"><span class="pre">new_connection_listener</span></code> is
+able to start new tasks as "siblings" of itself. Of course, in this
+case, we could just as well have written:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">server</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+      <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_new_connection</span><span class="p">()</span>
+            <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>...but sometimes things aren't so simple, and this trick comes in
+handy.</p>
+<p>One thing to remember, though: cancel scopes are inherited from the
+nursery, <strong>not</strong> from the task that calls <code class="docutils literal notranslate"><span class="pre">start_soon</span></code>. So in this
+example, the timeout does <em>not</em> apply to <code class="docutils literal notranslate"><span class="pre">child</span></code> (or to anything
+else):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">do_spawn</span><span class="p">(</span><span class="n">nursery</span><span class="p">):</span>
+   <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">move_on_after</span><span class="p">(</span><span class="n">TIMEOUT</span><span class="p">):</span>  <span class="c1"># don't do this, it has no effect</span>
+      <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+   <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">do_spawn</span><span class="p">,</span> <span class="n">nursery</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id11">
+<h3>自定义主管<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<p><strong>Custom supervisors</strong></p>
+<div class="tab-set docutils container">
+<input checked="True" class="tab-input" id="tab-set--7-input--1" name="tab-set--7" type="radio"/><label class="tab-label" for="tab-set--7-input--1">中文</label><div class="tab-content docutils container">
+<p>默认的清理逻辑通常足以应对简单情况，但如果你想要一个更复杂的监控器呢？例如，也许你有 <a class="reference external" href="http://learnyousomeerlang.com/supervisors">Erlang envy</a> ，并希望拥有自动重启崩溃任务之类的功能。Trio 本身并不提供这些功能，但你可以在其基础上构建它们；Trio 的目标是强制执行基本的清理规范，然后不干扰你的操作。（具体来说：Trio 不允许你构建一个退出并留下孤儿任务的监控器，如果你因为错误或懒惰而有未处理的异常，Trio 会确保它们传播。）然后，你可以将你精致的监控器封装到一个库中并发布到 PyPI，因为监控器很棘手，没必要每个人都重新写一个。</p>
+<p>例如，这里有一个函数，它接收一个函数列表，所有函数并发执行，并返回第一个完成的任务的结果：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">race</span><span class="p">(</span><span class="o">*</span><span class="n">async_fns</span><span class="p">):</span>
+   <span class="k">if</span> <span class="ow">not</span> <span class="n">async_fns</span><span class="p">:</span>
+      <span class="k">raise</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="ValueError"><span class="ne">ValueError</span></a><span class="p">(</span><span class="s2">"must pass at least one argument"</span><span class="p">)</span>
+
+   <span class="n">winner</span> <span class="o">=</span> <span class="kc">None</span>
+
+   <span class="k">async</span> <span class="k">def</span> <span class="nf">jockey</span><span class="p">(</span><span class="n">async_fn</span><span class="p">,</span> <span class="n">cancel_scope</span><span class="p">):</span>
+      <span class="k">nonlocal</span> <span class="n">winner</span>
+      <span class="n">winner</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_fn</span><span class="p">()</span>
+      <span class="n">cancel_scope</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+      <span class="k">for</span> <span class="n">async_fn</span> <span class="ow">in</span> <span class="n">async_fns</span><span class="p">:</span>
+            <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">jockey</span><span class="p">,</span> <span class="n">async_fn</span><span class="p">,</span> <span class="n">nursery</span><span class="o">.</span><span class="n">cancel_scope</span><span class="p">)</span>
+
+   <span class="k">return</span> <span class="n">winner</span>
+</pre></div>
+</div>
+<p>这段代码通过启动一组任务，每个任务尝试执行它们各自的函数。只要第一个函数完成执行，任务就会将外部作用域中的 <cite>winner</cite> 非局部变量设置为该函数的结果，并使用传入的取消作用域取消其他任务。一旦所有任务被取消（这会退出 nursery 块），就会返回 <cite>winner</cite> 变量。</p>
+<p>在这里，如果一个或多个竞赛函数抛出未处理的异常，Trio 的正常处理机制会启动：它取消其他任务，然后传播该异常。如果你希望有不同的行为，可以通过在 <cite>jockey</cite> 函数中添加一个 <cite>try</cite> 块来捕获异常，并按你的需求处理这些异常。</p>
+</div>
+<input class="tab-input" id="tab-set--7-input--2" name="tab-set--7" type="radio"/><label class="tab-label" for="tab-set--7-input--2">英文</label><div class="tab-content docutils container">
+<p>The default cleanup logic is often sufficient for simple cases, but
+what if you want a more sophisticated supervisor? For example, maybe
+you have <a class="reference external" href="http://learnyousomeerlang.com/supervisors">Erlang envy</a>
+and want features like automatic restart of crashed tasks. Trio itself
+doesn't provide these kinds of features, but you can build them on
+top; Trio's goal is to enforce basic hygiene and then get out of your
+way. (Specifically: Trio won't let you build a supervisor that exits
+and leaves orphaned tasks behind, and if you have an unhandled
+exception due to bugs or laziness then Trio will make sure they
+propagate.) And then you can wrap your fancy supervisor up in a
+library and put it on PyPI, because supervisors are tricky and there's
+no reason everyone should have to write their own.</p>
+<p>For example, here's a function that takes a list of functions, runs
+them all concurrently, and returns the result from the one that
+finishes first:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">race</span><span class="p">(</span><span class="o">*</span><span class="n">async_fns</span><span class="p">):</span>
+   <span class="k">if</span> <span class="ow">not</span> <span class="n">async_fns</span><span class="p">:</span>
+      <span class="k">raise</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/zh-cn/3/library/exceptions.html#ValueError" title="ValueError"><span class="ne">ValueError</span></a><span class="p">(</span><span class="s2">"must pass at least one argument"</span><span class="p">)</span>
+
+   <span class="n">winner</span> <span class="o">=</span> <span class="kc">None</span>
+
+   <span class="k">async</span> <span class="k">def</span> <span class="nf">jockey</span><span class="p">(</span><span class="n">async_fn</span><span class="p">,</span> <span class="n">cancel_scope</span><span class="p">):</span>
+      <span class="k">nonlocal</span> <span class="n">winner</span>
+      <span class="n">winner</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_fn</span><span class="p">()</span>
+      <span class="n">cancel_scope</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+   <span class="k">async</span> <span class="k">with</span> <span class="n">trio</span><span class="o">.</span><span class="n">open_nursery</span><span class="p">()</span> <span class="k">as</span> <span class="n">nursery</span><span class="p">:</span>
+      <span class="k">for</span> <span class="n">async_fn</span> <span class="ow">in</span> <span class="n">async_fns</span><span class="p">:</span>
+            <span class="n">nursery</span><span class="o">.</span><span class="n">start_soon</span><span class="p">(</span><span class="n">jockey</span><span class="p">,</span> <span class="n">async_fn</span><span class="p">,</span> <span class="n">nursery</span><span class="o">.</span><span class="n">cancel_scope</span><span class="p">)</span>
+
+   <span class="k">return</span> <span class="n">winner</span>
+</pre></div>
+</div>
+<p>This works by starting a set of tasks which each try to run their
+function. As soon as the first function completes its execution, the task will set the nonlocal variable <code class="docutils literal notranslate"><span class="pre">winner</span></code>
+from the outer scope to the result of the function, and cancel the other tasks using the passed in cancel scope. Once all tasks
+have been cancelled (which exits the nursery block), the variable <code class="docutils literal notranslate"><span class="pre">winner</span></code> will be returned.</p>
+<p>Here if one or more of the racing functions raises an unhandled
+exception then Trio's normal handling kicks in: it cancels the others
+and then propagates the exception. If you want different behavior, you
+can get that by adding a <code class="docutils literal notranslate"><span class="pre">try</span></code> block to the <code class="docutils literal notranslate"><span class="pre">jockey</span></code> function to
+catch exceptions and handle them however you like.</p>
+</div>
+</div>
+</section>
+<section id="api">
+<h3>与任务相关的 API 详细信息<a class="headerlink" href="#api" title="Link to this heading">¶</a></h3>
+<p><strong>Task-related API details</strong></p>
+<section id="id12">
+<h4>托儿所 API<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h4>
+<p><strong>The nursery API</strong></p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trio.open_nursery">
+<em class="property"><span class="pre">async</span> <span class="pre">with</span> </em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">open_nursery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict_exception_groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><em class="property"><span class="pre"> as</span> <span class="pre">nursery</span></em><a class="headerlink" href="#trio.open_nursery" title="Link to this definition">¶</a></dt>
+<dd><p>Returns an async context manager which must be used to create a
+new <cite>Nursery</cite>.</p>
+<p>It does not block on entry; on exit it blocks until all child tasks
+have exited. If no child tasks are running on exit, it will insert a
+schedule point (but no cancellation point) - equivalent to
+<a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.cancel_shielded_checkpoint" title="trio.lowlevel.cancel_shielded_checkpoint"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.lowlevel.cancel_shielded_checkpoint()</span></code></a>. This means a nursery
+is never the source of a cancellation exception, it only propagates it
+from sub-tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>strict_exception_groups</strong> (<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#bool" title="（在 Python v3.13）"><em>bool</em></a>) -- Unless set to False, even a single raised exception
+will be wrapped in an exception group. If not specified, uses the value passed
+to <a class="reference internal" href="run.html#trio.run" title="trio.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a>, which defaults to true. Setting it to False will be deprecated
+and ultimately removed in a future version of Trio.</p>
+</dd>
+<dt class="field-even">返回类型<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAsyncContextManager</span></code></a>[<a class="reference internal" href="#trio.Nursery" title="trio.Nursery"><code class="xref py py-class docutils literal notranslate"><span class="pre">Nursery</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="trio.Nursery">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">Nursery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_exception_groups</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Nursery" title="Link to this definition">¶</a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functions.html#object" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A context which may be used to spawn (or cancel) child tasks.</p>
+<p>Not constructed directly, use <cite>open_nursery</cite> instead.</p>
+<p>The nursery will remain open until all child tasks have completed,
+or until it is cancelled, at which point it will cancel all its
+remaining child tasks and close.</p>
+<p>Nurseries ensure the absence of orphaned Tasks, since all running
+tasks will belong to an open Nursery.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.Nursery.cancel_scope">
+<span class="sig-name descname"><span class="pre">cancel_scope</span></span><a class="headerlink" href="#trio.Nursery.cancel_scope" title="Link to this definition">¶</a></dt>
+<dd><p>Creating a nursery also implicitly creates a cancellation scope,
+which is exposed as the <a class="reference internal" href="#trio.Nursery.cancel_scope" title="trio.Nursery.cancel_scope"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cancel_scope</span></code></a> attribute. This is
+used internally to implement the logic where if an error occurs
+then <code class="docutils literal notranslate"><span class="pre">__aexit__</span></code> cancels all children, but you can use it for
+other things, e.g. if you want to explicitly cancel all children
+in response to some external event.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Nursery.start">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">async_fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Nursery.start" title="Link to this definition">¶</a></dt>
+<dd><p>Creates and initializes a child task.</p>
+<p>Like <a class="reference internal" href="#id13" title="trio.Nursery.start_soon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_soon()</span></code></a>, but blocks until the new task has
+finished initializing itself, and optionally returns some
+information from it.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">async_fn</span></code> must accept a <code class="docutils literal notranslate"><span class="pre">task_status</span></code> keyword argument,
+and it must make sure that it (or someone) eventually calls
+<a class="reference internal" href="#trio.TaskStatus.started" title="trio.TaskStatus.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">task_status.started()</span></code></a>.</p>
+<p>The conventional way to define <code class="docutils literal notranslate"><span class="pre">async_fn</span></code> is like:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">async_fn</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">task_status</span><span class="o">=</span><span class="n">trio</span><span class="o">.</span><span class="n">TASK_STATUS_IGNORED</span><span class="p">):</span>
+    <span class="o">...</span>  <span class="c1"># Caller is blocked waiting for this code to run</span>
+    <span class="n">task_status</span><span class="o">.</span><span class="n">started</span><span class="p">()</span>
+    <span class="o">...</span>  <span class="c1"># This async code can be interleaved with the caller</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#trio.trio.TASK_STATUS_IGNORED" title="trio.trio.TASK_STATUS_IGNORED"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trio.TASK_STATUS_IGNORED</span></code></a> is a special global object with
+a do-nothing <code class="docutils literal notranslate"><span class="pre">started</span></code> method. This way your function supports
+being called either like <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">nursery.start(async_fn,</span> <span class="pre">arg1,</span>
+<span class="pre">arg2)</span></code> or directly like <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">async_fn(arg1,</span> <span class="pre">arg2)</span></code>, and
+either way it can call <a class="reference internal" href="#trio.TaskStatus.started" title="trio.TaskStatus.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">task_status.started()</span></code></a>
+without worrying about which mode it's in. Defining your function like
+this will make it obvious to readers that it supports being used
+in both modes.</p>
+<p>Before the child calls <a class="reference internal" href="#trio.TaskStatus.started" title="trio.TaskStatus.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">task_status.started()</span></code></a>,
+it's effectively run underneath the call to <a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a>: if it
+raises an exception then that exception is reported by
+<a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a>, and does <em>not</em> propagate out of the nursery. If
+<a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a> is cancelled, then the child task is also
+cancelled.</p>
+<p>When the child calls <a class="reference internal" href="#trio.TaskStatus.started" title="trio.TaskStatus.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">task_status.started()</span></code></a>,
+it's moved out from underneath <a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a> and into the given nursery.</p>
+<p>If the child task passes a value to <a class="reference internal" href="#trio.TaskStatus.started" title="trio.TaskStatus.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">task_status.started(value)</span></code></a>,
+then <a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a> returns this value. Otherwise, it returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a> | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.Nursery.start_soon">
+<span class="sig-name descname"><span class="pre">start_soon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">async_fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.Nursery.start_soon" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a child task, scheduling <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">async_fn(*args)</span></code>.</p>
+<p>If you want to run a function and immediately wait for its result,
+then you don't need a nursery; just use <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">async_fn(*args)</span></code>.
+If you want to wait for the task to initialize itself before
+continuing, see <a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a>, the other fundamental method for
+creating concurrent tasks in Trio.</p>
+<p>Note that this is <em>not</em> an async function and you don't use await
+when calling it. It sets up the new task, but then returns
+immediately, <em>before</em> the new task has a chance to do anything.
+New tasks may start running in any order, and at any checkpoint the
+scheduler chooses - at latest when the nursery is waiting to exit.</p>
+<p>It's possible to pass a nursery object into another task, which
+allows that task to start new child tasks in the first task's
+nursery.</p>
+<p>The child task inherits its parent nursery's cancel scopes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>async_fn</strong> (<span class="sphinx_autodoc_typehints-type">Callable[[Unpack[PosArgT]], Awaitable[object]]</span>) -- An async callable.</p></li>
+<li><p><strong>args</strong> (<span class="sphinx_autodoc_typehints-type">Unpack[PosArgT]</span>) -- Positional arguments for <code class="docutils literal notranslate"><span class="pre">async_fn</span></code>. If you want
+to pass keyword arguments, use
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functools.html#functools.partial" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">functools.partial()</span></code></a>.</p></li>
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type">object</span>) -- The name for this task. Only used for
+debugging/introspection
+(e.g. <code class="docutils literal notranslate"><span class="pre">repr(task_obj)</span></code>). If this isn't a string,
+<a class="reference internal" href="#id13" title="trio.Nursery.start_soon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_soon()</span></code></a> will try to make it one. A
+common use case is if you're wrapping a function
+before spawning a new task, you might pass the
+original function as the <code class="docutils literal notranslate"><span class="pre">name=</span></code> to make
+debugging easier.</p></li>
+</ul>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="（在 Python v3.13）"><strong>RuntimeError</strong></a> -- If this nursery is no longer open
+    (i.e. its <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> block has
+    exited).</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">None</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Nursery.child_tasks">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">child_tasks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/zh-cn/3/library/stdtypes.html#frozenset" title="（在 Python v3.13）"><span class="pre">frozenset</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.Task" title="trio.lowlevel.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#trio.Nursery.child_tasks" title="Link to this definition">¶</a></dt>
+<dd><p>Contains all the child <a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.Task" title="trio.lowlevel.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>
+objects which are still running.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(<cite>frozenset</cite>)</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="trio.Nursery.parent_task">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_task</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../reference-lowlevel.html#trio.lowlevel.Task" title="trio.lowlevel.Task"><span class="pre">Task</span></a></em><a class="headerlink" href="#trio.Nursery.parent_task" title="Link to this definition">¶</a></dt>
+<dd><p>The Task that opened this nursery.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(<cite>~trio.lowlevel.Task</cite>)</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">await</span> </em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">async_fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd><p>Creates and initializes a child task.</p>
+<p>Like <a class="reference internal" href="#id13" title="trio.Nursery.start_soon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_soon()</span></code></a>, but blocks until the new task has
+finished initializing itself, and optionally returns some
+information from it.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">async_fn</span></code> must accept a <code class="docutils literal notranslate"><span class="pre">task_status</span></code> keyword argument,
+and it must make sure that it (or someone) eventually calls
+<a class="reference internal" href="#trio.TaskStatus.started" title="trio.TaskStatus.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">task_status.started()</span></code></a>.</p>
+<p>The conventional way to define <code class="docutils literal notranslate"><span class="pre">async_fn</span></code> is like:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">async_fn</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">task_status</span><span class="o">=</span><span class="n">trio</span><span class="o">.</span><span class="n">TASK_STATUS_IGNORED</span><span class="p">):</span>
+    <span class="o">...</span>  <span class="c1"># Caller is blocked waiting for this code to run</span>
+    <span class="n">task_status</span><span class="o">.</span><span class="n">started</span><span class="p">()</span>
+    <span class="o">...</span>  <span class="c1"># This async code can be interleaved with the caller</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#trio.trio.TASK_STATUS_IGNORED" title="trio.trio.TASK_STATUS_IGNORED"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trio.TASK_STATUS_IGNORED</span></code></a> is a special global object with
+a do-nothing <code class="docutils literal notranslate"><span class="pre">started</span></code> method. This way your function supports
+being called either like <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">nursery.start(async_fn,</span> <span class="pre">arg1,</span>
+<span class="pre">arg2)</span></code> or directly like <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">async_fn(arg1,</span> <span class="pre">arg2)</span></code>, and
+either way it can call <a class="reference internal" href="#trio.TaskStatus.started" title="trio.TaskStatus.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">task_status.started()</span></code></a>
+without worrying about which mode it's in. Defining your function like
+this will make it obvious to readers that it supports being used
+in both modes.</p>
+<p>Before the child calls <a class="reference internal" href="#trio.TaskStatus.started" title="trio.TaskStatus.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">task_status.started()</span></code></a>,
+it's effectively run underneath the call to <a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a>: if it
+raises an exception then that exception is reported by
+<a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a>, and does <em>not</em> propagate out of the nursery. If
+<a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a> is cancelled, then the child task is also
+cancelled.</p>
+<p>When the child calls <a class="reference internal" href="#trio.TaskStatus.started" title="trio.TaskStatus.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">task_status.started()</span></code></a>,
+it's moved out from underneath <a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a> and into the given nursery.</p>
+<p>If the child task passes a value to <a class="reference internal" href="#trio.TaskStatus.started" title="trio.TaskStatus.started"><code class="xref py py-meth docutils literal notranslate"><span class="pre">task_status.started(value)</span></code></a>,
+then <a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a> returns this value. Otherwise, it returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/typing.html#typing.Any" title="（在 Python v3.13）"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a> | <a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">start_soon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">async_fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id13" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a child task, scheduling <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">async_fn(*args)</span></code>.</p>
+<p>If you want to run a function and immediately wait for its result,
+then you don't need a nursery; just use <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">async_fn(*args)</span></code>.
+If you want to wait for the task to initialize itself before
+continuing, see <a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a>, the other fundamental method for
+creating concurrent tasks in Trio.</p>
+<p>Note that this is <em>not</em> an async function and you don't use await
+when calling it. It sets up the new task, but then returns
+immediately, <em>before</em> the new task has a chance to do anything.
+New tasks may start running in any order, and at any checkpoint the
+scheduler chooses - at latest when the nursery is waiting to exit.</p>
+<p>It's possible to pass a nursery object into another task, which
+allows that task to start new child tasks in the first task's
+nursery.</p>
+<p>The child task inherits its parent nursery's cancel scopes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>async_fn</strong> (<span class="sphinx_autodoc_typehints-type">Callable[[Unpack[PosArgT]], Awaitable[object]]</span>) -- An async callable.</p></li>
+<li><p><strong>args</strong> (<span class="sphinx_autodoc_typehints-type">Unpack[PosArgT]</span>) -- Positional arguments for <code class="docutils literal notranslate"><span class="pre">async_fn</span></code>. If you want
+to pass keyword arguments, use
+<a class="reference external" href="https://docs.python.org/zh-cn/3/library/functools.html#functools.partial" title="（在 Python v3.13）"><code class="xref py py-func docutils literal notranslate"><span class="pre">functools.partial()</span></code></a>.</p></li>
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type">object</span>) -- The name for this task. Only used for
+debugging/introspection
+(e.g. <code class="docutils literal notranslate"><span class="pre">repr(task_obj)</span></code>). If this isn't a string,
+<a class="reference internal" href="#id13" title="trio.Nursery.start_soon"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_soon()</span></code></a> will try to make it one. A
+common use case is if you're wrapping a function
+before spawning a new task, you might pass the
+original function as the <code class="docutils literal notranslate"><span class="pre">name=</span></code> to make
+debugging easier.</p></li>
+</ul>
+</dd>
+<dt class="field-even">抛出<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/zh-cn/3/library/exceptions.html#RuntimeError" title="（在 Python v3.13）"><strong>RuntimeError</strong></a> -- If this nursery is no longer open
+    (i.e. its <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> block has
+    exited).</p>
+</dd>
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">None</span></p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="trio.trio.TASK_STATUS_IGNORED">
+<span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">TASK_STATUS_IGNORED</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#trio.TaskStatus" title="trio.TaskStatus"><span class="pre">TaskStatus</span></a></em><a class="headerlink" href="#trio.trio.TASK_STATUS_IGNORED" title="Link to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Nursery.start()</span></code></a>.</p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="trio.TaskStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trio.</span></span><span class="sig-name descname"><span class="pre">TaskStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Protocol[StatusT]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.TaskStatus" title="Link to this definition">¶</a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/zh-cn/3/library/typing.html#typing.Protocol" title="（在 Python v3.13）"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a>[<a class="typevarref reference external" href="https://docs.python.org/zh-cn/3/library/typing.html#typing.TypeVar" title="TypeVar, （在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StatusT_contra</span></code></a>]</p>
+<p>The interface provided by <a class="reference internal" href="#id0" title="trio.Nursery.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Nursery.start()</span></code></a> to the spawned task.</p>
+<p>This is provided via the <code class="docutils literal notranslate"><span class="pre">task_status</span></code> keyword-only parameter.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="trio.TaskStatus.started">
+<span class="sig-name descname"><span class="pre">started</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trio.TaskStatus.started" title="Link to this definition">¶</a></dt>
+<dd><p>Tasks call this method to indicate that they have initialized.</p>
+<p>See <cite>nursery.start() &lt;trio.Nursery.start&gt;</cite> for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">返回类型<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/zh-cn/3/library/constants.html#None" title="（在 Python v3.13）"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</section>
+</section>
+</section>
+</section>
+</article>
+</div>
+<footer>
+<div class="related-pages">
+<a class="next-page" href="task_local_storeage.html">
+<div class="page-info">
+<div class="context">
+<span>Next</span>
+</div>
+<div class="title">任务存储</div>
+</div>
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+</a>
+<a class="prev-page" href="cancel_timeout.html">
+<svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+<div class="page-info">
+<div class="context">
+<span>Previous</span>
+</div>
+<div class="title">取消和超时</div>
+</div>
+</a>
+</div>
+<div class="bottom-of-page">
+<div class="left-details">
+<div class="copyright">
+                Copyright © 2017, Nathaniel J. Smith
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+</div>
+<div class="right-details">
+<div class="icons">
+<a aria-label="GitHub" class="muted-link" href="https://github.com/hellowac/trio-zh-cn">
+<svg fill="currentColor" stroke="currentColor" stroke-width="0" viewbox="0 0 16 16">
+<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z" fill-rule="evenodd"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<aside class="toc-drawer">
+<div class="toc-sticky toc-scroll">
+<div class="toc-title-container">
+<span class="toc-title">
+            On this page
+          </span>
+</div>
+<div class="toc-tree-container">
+<div class="toc-tree">
+<ul>
+<li><a class="reference internal" href="#">任务</a><ul>
+<li><a class="reference internal" href="#id2">任务让您可以同时执行多项操作</a><ul>
+<li><a class="reference internal" href="#id3">托儿所和生成</a></li>
+<li><a class="reference internal" href="#id6">子任务和取消</a></li>
+<li><a class="reference internal" href="#exceptiongroups">多个子任务中的错误</a><ul>
+<li><a class="reference internal" href="#handling-exception-groups">针对多个错误进行设计</a></li>
+<li><a class="reference internal" href="#strict-exception-groups">注意历史: “非严格” ExceptionGroups</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id10">生成任务而不成为父级</a></li>
+<li><a class="reference internal" href="#id11">自定义主管</a></li>
+<li><a class="reference internal" href="#api">与任务相关的 API 详细信息</a><ul>
+<li><a class="reference internal" href="#id12">托儿所 API</a><ul>
+<li><a class="reference internal" href="#trio.open_nursery"><code class="docutils literal notranslate"><span class="pre">open_nursery()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Nursery"><code class="docutils literal notranslate"><span class="pre">Nursery</span></code></a><ul>
+<li><a class="reference internal" href="#trio.Nursery.cancel_scope"><code class="docutils literal notranslate"><span class="pre">Nursery.cancel_scope</span></code></a></li>
+<li><a class="reference internal" href="#trio.Nursery.start"><code class="docutils literal notranslate"><span class="pre">Nursery.start()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Nursery.start_soon"><code class="docutils literal notranslate"><span class="pre">Nursery.start_soon()</span></code></a></li>
+<li><a class="reference internal" href="#trio.Nursery.child_tasks"><code class="docutils literal notranslate"><span class="pre">Nursery.child_tasks</span></code></a></li>
+<li><a class="reference internal" href="#trio.Nursery.parent_task"><code class="docutils literal notranslate"><span class="pre">Nursery.parent_task</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Nursery.start()</span></code></a></li>
+<li><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">Nursery.start_soon()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#trio.trio.TASK_STATUS_IGNORED"><code class="docutils literal notranslate"><span class="pre">trio.TASK_STATUS_IGNORED</span></code></a></li>
+<li><a class="reference internal" href="#trio.TaskStatus"><code class="docutils literal notranslate"><span class="pre">TaskStatus</span></code></a><ul>
+<li><a class="reference internal" href="#trio.TaskStatus.started"><code class="docutils literal notranslate"><span class="pre">TaskStatus.started()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div><script src="../_static/documentation_options.js?v=d2451d57"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+<script src="../_static/tabs.js?v=3ee01567"></script>
+<script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+<script src="../_static/copybutton.js?v=f281be69"></script>
+<script src="../_static/translations.js?v=beaddf03"></script>
+</body>
+</html>
