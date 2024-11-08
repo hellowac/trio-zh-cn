@@ -109,3 +109,4 @@ urllib3==2.2.3
 furo
 sphinx-inline-tabs
 sphinx-copybutton
+sphinx-autodoc-typehints
