@@ -172,18 +172,19 @@ autodoc_type_aliases = {
 # built documents.
 #
 # The short X.Y version.
-# import trio
+import trio
 
-# version = trio.__version__
-# # The full version, including alpha/beta/rc tags.
-# release = version
+version = trio.__version__
+# The full version, including alpha/beta/rc tags.
+release = version
 
 
 ##
 
-v = parse(get_version("trio"))
-version = v.base_version
-release = v.public
+
+# v = parse(get_version("trio"))
+# version = v.base_version
+# release = v.public
 
 language = "zh_CN"
 
