@@ -1,5 +1,3 @@
-.. module:: trio
-
 .. _interactive debugging:
 
 

@@ -1,5 +1,3 @@
-.. module:: trio
-
 .. _threads:
 
 线程（如果必须）

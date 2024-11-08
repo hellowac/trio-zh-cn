@@ -1,5 +1,7 @@
-Release history
+发布历史
 ===============
+
+**Release history**
 
 .. currentmodule:: trio
 
@@ -8,34 +10,73 @@ Release history
 Trio 0.27.0 (2024-10-17)
 ------------------------
 
-Breaking changes
+重大变更
 ~~~~~~~~~~~~~~~~
 
-- :func:`trio.move_on_after` and :func:`trio.fail_after` previously set the deadline relative to initialization time, instead of more intuitively upon entering the context manager. This might change timeouts if a program relied on this behavior. If you want to restore previous behavior you should instead use ``trio.move_on_at(trio.current_time() + ...)``.
-  flake8-async has a new rule to catch this, in case you're supporting older trio versions. See :ref:`ASYNC122`. (`#2512 <https://github.com/python-trio/trio/issues/2512>`__)
+**Breaking changes**
+
+.. tab:: 中文
+
+    - :func:`trio.move_on_after` 和 :func:`trio.fail_after` 之前是相对于初始化时间设置截止时间的，而不是更直观的在进入上下文管理器时设置。如果程序依赖于这种行为，这可能会导致超时发生变化。如果您想恢复之前的行为，应改为使用 ``trio.move_on_at(trio.current_time() + ...)``。flake8-async 现在有一条新规则来捕捉这个问题，以防您需要支持旧版本的 Trio。参见 :ref:`ASYNC122`。 (`#2512 <https://github.com/python-trio/trio/issues/2512>`__)  
+
+.. tab:: 英文
+
+    - :func:`trio.move_on_after` and :func:`trio.fail_after` previously set the deadline relative to initialization time, instead of more intuitively upon entering the context manager. This might change timeouts if a program relied on this behavior. If you want to restore previous behavior you should instead use ``trio.move_on_at(trio.current_time() + ...)``. flake8-async has a new rule to catch this, in case you're supporting older trio versions. See :ref:`ASYNC122`. (`#2512 <https://github.com/python-trio/trio/issues/2512>`__)
 
 
-Features
+功能
 ~~~~~~~~
 
-- :meth:`CancelScope.relative_deadline` and :meth:`CancelScope.is_relative` added, as well as a ``relative_deadline`` parameter to ``__init__``. This allows initializing scopes ahead of time, but where the specified relative deadline doesn't count down until the scope is entered. (`#2512 <https://github.com/python-trio/trio/issues/2512>`__)
-- :class:`trio.Lock` and :class:`trio.StrictFIFOLock` will now raise :exc:`trio.BrokenResourceError` when :meth:`trio.Lock.acquire` would previously stall due to the owner of the lock exiting without releasing the lock. (`#3035 <https://github.com/python-trio/trio/issues/3035>`__)
-- `trio.move_on_at`, `trio.move_on_after`, `trio.fail_at` and `trio.fail_after` now accept *shield* as a keyword argument. If specified, it provides an initial value for the `~trio.CancelScope.shield` attribute of the `trio.CancelScope` object created by the context manager. (`#3052 <https://github.com/python-trio/trio/issues/3052>`__)
-- Added :func:`trio.lowlevel.add_parking_lot_breaker` and :func:`trio.lowlevel.remove_parking_lot_breaker` to allow creating custom lock/semaphore implementations that will break their underlying parking lot if a task exits unexpectedly. :meth:`trio.lowlevel.ParkingLot.break_lot` is also added, to allow breaking a parking lot intentionally. (`#3081 <https://github.com/python-trio/trio/issues/3081>`__)
+**Features**
+
+.. tab:: 中文
+
+    - 添加了 :meth:`CancelScope.relative_deadline` 和 :meth:`CancelScope.is_relative`，以及 ``__init__`` 中的 ``relative_deadline`` 参数。这允许提前初始化作用域，但指定的相对截止时间不会在进入作用域之前倒计时。 (`#2512 <https://github.com/python-trio/trio/issues/2512>`__)
+
+    - :class:`trio.Lock` 和 :class:`trio.StrictFIFOLock` 现在会在 :meth:`trio.Lock.acquire` 由于锁的所有者退出而未释放锁时，抛出 :exc:`trio.BrokenResourceError`。 (`#3035 <https://github.com/python-trio/trio/issues/3035>`__)
+
+    - :func:`trio.move_on_at`、 :func:`trio.move_on_after`、 :func:`trio.fail_at` 和 :func:`trio.fail_after` 现在接受 *shield* 作为关键字参数。如果指定，它会为由上下文管理器创建的 :func:`trio.CancelScope` 对象的 :func:`~trio.CancelScope.shield` 属性提供初始值。 (`#3052 <https://github.com/python-trio/trio/issues/3052>`__)
+
+    - 添加了 :func:`trio.lowlevel.add_parking_lot_breaker` 和 :func:`trio.lowlevel.remove_parking_lot_breaker`，以允许创建自定义的锁/信号量实现，如果任务意外退出，将打破其底层的停车场。还添加了 :meth:`trio.lowlevel.ParkingLot.break_lot`，以便有意打破停车场。 (`#3081 <https://github.com/python-trio/trio/issues/3081>`__)
+
+.. tab:: 英文
+
+    - :meth:`CancelScope.relative_deadline` and :meth:`CancelScope.is_relative` added, as well as a ``relative_deadline`` parameter to ``__init__``. This allows initializing scopes ahead of time, but where the specified relative deadline doesn't count down until the scope is entered. (`#2512 <https://github.com/python-trio/trio/issues/2512>`__)
+    - :class:`trio.Lock` and :class:`trio.StrictFIFOLock` will now raise :exc:`trio.BrokenResourceError` when :meth:`trio.Lock.acquire` would previously stall due to the owner of the lock exiting without releasing the lock. (`#3035 <https://github.com/python-trio/trio/issues/3035>`__)
+    - :func:`trio.move_on_at`, :func:`trio.move_on_after`, :func:`trio.fail_at` and :func:`trio.fail_after` now accept *shield* as a keyword argument. If specified, it provides an initial value for the :func:`~trio.CancelScope.shield` attribute of the `trio.CancelScope` object created by the context manager. (`#3052 <https://github.com/python-trio/trio/issues/3052>`__)
+    - Added :func:`trio.lowlevel.add_parking_lot_breaker` and :func:`trio.lowlevel.remove_parking_lot_breaker` to allow creating custom lock/semaphore implementations that will break their underlying parking lot if a task exits unexpectedly. :meth:`trio.lowlevel.ParkingLot.break_lot` is also added, to allow breaking a parking lot intentionally. (`#3081 <https://github.com/python-trio/trio/issues/3081>`__)
 
 
-Bugfixes
+bug修复
 ~~~~~~~~
 
-- Allow sockets to bind any ``os.PathLike`` object. (`#3041 <https://github.com/python-trio/trio/issues/3041>`__)
-- Update ``trio.lowlevel.open_process``'s documentation to allow bytes. (`#3076 <https://github.com/python-trio/trio/issues/3076>`__)
-- Update :func:`trio.sleep_forever` to be `NoReturn`. (`#3095 <https://github.com/python-trio/trio/issues/3095>`__)
+**Bugfixes**
+
+.. tab:: 中文
+
+    - 允许套接字绑定任何 ``os.PathLike`` 对象。 (`#3041 <https://github.com/python-trio/trio/issues/3041>`__)
+    - 更新 ``trio.lowlevel.open_process`` 的文档，允许使用字节类型。 (`#3076 <https://github.com/python-trio/trio/issues/3076>`__)
+    - 更新 :func:`trio.sleep_forever` 为 `NoReturn` 类型。 (`#3095 <https://github.com/python-trio/trio/issues/3095>`__)
+
+.. tab:: 英文
+
+    - Allow sockets to bind any ``os.PathLike`` object. (`#3041 <https://github.com/python-trio/trio/issues/3041>`__)
+    - Update ``trio.lowlevel.open_process``'s documentation to allow bytes. (`#3076 <https://github.com/python-trio/trio/issues/3076>`__)
+    - Update :func:`trio.sleep_forever` to be `NoReturn`. (`#3095 <https://github.com/python-trio/trio/issues/3095>`__)
 
 
-Improved documentation
+改进文档
 ~~~~~~~~~~~~~~~~~~~~~~
 
-- Add docstrings for memory channels' ``statistics()`` and ``aclose`` methods. (`#3101 <https://github.com/python-trio/trio/issues/3101>`__)
+**Improved documentation**
+
+.. tab:: 中文
+
+    - 为内存通道的 ``statistics()`` 和 ``aclose`` 方法添加了文档字符串。 (`#3101 <https://github.com/python-trio/trio/issues/3101>`__)
+
+.. tab:: 英文
+
+    - Add docstrings for memory channels' ``statistics()`` and ``aclose`` methods. (`#3101 <https://github.com/python-trio/trio/issues/3101>`__)
 
 
 Trio 0.26.2 (2024-08-08)

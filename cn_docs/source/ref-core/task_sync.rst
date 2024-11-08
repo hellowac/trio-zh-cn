@@ -3,7 +3,7 @@
 .. _synchronization:
 
 任务同步和通信
-============
+================
 
 **Synchronizing and communicating between tasks**
 

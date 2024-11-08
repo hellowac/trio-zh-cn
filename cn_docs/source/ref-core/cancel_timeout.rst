@@ -161,6 +161,8 @@
 
 **Cancellation semantics**
 
+.. _blocking-cleanup-example:
+
 .. tab:: 中文
 
    您可以自由嵌套取消块，每个 :exc:`Cancelled` 异常“知道”它属于哪个块。只要您不停止它，异常将继续传播，直到它到达引发它的块，在那时它会自动停止。
@@ -195,8 +197,6 @@
       print(cancel_scope.cancelled_caught)  # prints "True"
 
    ``cancel_scope`` 对象还允许您检查或调整该作用域的截止时间，显式触发取消而不等待截止时间，检查该作用域是否已被取消，等等——有关详细信息，请参见 :class:`CancelScope` 下文。
-
-   .. _blocking-cleanup-example:
 
    Trio 中的取消是“级别触发的”，这意味着一旦一个块被取消，*所有* 可取消的操作都将继续引发 :exc:`Cancelled` 异常。这有助于避免一些与资源清理相关的问题。例如，假设我们有一个函数，它连接到远程服务器并发送一些消息，然后在退出时进行清理：
 
@@ -276,8 +276,6 @@
    for the deadline, check if the scope has already been cancelled, and
    so forth – see :class:`CancelScope` below for the full details.
 
-   .. _blocking-cleanup-example:
-
    Cancellations in Trio are "level triggered", meaning that once a block
    has been cancelled, *all* cancellable operations in that block will
    keep raising :exc:`Cancelled`. This helps avoid some pitfalls around
@@ -355,7 +353,7 @@
 
    有一些特殊情况，由于外部约束，无法完全实现这些语义。这些情况总是会被记录下来。还有一个系统性的例外：
 
-   * 异步清理操作——如 ``__aexit__`` 方法或异步关闭方法——和其他操作一样是可取消的，*但*如果它们被取消，它们仍然会在引发 :exc:`Cancelled` 之前执行最低级别的清理。
+   * 异步清理操作——如 ``__aexit__`` 方法或异步关闭方法——和其他操作一样是可取消的， *但* 如果它们被取消，它们仍然会在引发 :exc:`Cancelled` 之前执行最低级别的清理。
 
    例如，关闭 TLS 包装的套接字通常涉及向远程对等方发送通知，以便它们可以通过加密方式确保你确实打算关闭套接字，而不是中间人攻击者破坏了你的连接。但要健壮地处理这一过程有点棘手。还记得我们上面提到的 :ref:`示例 <blocking-cleanup-example>` 吗？其中阻塞的 ``send_goodbye_msg`` 引发了问题？这正是关闭 TLS 套接字的工作方式：如果远程对等方消失了，那么我们的代码可能永远无法实际发送关闭通知，而如果它一直尝试发送，那就会永远阻塞。因此，关闭 TLS 包装的套接字的方法会*尝试*发送该通知——如果它被取消，那么它会放弃发送消息，但*仍然*会在引发 :exc:`Cancelled` 之前关闭底层套接字，这样至少不会泄漏资源。
 
@@ -371,28 +369,25 @@
    to call it, then it's cancellable (see :ref:`checkpoints`
    above). Cancellable means:
 
-   * If you try to call it when inside a cancelled scope, then it will
-   raise :exc:`Cancelled`.
+   * If you try to call it when inside a cancelled scope, then it will raise :exc:`Cancelled`.
 
-   * If it blocks, and while it's blocked then one of the scopes around
-   it becomes cancelled, it will return early and raise
-   :exc:`Cancelled`.
+   * If it blocks, and while it's blocked then one of the scopes around it becomes cancelled, it will return early and raise :exc:`Cancelled`.
 
    * Raising :exc:`Cancelled` means that the operation *did not
-   happen*. If a Trio socket's ``send`` method raises :exc:`Cancelled`,
-   then no data was sent. If a Trio socket's ``recv`` method raises
-   :exc:`Cancelled` then no data was lost – it's still sitting in the
-   socket receive buffer waiting for you to call ``recv`` again. And so
-   forth.
+     happen*. If a Trio socket's ``send`` method raises :exc:`Cancelled`,
+     then no data was sent. If a Trio socket's ``recv`` method raises
+     :exc:`Cancelled` then no data was lost – it's still sitting in the
+     socket receive buffer waiting for you to call ``recv`` again. And so
+     forth.
 
    There are a few idiosyncratic cases where external constraints make it
    impossible to fully implement these semantics. These are always
    documented. There is also one systematic exception:
 
    * Async cleanup operations – like ``__aexit__`` methods or async close
-   methods – are cancellable just like anything else *except* that if
-   they are cancelled, they still perform a minimum level of cleanup
-   before raising :exc:`Cancelled`.
+     methods – are cancellable just like anything else *except* that if
+     they are cancelled, they still perform a minimum level of cleanup
+     before raising :exc:`Cancelled`.
 
    For example, closing a TLS-wrapped socket normally involves sending a
    notification to the remote peer, so that they can be cryptographically
@@ -414,6 +409,8 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Cancellation API details**
+
+.. currentmodule:: trio.testing
 
 .. tab:: 中文
 
@@ -552,7 +549,7 @@
 .. tab:: 英文
 
    * If you want to impose a timeout on a function, but you don't care
-   whether it timed out or not:
+     whether it timed out or not:
 
    .. code-block:: python
 
@@ -561,7 +558,7 @@
       # carry on!
 
    * If you want to impose a timeout on a function, and then do some
-   recovery if it timed out:
+     recovery if it timed out:
 
    .. code-block:: python
 
@@ -572,8 +569,8 @@
             try_to_recover()
 
    * If you want to impose a timeout on a function, and then if it times
-   out then just give up and raise an error for your caller to deal
-   with:
+     out then just give up and raise an error for your caller to deal
+     with:
 
    .. code-block:: python
 

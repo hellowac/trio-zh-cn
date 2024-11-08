@@ -1224,7 +1224,7 @@
       child1: exiting!
       parent: all done!
 
-   Trio 之所以拥有如此丰富的 :ref:`仪表 API <tutorial-instrument-example>`，主要是为了使编写调试工具成为可能，帮助捕捉到像这样的潜在问题。
+   Trio 之所以拥有如此丰富的 :ref:`工具 API <tutorial-instrument-example>`，主要是为了使编写调试工具成为可能，帮助捕捉到像这样的潜在问题。
 
 .. tab:: 英文
 

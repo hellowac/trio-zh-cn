@@ -1,16 +1,133 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import collections.abc
 import os
 import sys
+import types
 from importlib.metadata import version as get_version
+from typing import TYPE_CHECKING, cast
 
 from packaging.version import parse
+
+if TYPE_CHECKING:
+    from sphinx.application import Sphinx
+
 
 # For our local_customization module
 sys.path.insert(0, os.path.abspath("."))
 # For trio itself
 sys.path.insert(0, os.path.abspath("../../src"))
+
+# Enable reloading with `typing.TYPE_CHECKING` being True
+os.environ["SPHINX_AUTODOC_RELOAD_MODULES"] = "1"
+
+
+# https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#event-autodoc-process-signature
+def autodoc_process_signature(
+    app: Sphinx,
+    what: str,
+    name: str,
+    obj: object,
+    options: object,
+    signature: str,
+    return_annotation: str,
+) -> tuple[str, str]:
+    """Modify found signatures to fix various issues."""
+    if name == "trio.testing._raises_group._ExceptionInfo.type":
+        # This has the type "type[E]", which gets resolved into the property itself.
+        # That means Sphinx can't resolve it. Fix the issue by overwriting with a fully-qualified
+        # name.
+        assert isinstance(obj, property), obj
+        assert isinstance(obj.fget, types.FunctionType), obj.fget
+        assert (
+            obj.fget.__annotations__["return"] == "type[MatchE]"
+        ), obj.fget.__annotations__
+        obj.fget.__annotations__["return"] = "type[~trio.testing._raises_group.MatchE]"
+    if signature is not None:
+        signature = signature.replace("~_contextvars.Context", "~contextvars.Context")
+        if name == "trio.lowlevel.RunVar":  # Typevar is not useful here.
+            signature = signature.replace(": ~trio._core._local.T", "")
+        if "_NoValue" in signature:
+            # Strip the type from the union, make it look like = ...
+            signature = signature.replace(" | type[trio._core._local._NoValue]", "")
+            signature = signature.replace("<class 'trio._core._local._NoValue'>", "...")
+        if name in ("trio.testing.RaisesGroup", "trio.testing.Matcher") and (
+            "+E" in signature or "+MatchE" in signature
+        ):
+            # This typevar being covariant isn't handled correctly in some cases, strip the +
+            # and insert the fully-qualified name.
+            signature = signature.replace("+E", "~trio.testing._raises_group.E")
+            signature = signature.replace(
+                "+MatchE",
+                "~trio.testing._raises_group.MatchE",
+            )
+        if "DTLS" in name:
+            signature = signature.replace("SSL.Context", "OpenSSL.SSL.Context")
+        # Don't specify PathLike[str] | PathLike[bytes], this is just for humans.
+        signature = signature.replace("StrOrBytesPath", "str | bytes | os.PathLike")
+
+    return signature, return_annotation
+
+
+def add_intersphinx(app: Sphinx) -> None:
+    """Add some specific intersphinx mappings.
+
+    Hooked up to builder-inited. app.builder.env.interpshinx_inventory is not an official API, so this may break on new sphinx versions.
+    """
+
+    def add_mapping(
+        reftype: str,
+        library: str,
+        obj: str,
+        version: str = "3.12",
+        target: str | None = None,
+    ) -> None:
+        """helper function"""
+        url_version = "3" if version == "3.12" else version
+        if target is None:
+            target = f"{library}.{obj}"
+
+        # sphinx doing fancy caching stuff makes this attribute invisible
+        # to type checkers
+        inventory = app.builder.env.intersphinx_inventory  # type: ignore[attr-defined]
+        assert isinstance(inventory, dict)
+        inventory = cast("Inventory", inventory)
+
+        inventory[f"py:{reftype}"][f"{target}"] = (
+            "Python",
+            version,
+            f"https://docs.python.org/{url_version}/library/{library}.html/{obj}",
+            "-",
+        )
+
+    # This has been removed in Py3.12, so add a link to the 3.11 version with deprecation warnings.
+    add_mapping("method", "pathlib", "Path.link_to", "3.11")
+
+    # defined in py:data in objects.inv, but sphinx looks for a py:class
+    # see https://github.com/sphinx-doc/sphinx/issues/10974
+    # to dump the objects.inv for the stdlib, you can run
+    # python -m sphinx.ext.intersphinx http://docs.python.org/3/objects.inv
+    add_mapping("class", "math", "inf")
+    add_mapping("class", "types", "FrameType")
+
+    # new in py3.12, and need target because sphinx is unable to look up
+    # the module of the object if compiling on <3.12
+    if not hasattr(collections.abc, "Buffer"):
+        add_mapping("class", "collections.abc", "Buffer", target="Buffer")
+
+
+# XX hack the RTD theme until
+#   https://github.com/rtfd/sphinx_rtd_theme/pull/382
+# is shipped (should be in the release after 0.2.4)
+# ...note that this has since grown to contain a bunch of other CSS hacks too
+# though.
+def setup(app: Sphinx) -> None:
+    app.add_css_file("hackrtd.css")
+    app.connect("autodoc-process-signature", autodoc_process_signature)
+    # After Intersphinx runs, add additional mappings.
+    app.connect("builder-inited", add_intersphinx, priority=1000)
+
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -19,6 +136,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
     "sphinxcontrib_trio",  # 使 Sphinx 更好地记录 Python 函数和方法。特别是，它可以轻松记录异步函数。
+    "sphinx_codeautolink",
     "local_customization",
     "typevars",
     "sphinx_inline_tabs",  # tabs
@@ -32,6 +150,7 @@ project = "Trio"
 copyright = "2017, Nathaniel J. Smith"  # noqa: A001 # Name shadows builtin
 author = "Nathaniel J. Smith"
 
+autodoc_inherit_docstrings = False
 autodoc_member_order = "bysource"
 
 autodoc_type_aliases = {
