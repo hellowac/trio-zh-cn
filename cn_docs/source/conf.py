@@ -229,5 +229,5 @@ html_theme_options = {
     ],
     "source_repository": "https://github.com/hellowac/trio-zh-cn/",
     "source_branch": "sync-docs",
-    "source_directory": "cn_docs/",
+    "source_directory": "cn_docs/source/",
 }
